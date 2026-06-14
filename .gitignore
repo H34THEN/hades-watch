@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+.next/
+out/
+dist/
+build/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# system
+.DS_Store
+Thumbs.db
+
+# prisma/local db artifacts
+*.db
+*.db-journal
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
