@@ -122,6 +122,11 @@ model User {
   passwordResetTokens     PasswordResetToken[]
   missionParticipations   MissionParticipation[]
   cipherSolves            CipherSolve[]
+  inviteRedemption        InviteRedemption?
+  spotifyPlaylistId       String?
+  spotifyPlaylistUrl      String?
+  spotifyEmbedUrl         String?
+  activeTitle             String?
 
   @@index([createdAt])
 }
@@ -205,9 +210,23 @@ model InviteCode {
   isDevCode       Boolean   @default(false)
 
   createdBy User? @relation("InviteCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  redemptions InviteRedemption[]
 
   @@index([revoked])
   @@index([expiresAt])
+}
+
+model InviteRedemption {
+  id           String    @id @default(cuid())
+  inviteCodeId String
+  userId       String    @unique
+  roleGranted  RoleName?
+  redeemedAt   DateTime  @default(now())
+
+  invite InviteCode @relation(fields: [inviteCodeId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([inviteCodeId])
 }
 
 model AuditLog {

@@ -28,7 +28,9 @@ src/
     ciphers/                   # Cipher puzzles (roleplay)
     moderation/                # Moderation console
     admin/                     # Admin console + subpages
+    profile/                   # Operative dossier (signed-in user)
   components/
+    profile/                   # Dossier sections, Spotify form, badges
     moderation/                # Report actions, nav
     mmo/                       # Character form, MMO nav
     archive/                   # Locked cards, unlock button
@@ -40,8 +42,18 @@ src/
     actions/phase4.ts          # Dead drops, ciphers, admin users
     auth/guards.ts             # requireModeratorUser, requireAdminUser
     clearance.ts               # Role clearance + roleplay disclaimer
+    dossier.ts                 # Titles, badges, clearance, invite redaction
+    spotify.ts                 # Playlist URL validation
+    queries/dossier.ts         # Profile dossier data loader
     jitsi.ts                   # Room name / URL generation
 ```
+
+## Profile Dossier (Phase 7)
+
+- Route: `/profile` — signed-in user's operative dossier
+- Spotify embed (iframe), titles/badges, faction/clearance, invite lineage, mission/cipher history
+- Models: `User` Spotify fields, `InviteRedemption`
+- See [PROFILE_DOSSIER.md](PROFILE_DOSSIER.md)
 
 ## Phase 4 Systems
 
@@ -57,7 +69,7 @@ src/
 - Models: `Character` (one per user), `Faction`, `FactionMembership`, `Quest`
 - Routes: `/mmo`, `/mmo/character`, `/mmo/factions`, `/mmo/missions`
 - Membership requests scaffolded (Pending/Approved/Rejected/Left)
-- Mission participation — Phase 5 TODO
+- Mission participation — complete (Phase 5)
 
 ### Lore Archive
 
@@ -88,4 +100,4 @@ src/
 
 ## Deployment
 
-See [DEPLOYMENT.md](DEPLOYMENT.md). **Not production-ready** until Phase 5 hardening.
+See [DEPLOYMENT.md](DEPLOYMENT.md). Live at `https://hadeswatch.com`.

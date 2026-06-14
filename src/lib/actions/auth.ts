@@ -3,7 +3,7 @@
 import { writeAuditLog } from "@/lib/audit";
 import { createVerificationForNewUser } from "@/lib/actions/email-verification";
 import { hashPassword } from "@/lib/auth/password";
-import { consumeInviteCode, validateInviteCode } from "@/lib/invites";
+import { consumeInviteCode, findInviteByCode, validateInviteCode } from "@/lib/invites";
 import { rateLimitOrThrow } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations/auth";
@@ -82,6 +82,17 @@ export async function registerUser(
       await tx.userRole.create({
         data: { userId: created.id, roleId: role.id },
       });
+
+      const invite = await findInviteByCode(inviteCode);
+      if (invite) {
+        await tx.inviteRedemption.create({
+          data: {
+            inviteCodeId: invite.id,
+            userId: created.id,
+            roleGranted: inviteResult.roleGranted,
+          },
+        });
+      }
 
       await consumeInviteCode(inviteCode, tx);
 

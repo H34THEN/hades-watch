@@ -75,11 +75,22 @@
   - `docs/ROLLBACK.md`
 - Updated `docs/DEPLOYMENT.md`, `docs/VPS_RUNBOOK.md`, `docs/LAUNCH_CHECKLIST.md`
 
-## Phase 6B — Next
+## Phase 6B — Live
 
-- Actual VPS deployment to hadeswatch.com (operator-executed)
+- Production deployment at `https://hadeswatch.com`
+- Standalone Next.js + systemd + Nginx + Cloudflare
+
+## Phase 7 — Profile Identity + Media Layer
+
+- Spotify playlist embed on `/profile` (iframe, no OAuth)
+- Dossier identity: titles, badges, clearance, faction display
+- Invite lineage (`InviteRedemption` model)
+- Operational history: missions, ciphers, lore unlocks
+- See `docs/PROFILE_DOSSIER.md`
+
+## Future
+
 - Wire SMTP transport (nodemailer or provider SDK)
-- Enforce email verification in production
 - Distributed rate limiting (Redis/Upstash) if multi-instance
-- Monitoring, alerting, backup automation on VPS
-- Launch validation and public announcement
+- Spotify OAuth / Web Playback SDK
+- Public dossier pages
