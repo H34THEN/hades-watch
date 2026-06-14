@@ -1,0 +1,544 @@
+// Hades Watch — PostgreSQL schema (Phase 5)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RoleName {
+  Owner
+  Admin
+  Moderator
+  Expert
+  Gamer
+  Member
+  Guest
+}
+
+enum AnnouncementStatus {
+  Draft
+  Published
+  Archived
+}
+
+enum TransmissionPriority {
+  Low
+  Normal
+  High
+  Critical
+}
+
+enum EventStatus {
+  Draft
+  Published
+  Cancelled
+  Archived
+}
+
+enum ModerationReportStatus {
+  Open
+  Reviewing
+  Resolved
+  Dismissed
+}
+
+enum FactionMembershipStatus {
+  Pending
+  Approved
+  Rejected
+  Left
+}
+
+enum QuestStatus {
+  Draft
+  Available
+  Active
+  Completed
+  Archived
+}
+
+enum LoreStatus {
+  Draft
+  Published
+  Archived
+}
+
+enum DeadDropStatus {
+  Draft
+  Active
+  Expired
+  Archived
+}
+
+enum CipherStatus {
+  Draft
+  Active
+  Archived
+}
+
+enum MissionParticipationStatus {
+  Interested
+  Joined
+  InProgress
+  Completed
+  Dropped
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  passwordHash  String?
+  disabled      Boolean   @default(false)
+  banned        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts            Account[]
+  sessions            Session[]
+  userRoles           UserRole[]
+  themePreference     ThemePreference?
+  auditLogs           AuditLog[]            @relation("AuditActor")
+  createdInvites      InviteCode[]          @relation("InviteCreator")
+  announcements       Announcement[]        @relation("AnnouncementAuthor")
+  events              Event[]               @relation("EventCreator")
+  moderationReports   ModerationReport[]    @relation("ReportAuthor")
+  assignedReports     ModerationReport[]    @relation("ReportAssignee")
+  reviewedReports     ModerationReport[]    @relation("ReportReviewer")
+  moderationNotes     ModerationNote[]      @relation("NoteAuthor")
+  notesAbout          ModerationNote[]      @relation("NoteSubject")
+  character           Character?
+  factionMemberships  FactionMembership[]
+  loreUnlocks         UserLoreUnlock[]
+  createdLore         LoreEntry[]           @relation("LoreAuthor")
+  createdDeadDrops    DeadDrop[]            @relation("DeadDropAuthor")
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  missionParticipations   MissionParticipation[]
+  cipherSolves            CipherSolve[]
+
+  @@index([createdAt])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        RoleName @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userRoles UserRole[]
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  grantedAt DateTime @default(now())
+  grantedBy String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+model InviteCode {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  emailRestricted String?
+  roleGranted     RoleName?
+  maxUses         Int       @default(1)
+  usesCount       Int       @default(0)
+  expiresAt       DateTime?
+  createdById     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  revoked         Boolean   @default(false)
+  isDevCode       Boolean   @default(false)
+
+  createdBy User? @relation("InviteCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([revoked])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  targetType String?
+  targetId   String?
+  metadata   Json?
+  ipHash     String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([actorId])
+}
+
+model Announcement {
+  id           String               @id @default(cuid())
+  title        String
+  body         String               @db.Text
+  status       AnnouncementStatus   @default(Draft)
+  priority     TransmissionPriority @default(Normal)
+  pinned       Boolean              @default(false)
+  audienceRole RoleName?
+  authorId     String?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  publishedAt  DateTime?
+
+  author User? @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Event {
+  id            String      @id @default(cuid())
+  title         String
+  description   String      @db.Text
+  eventType     String      @default("general")
+  status        EventStatus @default(Draft)
+  startsAt      DateTime
+  endsAt        DateTime?
+  location      String?
+  virtualUrl    String?
+  jitsiRoomName String?
+  audienceRole  RoleName?
+  createdById   String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  cancelledAt   DateTime?
+
+  createdBy User? @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([startsAt])
+}
+
+model ModerationReport {
+  id             String                 @id @default(cuid())
+  reporterId     String?
+  targetType     String
+  targetId       String
+  reason         String                 @db.Text
+  status         ModerationReportStatus @default(Open)
+  assignedToId   String?
+  resolutionNote String?                @db.Text
+  reviewedById   String?
+  reviewedAt     DateTime?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  reporter   User? @relation("ReportAuthor", fields: [reporterId], references: [id], onDelete: SetNull)
+  assignedTo User? @relation("ReportAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  reviewedBy User? @relation("ReportReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([assignedToId])
+  @@index([createdAt])
+}
+
+model ModerationNote {
+  id        String   @id @default(cuid())
+  userId    String
+  authorId  String?
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  subject User  @relation("NoteSubject", fields: [userId], references: [id], onDelete: Cascade)
+  author  User? @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Character {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  callsign   String
+  pronouns   String?
+  bio        String?  @db.Text
+  archetype  String?
+  avatarUrl  String?
+  isPublic   Boolean  @default(true)
+  factionId  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  faction Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+
+  @@index([factionId])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model Faction {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String   @unique
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  characters  Character[]
+  quests      Quest[]
+  memberships FactionMembership[]
+  loreEntries LoreEntry[]
+}
+
+model FactionMembership {
+  id        String                  @id @default(cuid())
+  userId    String
+  factionId String
+  status    FactionMembershipStatus @default(Pending)
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  faction Faction @relation(fields: [factionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, factionId])
+  @@index([status])
+}
+
+model Quest {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  description String      @db.Text
+  status      QuestStatus @default(Draft)
+  factionId   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  faction Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  participations MissionParticipation[]
+
+  @@index([status])
+  @@index([factionId])
+}
+
+model MissionParticipation {
+  id          String                     @id @default(cuid())
+  userId      String
+  questId     String
+  status      MissionParticipationStatus @default(Joined)
+  joinedAt    DateTime                   @default(now())
+  completedAt DateTime?
+  notes       String?                    @db.Text
+  updatedAt   DateTime                   @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest Quest @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId])
+  @@index([status])
+  @@index([questId])
+}
+
+model LoreEntry {
+  id               String     @id @default(cuid())
+  slug             String     @unique
+  title            String
+  excerpt          String?
+  body             String     @db.Text
+  status           LoreStatus @default(Draft)
+  requiredRole     RoleName?
+  requiredFactionId String?
+  authorId         String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  publishedAt      DateTime?
+
+  author          User?            @relation("LoreAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  requiredFaction Faction?         @relation(fields: [requiredFactionId], references: [id], onDelete: SetNull)
+  unlocks         UserLoreUnlock[]
+
+  @@index([status])
+  @@index([slug])
+}
+
+model UserLoreUnlock {
+  id          String   @id @default(cuid())
+  userId      String
+  loreEntryId String
+  unlockedAt  DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loreEntry LoreEntry @relation(fields: [loreEntryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, loreEntryId])
+}
+
+model DeadDrop {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  codename      String
+  title         String
+  locationHint  String
+  message       String         @db.Text
+  status        DeadDropStatus @default(Active)
+  clearanceRole RoleName?
+  expiresAt     DateTime?
+  createdById   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  createdBy User? @relation("DeadDropAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([clearanceRole])
+}
+
+model SecretTransmission {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  title         String
+  body          String         @db.Text
+  status        DeadDropStatus @default(Active)
+  clearanceRole RoleName?
+  expiresAt     DateTime?
+  oneTime       Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([clearanceRole])
+  @@index([status])
+}
+
+model CipherPuzzle {
+  id           String       @id @default(cuid())
+  slug         String       @unique
+  title        String
+  prompt       String       @db.Text
+  hint         String?
+  difficulty   String       @default("medium")
+  solutionHash String?
+  status       CipherStatus @default(Active)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  solves CipherSolve[]
+
+  @@index([status])
+}
+
+model CipherSolve {
+  id             String   @id @default(cuid())
+  userId         String
+  cipherPuzzleId String
+  solvedAt       DateTime @default(now())
+  attemptCount   Int      @default(1)
+
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cipher CipherPuzzle @relation(fields: [cipherPuzzleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cipherPuzzleId])
+  @@index([cipherPuzzleId])
+}
+
+model Asset {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  type        String
+  path        String
+  themeKey    String?
+  description String?
+  mimeType    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([themeKey])
+}
+
+model ThemePreference {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  themeId   String
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

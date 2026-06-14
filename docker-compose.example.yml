@@ -1,0 +1,46 @@
+# Example only — copy to docker-compose.yml locally. Never commit real secrets.
+#
+# Production: bind web to localhost if host Nginx terminates TLS:
+#   ports: ["127.0.0.1:3000:3000"]
+#
+# External Postgres: remove `db` service and set DATABASE_URL in .env
+
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: archivist
+      POSTGRES_PASSWORD: change-me-local-only
+      POSTGRES_DB: hadeswatch_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U archivist -d hadeswatch_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

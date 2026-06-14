@@ -1,6 +1,91 @@
 # Hades Watch Architecture
 
-Hades Watch is intended to become a Next.js, TypeScript, Tailwind, Prisma, PostgreSQL-ready cyberpunk community platform.
+## Stack
 
-Cursor should initialize the actual application framework inside this repo and preserve the planning documentation unless it has a clear improvement.
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 + CSS variables |
+| UI | shadcn/ui |
+| ORM | Prisma 7 + PostgreSQL (`@prisma/adapter-pg`) |
+| Auth | Auth.js / NextAuth v5 (credentials, JWT sessions) |
+| Validation | Zod |
+| Meetings | Jitsi Meet links (public instance, no self-host) |
 
+## Directory Layout
+
+```txt
+src/
+  app/
+    dashboard/                 # Operative hub
+    dashboard/transmissions/   # User-facing broadcasts
+    dashboard/events/          # Upcoming events summary
+    events/                    # Full event calendar
+    mmo/                       # Text MMO hub, character, factions, missions
+    archive/                   # Lore archive
+    dead-drops/                # Fictional dead drops (roleplay)
+    ciphers/                   # Cipher puzzles (roleplay)
+    moderation/                # Moderation console
+    admin/                     # Admin console + subpages
+  components/
+    moderation/                # Report actions, nav
+    mmo/                       # Character form, MMO nav
+    archive/                   # Locked cards, unlock button
+    admin/                     # Admin CRUD panels
+  lib/
+    actions/moderation.ts      # Reports, notes, assignment
+    actions/mmo.ts             # Character, factions, quests
+    actions/lore.ts            # Lore listing, unlock, admin CRUD
+    actions/phase4.ts          # Dead drops, ciphers, admin users
+    auth/guards.ts             # requireModeratorUser, requireAdminUser
+    clearance.ts               # Role clearance + roleplay disclaimer
+    jitsi.ts                   # Room name / URL generation
+```
+
+## Phase 4 Systems
+
+### Moderation Workflow
+
+- Model: `ModerationReport` (Open, Reviewing, Resolved, Dismissed), `ModerationNote`
+- Routes: `/moderation`, `/moderation/reports`, `/moderation/reports/[id]`, `/moderation/notes`, `/moderation/actions`
+- Access: Owner, Admin, Moderator
+- Audit: report create/status/assign, note create
+
+### Text MMO (Lightweight)
+
+- Models: `Character` (one per user), `Faction`, `FactionMembership`, `Quest`
+- Routes: `/mmo`, `/mmo/character`, `/mmo/factions`, `/mmo/missions`
+- Membership requests scaffolded (Pending/Approved/Rejected/Left)
+- Mission participation — Phase 5 TODO
+
+### Lore Archive
+
+- Models: `LoreEntry`, `UserLoreUnlock`
+- Routes: `/archive`, `/archive/lore`, `/archive/lore/[slug]`
+- Locked entries show locked cards; accessible entries require unlock action
+- Admin: `/admin/lore`
+
+### Dead Drops / Ciphers (Roleplay Only)
+
+- Models: `DeadDrop`, `SecretTransmission`, `CipherPuzzle`
+- Routes: `/dead-drops`, `/dead-drops/[slug]`, `/ciphers`
+- **Not secure messaging** — in-world flavor only
+- Admin: `/admin/dead-drops`
+
+### Phase 3 Systems (unchanged)
+
+- Transmissions, Events, Jitsi scaffolding — see prior sections in git history
+
+## Route Protection
+
+| Route | Requirement |
+|-------|-------------|
+| `/dashboard/*` | Authenticated |
+| `/events`, `/mmo/*`, `/archive/*`, `/dead-drops/*`, `/ciphers` | Authenticated |
+| `/admin/*` | Owner or Admin (page-level) |
+| `/moderation/*` | Owner, Admin, or Moderator |
+
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md). **Not production-ready** until Phase 5 hardening.
