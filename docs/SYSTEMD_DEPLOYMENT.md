@@ -85,6 +85,10 @@ sudo -u hadeswatch -H bash -c '
 '
 ```
 
+`npm run build` runs `postbuild`, which copies `.next/static` and `public` into `.next/standalone` (required for CSS/JS in standalone mode).
+
+Production VPS example path: `/opt/hades-watch-next`.
+
 ## 7. Database Migrations
 
 Take a backup first (`docs/BACKUPS.md`).
@@ -111,13 +115,15 @@ sudo -u hadeswatch -H bash -c '
 
 Unset `ALLOW_PROD_ADMIN_BOOTSTRAP` in `.env` after Owner registers.
 
-## 9. systemd Service
+## 9. systemd Service (standalone)
 
-Create `/etc/systemd/system/hades-watch.service`:
+Use the **standalone** server (`output: "standalone"` in `next.config.ts`). Do **not** use `npm run start` in production.
+
+Create `/etc/systemd/system/hades-watch-next.service`:
 
 ```ini
 [Unit]
-Description=Hades Watch Next.js Application
+Description=Hades Watch Next.js (standalone)
 Documentation=https://hadeswatch.com
 After=network.target postgresql.service
 Wants=postgresql.service
@@ -126,16 +132,18 @@ Wants=postgresql.service
 Type=simple
 User=hadeswatch
 Group=hadeswatch
-WorkingDirectory=/opt/hades-watch
-EnvironmentFile=/opt/hades-watch/.env
-ExecStart=/usr/bin/npm run start
+WorkingDirectory=/opt/hades-watch-next/.next/standalone
+EnvironmentFile=/opt/hades-watch-next/.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node /opt/hades-watch-next/.next/standalone/server.js
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=hades-watch
+SyslogIdentifier=hades-watch-next
 
-# Hardening
 NoNewPrivileges=true
 PrivateTmp=true
 
@@ -143,20 +151,22 @@ PrivateTmp=true
 WantedBy=multi-user.target
 ```
 
+Adjust paths if your clone lives elsewhere (e.g. `/opt/hades-watch`).
+
 Enable and start:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable hades-watch
-sudo systemctl start hades-watch
-sudo systemctl status hades-watch
+sudo systemctl enable hades-watch-next
+sudo systemctl start hades-watch-next
+sudo systemctl status hades-watch-next
 ```
 
 ## 10. Logs
 
 ```bash
-sudo journalctl -u hades-watch -f
-sudo journalctl -u hades-watch --since "1 hour ago"
+sudo journalctl -u hades-watch-next -f
+sudo journalctl -u hades-watch-next --since "1 hour ago"
 ```
 
 ## 11. Health Check
@@ -183,18 +193,20 @@ sudo systemctl reload nginx
 ## 13. Deploy Updates
 
 ```bash
-sudo systemctl stop hades-watch
+sudo systemctl stop hades-watch-next
 # backup DB — see docs/BACKUPS.md
 sudo -u hadeswatch -H bash -c '
-  cd /opt/hades-watch
+  cd /opt/hades-watch-next
   git pull
   npm ci
   npm run build
   npm run db:deploy
 '
-sudo systemctl start hades-watch
+sudo systemctl start hades-watch-next
 curl -s http://127.0.0.1:3000/api/health
 ```
+
+Troubleshooting (themes, CSS, Nginx headers): `docs/DEPLOYMENT.md`.
 
 Rollback: `docs/ROLLBACK.md`
 

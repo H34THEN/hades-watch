@@ -13,7 +13,8 @@ const securityHeaders = [
   ...(isProd
     ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }]
     : []),
-  // Conservative CSP starter — tighten before launch. See docs/SECURITY.md
+  // ThemeProvider sets CSS variables via inline styles on <html> — requires 'unsafe-inline'.
+  // Do not duplicate CSP in Nginx; a stricter proxy CSP blocks theme colors. See docs/NGINX.md
   {
     key: "Content-Security-Policy",
     value: [
