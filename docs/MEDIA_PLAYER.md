@@ -80,6 +80,32 @@ The script copies the file into `storage/uploads/audio/tracks`, creates/upserts 
 
 Requires `DATABASE_URL` and an Owner user in the database.
 
+### Import on VPS (copy file to server first)
+
+The path must exist **on the machine running the script**. A path like `/home/heathen/Projects/...` only works on your laptop, not on the VPS.
+
+**From your laptop** (copy one track to the server):
+
+```bash
+scp "/home/heathen/Projects/hades-watch/01 - Salt on the Tongue Fixed.mp3" \
+  root@srv767908:/tmp/salt-on-the-tongue-fixed.mp3
+```
+
+**On the VPS** (`/opt/hades-watch-next`):
+
+```bash
+cd /opt/hades-watch-next
+mkdir -p storage/uploads/audio/tracks storage/uploads/audio/covers
+npm run media:import-track -- "/tmp/salt-on-the-tongue-fixed.mp3" \
+  --title "Salt on the Tongue Fixed" \
+  --album "Album One" \
+  --artist "Heathen" \
+  --track 1 \
+  --visibility APPROVED_USERS
+```
+
+Or use the browser upload at `/admin/media/upload` after `git pull` and rebuild (uses `POST /api/media/upload`).
+
 ## Testing with one song
 
 1. Log in as Owner

@@ -62,7 +62,13 @@ function parseArgs(argv: string[]) {
 
 function validateSourceFile(filePath: string) {
   if (!existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
+    throw new Error(
+      `File not found on this machine: ${filePath}\n` +
+        "The import script reads a path on the server where it runs. " +
+        "On a VPS, copy the MP3 to the server first (scp/rsync), then pass that server path. " +
+        "Example: scp song.mp3 root@your-host:/tmp/song.mp3 then " +
+        'npm run media:import-track -- "/tmp/song.mp3" --title "..."',
+    );
   }
   const ext = basename(filePath).toLowerCase().match(/\.[a-z0-9]+$/)?.[0];
   if (!ext || !ALLOWED_AUDIO_EXTENSIONS.has(ext)) {
