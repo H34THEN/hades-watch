@@ -1,4 +1,6 @@
 import "dotenv/config";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { createHash } from "crypto";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, RoleName } from "../src/generated/prisma/client";
@@ -193,6 +195,15 @@ async function seedPhase4Content() {
 
   const loreEntries = [
     {
+      slug: "the-chthonic-uprising",
+      title: "The Chthonic Uprising",
+      excerpt:
+        "A recovered Dead Index testimony from Heathen on how the underworld resistance formed after the Ledger Purges, All-Seeing Census, Burning of the Civic Tablets, and Thunder Casket Crisis.",
+      body: null as string | null,
+      bodyFromFile: "docs/lore/CHTHONIC_UPRISING_ORIGIN.md",
+      requiredRole: null as RoleName | null,
+    },
+    {
       slug: "the-first-watch",
       title: "The First Watch",
       excerpt: "Before the network had a name, someone stayed awake on purpose.",
@@ -217,12 +228,18 @@ async function seedPhase4Content() {
   ];
 
   for (const l of loreEntries) {
+    const body =
+      l.body ??
+      (l.bodyFromFile
+        ? readFileSync(join(process.cwd(), l.bodyFromFile), "utf8")
+        : "");
+
     await prisma.loreEntry.upsert({
       where: { slug: l.slug },
       update: {
         title: l.title,
         excerpt: l.excerpt,
-        body: l.body,
+        body,
         status: "Published",
         publishedAt: new Date(),
         requiredRole: l.requiredRole,
@@ -232,7 +249,7 @@ async function seedPhase4Content() {
         slug: l.slug,
         title: l.title,
         excerpt: l.excerpt,
-        body: l.body,
+        body,
         status: "Published",
         publishedAt: new Date(),
         requiredRole: l.requiredRole,

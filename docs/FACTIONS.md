@@ -1,16 +1,26 @@
 # Chthonic Uprising Factions
 
-Canonical faction lore for Hades Watch lives in `FactionsLoreBuilder.md` at the repo root. This document describes the database model, seed workflow, and role separation.
+Canonical faction lore for Hades Watch lives in:
+
+- `FactionsLoreBuilder.md` (repo root, builder reference)
+- **`docs/lore/CHTHONIC_UPRISING_ORIGIN.md`** (canonical alliance origin dossier)
+
+Archive entry: `/archive/lore/the-chthonic-uprising` (seeded from the origin dossier).
 
 ## Parent Alliance
 
 **The Chthonic Uprising** (`chthonic-uprising`) is the parent underworld resistance alliance.
 
-- **Leader:** The Archivist
-- **Site role mapping:** Owner (founder / keeper of the Dead Index)
+- **Coordinator:** Heathen, also known as **The Archivist** and **Slewfoot**
+- **Site role mapping:** Owner (keeper of the Dead Index, not a surface king)
 - **Motto:** *What the surface buries, the underworld remembers.*
+- **Alt motto:** *No ghost goes uncounted. No god goes unwatched.*
 
-The Archivist is not a normal faction leader — they coordinate the whole movement.
+Heathen is not a flawless chosen-one ruler. The Uprising was built collectively by the five founding cells. See the [origin dossier](lore/CHTHONIC_UPRISING_ORIGIN.md) for Dead Index testimony.
+
+## The Dead Index
+
+The Dead Index is the underworld memory spine of the Uprising: erased names, suppressed uprisings, broken algorithms, blacksite contracts, and testimonies the Surface Order tried to bury. Heathen began it as backups; the cells taught it consent, threat modeling, and exits. Full origin in `docs/lore/CHTHONIC_UPRISING_ORIGIN.md` §7.
 
 ## Five Baseline Cells
 
@@ -103,7 +113,7 @@ Navigation: header **Factions**, dashboard **Enter the Chthonic Uprising**, prof
 
 ## The Archivist / Owner Lore
 
-The **Owner** role maps to **The Archivist** (Heathen): Hades-blood sovereign, Keeper of the Dead Index, Warden of the Five Cells. Custodianship over the Dead Index — not surface kingship.
+The **Owner** role maps to **Heathen** (The Archivist, Slewfoot): Keeper of the Dead Index, Warden of the Five Cells. Custodianship over memory and access — not divine right or surface kingship. Full testimony: `docs/lore/CHTHONIC_UPRISING_ORIGIN.md`.
 
 ## Troubleshooting 404s
 
@@ -116,3 +126,7 @@ Faction pages use `src/lib/factions/resolve.ts` to fall back to canonical data w
 ## Source Data
 
 Canonical seed definitions: `src/lib/factions/chthonic-data.ts`
+
+Origin dossier excerpts for UI: `src/lib/factions/origin-dossier.ts`
+
+Full alliance origin prose: `docs/lore/CHTHONIC_UPRISING_ORIGIN.md`

@@ -4,18 +4,19 @@ export const ALLIANCE_SLUG = "chthonic-uprising";
 
 export const ARCHIVIST_LORE = {
   operationalName: "Heathen",
+  aliases: ["The Archivist", "Slewfoot"],
   titles: [
     "The Archivist",
-    "Hades-Blood Regent",
     "Keeper of the Dead Index",
-    "Sovereign of the Underwatch",
     "Warden of the Five Cells",
+    "Sovereign of the Underwatch",
     "Chthonic Overlord",
+    "Hades-Blood Regent",
   ],
   summary:
-    "Heathen, known operationally as the Archivist, is the Hades-blood sovereign of Hades Watch — not a surface king, but the underworld's keeper of memory, access, and consequence.",
+    "Heathen, also known as The Archivist and Slewfoot, is the Keeper of the Dead Index and mythic equivalent of the Owner role. A witness, organizer, technomancer, and reluctant coordinator — not a flawless chosen-one ruler.",
   doctrine:
-    "The Archivist governs the factions through the Dead Index: an encrypted archive of erased names, broken contracts, forbidden maps, and the living record of everyone the regime tried to bury. The Archivist's authority is not divine right. It is custodianship. Every faction answers to the Archivist because the Archivist preserves the truth that makes resistance possible.",
+    "The Uprising was built collectively. Heathen holds custodianship over the Dead Index: memory with obligations, access with accountability. Every faction answers because the archive preserves the truth that makes resistance possible. Underworld power is a tool. Sunlight is the promise.",
 };
 
 export const ALLIANCE_DATA = {
@@ -25,8 +26,8 @@ export const ALLIANCE_DATA = {
     "A distributed underworld resistance formed beneath the technocratic surface regime. The Archivist gathered the first cells after discovering fragments of the Dead Index.",
   tagline: "What the surface buries, the underworld remembers.",
   archetype: "Parent Alliance",
-  leaderName: "The Archivist",
-  leaderTitle: "Owner / Founder / Keeper of the Dead Index",
+  leaderName: "Heathen",
+  leaderTitle: "The Archivist / Slewfoot / Keeper of the Dead Index",
   leaderLore:
     "The Archivist does not command like a king. The Archivist remembers, routes, verifies, preserves, and retaliates.",
   motto: "No ghost goes uncounted. No god goes unwatched.",

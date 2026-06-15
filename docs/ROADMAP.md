@@ -109,6 +109,21 @@
 - Chthonic Command: `/admin/factions/command` — see `docs/CHTHONIC_COMMAND.md`
 - Canonical fallback prevents faction 404 when seed not run
 - See `docs/FACTIONS.md`, `docs/TEST_USERS.md`, `FactionsLoreBuilder.md`
+- **Origin dossier added:** `docs/lore/CHTHONIC_UPRISING_ORIGIN.md`
+- **Archive lore:** `the-chthonic-uprising` (Dead Index testimony from Heathen)
+- **Alliance page:** `/mmo/factions/chthonic-uprising` surfaces origin excerpts
+
+## Future Lore
+
+Planned archive entries and mission chains from the origin dossier:
+
+- The Ledger Purges
+- The All-Seeing Census
+- The Burning of the Civic Tablets
+- The Thunder Casket Crisis
+- The Bronze Gate Levies
+- Signal Ghosts
+- Underwatch
 
 ## Future
 
