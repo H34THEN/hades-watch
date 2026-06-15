@@ -84,12 +84,26 @@ Requires `DATABASE_URL` and an Owner user in the database.
 
 The path must exist **on the machine running the script**. A path like `/home/heathen/Projects/...` only works on your laptop, not on the VPS.
 
-**From your laptop** (copy one track to the server):
+**From your laptop** (use the **public VPS IP** from Hostinger hPanel → VPS → Overview, not `srv767908`):
 
 ```bash
+# Replace 203.0.113.50 with your actual Hostinger VPS IP
 scp "/home/heathen/Projects/hades-watch/01 - Salt on the Tongue Fixed.mp3" \
-  root@srv767908:/tmp/salt-on-the-tongue-fixed.mp3
+  root@203.0.113.50:/tmp/salt-on-the-tongue-fixed.mp3
 ```
+
+`hadeswatch.com` points at Cloudflare, not your origin server — do **not** use the domain for `scp`.
+
+Optional: add `~/.ssh/config` so you can `scp` to a short name:
+
+```sshconfig
+Host hadeswatch-vps
+    HostName 203.0.113.50
+    User root
+    Port 22
+```
+
+Then: `scp "…/01 - Salt on the Tongue Fixed.mp3" hadeswatch-vps:/tmp/salt-on-the-tongue-fixed.mp3`
 
 **On the VPS** (`/opt/hades-watch-next`):
 
