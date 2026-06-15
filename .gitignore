@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# uploaded media (persist on VPS, not in git)
+storage/uploads/audio/
+public/uploads/audio/

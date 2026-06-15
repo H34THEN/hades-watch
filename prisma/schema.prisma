@@ -126,6 +126,13 @@ enum FactionPosition {
   LEADER
 }
 
+enum MediaVisibility {
+  PRIVATE
+  APPROVED_USERS
+  PUBLIC
+  HIDDEN
+}
+
 enum UserAccountStatus {
   Pending
   Approved
@@ -197,6 +204,8 @@ model User {
   spotifyPlaylistUrl      String?
   spotifyEmbedUrl         String?
   activeTitle             String?
+  mediaAlbumsCreated      MediaAlbum[]  @relation("MediaAlbumCreator")
+  mediaTracksUploaded     MediaTrack[]  @relation("MediaTrackUploader")
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -767,4 +776,46 @@ model ThemePreference {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MediaAlbum {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  title       String
+  artistName  String?
+  description String?         @db.Text
+  coverPath   String?
+  visibility  MediaVisibility @default(APPROVED_USERS)
+  sortOrder   Int             @default(0)
+  createdById String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  tracks    MediaTrack[]
+  createdBy User?        @relation("MediaAlbumCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([visibility])
+}
+
+model MediaTrack {
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  title        String
+  artistName   String?
+  albumId      String?
+  trackNumber  Int?
+  description  String?         @db.Text
+  filePath     String
+  mimeType     String?
+  durationSec  Int?
+  visibility   MediaVisibility @default(APPROVED_USERS)
+  uploadedById String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  album      MediaAlbum? @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  uploadedBy User?       @relation("MediaTrackUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([visibility])
+  @@index([albumId])
 }

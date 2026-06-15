@@ -124,7 +124,45 @@ async function main() {
   const allianceId = await seedAlliance();
   console.log(`  ✓ ${ALLIANCE_DATA.name}`);
   await seedFactions(allianceId);
+  await seedOwnerAllianceMemberships();
   console.log("\nFaction seed complete.");
+}
+
+async function seedOwnerAllianceMemberships() {
+  const alliance = await prisma.faction.findUnique({ where: { slug: ALLIANCE_DATA.slug } });
+  if (!alliance) return;
+
+  const owners = await prisma.user.findMany({
+    where: { userRoles: { some: { role: { name: "Owner" } } } },
+    include: {
+      factionMemberships: {
+        where: { status: "Approved", faction: { isAlliance: false } },
+      },
+    },
+  });
+
+  for (const owner of owners) {
+    const hasPrimaryCell = owner.factionMemberships.some((m) => m.isPrimary);
+    await prisma.factionMembership.upsert({
+      where: { userId_factionId: { userId: owner.id, factionId: alliance.id } },
+      create: {
+        userId: owner.id,
+        factionId: alliance.id,
+        status: "Approved",
+        position: "LEADER",
+        displayTitle: "The Archivist",
+        reputation: 9999,
+        isPrimary: !hasPrimaryCell,
+      },
+      update: {
+        status: "Approved",
+        position: "LEADER",
+        displayTitle: "The Archivist",
+        reputation: 9999,
+      },
+    });
+    console.log(`  ✓ Owner alliance mark: ${owner.email}`);
+  }
 }
 
 main()

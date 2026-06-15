@@ -17,11 +17,13 @@ import type { ResolvedAlliance } from "@/lib/factions/resolve";
 interface AllianceOriginDossierProps {
   alliance: ResolvedAlliance;
   showAdminLink?: boolean;
+  showOwnerLink?: boolean;
 }
 
 export function AllianceOriginDossier({
   alliance,
   showAdminLink = false,
+  showOwnerLink = false,
 }: AllianceOriginDossierProps) {
   const cellBySlug = Object.fromEntries(alliance.cells.map((c) => [c.slug, c]));
 
@@ -50,6 +52,21 @@ export function AllianceOriginDossier({
             Leader Dossiers
           </CommandButton>
         </Link>
+      </TerminalPanel>
+
+      <TerminalPanel title="alliance.membership" className="border-primary/20">
+        <p className="text-sm leading-relaxed text-foreground/85">
+          The Chthonic Uprising is the parent alliance — the living compact of all five cells.
+          Heathen / Slewfoot / The Archivist leads it. The founding cells operate beneath it.
+        </p>
+        <p className="mt-3 font-mono text-xs text-muted-foreground italic">
+          Alliance membership is recorded by the Archivist through the Dead Index.
+        </p>
+        {showOwnerLink && (
+          <Link href="/admin/factions/command" className="mt-4 inline-block">
+            <CommandButton size="sm">Manage Chthonic Membership</CommandButton>
+          </Link>
+        )}
       </TerminalPanel>
 
       <TerminalPanel title="origin.before_descent">

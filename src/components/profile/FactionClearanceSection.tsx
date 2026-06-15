@@ -33,7 +33,7 @@ export function FactionClearanceSection({ dossier }: FactionClearanceSectionProp
         {dossier.faction ? (
           <>
             <div className="flex justify-between border-b border-border/40 pb-2">
-              <dt className="text-muted-foreground">FACTION</dt>
+              <dt className="text-muted-foreground">CELL / FACTION</dt>
               <dd>
                 <Link
                   href={`/mmo/factions/${dossier.faction.slug}`}
@@ -62,13 +62,55 @@ export function FactionClearanceSection({ dossier }: FactionClearanceSectionProp
           </>
         ) : (
           <div>
-            <p className="text-muted-foreground italic">No faction binding recorded.</p>
+            <p className="text-muted-foreground italic">No cell binding recorded.</p>
             <Link
               href="/mmo/factions"
               className="mt-3 inline-block font-mono text-xs text-primary hover:underline"
             >
               Browse Chthonic Uprising cells →
             </Link>
+          </div>
+        )}
+        {dossier.allianceMembership && (
+          <div className="border-t border-primary/20 pt-4">
+            <p className="mb-3 font-mono text-[10px] tracking-widest text-primary/80 uppercase">
+              Alliance Mark · Dead Index Recognized
+            </p>
+            <div className="flex justify-between border-b border-border/40 pb-2">
+              <dt className="text-muted-foreground">CHTHONIC UPRISING</dt>
+              <dd>
+                <Link
+                  href={`/mmo/factions/${dossier.allianceMembership.slug}`}
+                  className="text-primary hover:underline"
+                >
+                  {dossier.allianceMembership.name}
+                </Link>
+              </dd>
+            </div>
+            {(dossier.allianceMembership.displayTitle ||
+              dossier.allianceMembership.position) && (
+              <div className="flex justify-between border-b border-border/40 py-2">
+                <dt className="text-muted-foreground">MARKED AS</dt>
+                <dd className="text-primary">
+                  {dossier.allianceMembership.displayTitle ??
+                    (dossier.allianceMembership.position
+                      ? POSITION_LABELS[
+                          dossier.allianceMembership
+                            .position as keyof typeof POSITION_LABELS
+                        ]
+                      : null)}
+                </dd>
+              </div>
+            )}
+            {dossier.allianceMembership.reputation > 0 && (
+              <div className="flex justify-between py-2">
+                <dt className="text-muted-foreground">ALLIANCE REP</dt>
+                <dd>{dossier.allianceMembership.reputation}</dd>
+              </div>
+            )}
+            <p className="text-[10px] text-muted-foreground italic">
+              Marked by the Archivist. The five cells may recruit. The Uprising remembers.
+            </p>
           </div>
         )}
         {dossier.pendingFactionRequest && (

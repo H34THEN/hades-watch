@@ -75,7 +75,13 @@ export type AuditAction =
   | "user.faction.remove"
   | "user.faction.reputation"
   | "user.faction.primary"
-  | "user.badge.award";
+  | "user.badge.award"
+  | "media.album.create"
+  | "media.track.upload"
+  | "media.track.update"
+  | "media.track.delete"
+  | "alliance.membership.assign"
+  | "alliance.membership.remove";
 
 interface AuditEntry {
   action: AuditAction;

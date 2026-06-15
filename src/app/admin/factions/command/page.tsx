@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { ChthonicAlliancePanel } from "@/components/admin/ChthonicAlliancePanel";
 import { ChthonicCommandPanel } from "@/components/admin/ChthonicCommandPanel";
 import { RoleBadge } from "@/components/badges/RoleBadge";
 import { AccessDenied } from "@/components/layout/AccessDenied";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
+import { getChthonicAllianceMembers } from "@/lib/actions/chthonic-alliance";
 import { getChthonicCommandData } from "@/lib/actions/chthonic-command";
 import { writeAuditLog } from "@/lib/audit";
 import { ARCHIVIST_LORE } from "@/lib/factions/chthonic-data";
@@ -39,7 +41,10 @@ export default async function ChthonicCommandPage() {
     );
   }
 
-  const data = await getChthonicCommandData();
+  const [data, allianceData] = await Promise.all([
+    getChthonicCommandData(),
+    getChthonicAllianceMembers(),
+  ]);
   const ownerView = isOwner(user.roles);
 
   return (
@@ -91,6 +96,15 @@ export default async function ChthonicCommandPage() {
       )}
 
       <ChthonicCommandPanel data={data} isOwner={ownerView} />
+      {allianceData && (
+        <div className="mt-8">
+          <ChthonicAlliancePanel
+            members={allianceData.members}
+            assignableUsers={allianceData.assignableUsers}
+            isOwner={allianceData.isOwner}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -116,6 +116,16 @@
 - **State of Affairs:** EFF starter links seeded via `db:seed:archive`
 - **Alliance page:** `/mmo/factions/chthonic-uprising` surfaces origin excerpts
 
+## Phase 10 — Owner Signal Deck & Alliance Assignment
+
+- **Media models:** `MediaAlbum`, `MediaTrack` with visibility tiers
+- **Owner Signal Deck:** `/admin/media`, `/admin/media/upload` (Owner upload only)
+- **Signal Player:** global corner player, collapsed by default, no autoplay
+- **Chthonic alliance membership:** Owner-only assignment; blocks self-join on alliance
+- **Profile dossier:** alliance mark shown separately from cell faction
+- **Docs:** `docs/MEDIA_PLAYER.md`
+- **Seed:** `db:seed:factions` assigns Owner → Chthonic Uprising `LEADER` / The Archivist
+
 ## Future Lore
 
 Planned archive entries and mission chains from the origin dossier:

@@ -52,6 +52,14 @@ export interface DossierData {
   earnedTitles: ReturnType<typeof computeEarnedTitles>;
   badges: ReturnType<typeof computeBadges>;
   clearance: ReturnType<typeof getClearanceForRoles>;
+  allianceMembership: {
+    name: string;
+    slug: string;
+    status: string;
+    position: FactionPosition | null;
+    displayTitle: string | null;
+    reputation: number;
+  } | null;
   faction: {
     name: string;
     slug: string;
@@ -136,17 +144,28 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
   const clearance = getClearanceForRoles(roles);
   const showFullInvites = canViewFullInviteLineage(roles);
 
-  const approvedMembership = user.factionMemberships.find(
-    (m) => m.status === "Approved" && m.isPrimary,
-  ) ?? user.factionMemberships.find((m) => m.status === "Approved");
-  const pendingMembership = user.factionMemberships.find((m) => m.status === "Pending");
+  const approvedCellMembership =
+    user.factionMemberships.find(
+      (m) => m.status === "Approved" && m.isPrimary && !m.faction.isAlliance,
+    ) ??
+    user.factionMemberships.find(
+      (m) => m.status === "Approved" && !m.faction.isAlliance,
+    );
+  const approvedAllianceMembership = user.factionMemberships.find(
+    (m) => m.status === "Approved" && m.faction.isAlliance,
+  );
+  const pendingMembership = user.factionMemberships.find(
+    (m) => m.status === "Pending" && !m.faction.isAlliance,
+  );
 
   const faction =
-    approvedMembership?.faction ??
-    user.character?.faction ??
+    approvedCellMembership?.faction ??
+    (user.character?.faction && !user.character.faction.isAlliance
+      ? user.character.faction
+      : null) ??
     null;
 
-  const factionStatus = approvedMembership?.status ?? null;
+  const factionStatus = approvedCellMembership?.status ?? null;
 
   const missionsCompleted = user.missionParticipations.filter(
     (m) => m.status === "Completed",
@@ -240,9 +259,19 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
           name: faction.name,
           slug: faction.slug,
           status: factionStatus ?? (user.character?.factionId ? "Linked" : "Active"),
-          position: approvedMembership?.position ?? null,
-          displayTitle: approvedMembership?.displayTitle ?? null,
-          reputation: approvedMembership?.reputation ?? 0,
+          position: approvedCellMembership?.position ?? null,
+          displayTitle: approvedCellMembership?.displayTitle ?? null,
+          reputation: approvedCellMembership?.reputation ?? 0,
+        }
+      : null,
+    allianceMembership: approvedAllianceMembership
+      ? {
+          name: approvedAllianceMembership.faction.name,
+          slug: approvedAllianceMembership.faction.slug,
+          status: approvedAllianceMembership.status,
+          position: approvedAllianceMembership.position,
+          displayTitle: approvedAllianceMembership.displayTitle,
+          reputation: approvedAllianceMembership.reputation,
         }
       : null,
     dbBadges: user.userBadges.map((ub) => ({

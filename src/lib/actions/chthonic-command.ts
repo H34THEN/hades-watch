@@ -41,7 +41,7 @@ export async function getChthonicCommandData() {
       resolveFactionsList(),
       resolveAlliance(),
       prisma.factionMembership.findMany({
-        where: { status: "Approved" },
+        where: { status: "Approved", faction: { isAlliance: false } },
         orderBy: [{ faction: { name: "asc" } }, { createdAt: "asc" }],
         include: {
           user: {

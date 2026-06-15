@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAlliance, getFactionBySlug, getUserFactionMembership } from "@/lib/actions/mmo";
 import { getSessionUser } from "@/lib/auth/session";
-import { isAdmin } from "@/lib/auth/roles";
+import { isAdmin, isOwner } from "@/lib/auth/roles";
 import { MmoNav } from "@/components/mmo/MmoNav";
 import { AllianceOriginDossier } from "@/components/factions/AllianceOriginDossier";
 import { FactionDetailClient } from "./FactionDetailClient";
@@ -36,6 +36,7 @@ export default async function FactionDetailPage({
         <AllianceOriginDossier
           alliance={alliance}
           showAdminLink={user ? isAdmin(user.roles) : false}
+          showOwnerLink={user ? isOwner(user.roles) : false}
         />
       </div>
     );

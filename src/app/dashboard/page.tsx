@@ -187,9 +187,24 @@ export default async function DashboardPage() {
           <p className="mb-3 font-mono text-xs text-muted-foreground">
             Warden of the Five Cells — sovereign oversight of the Chthonic Uprising.
           </p>
-          <Link href="/admin/factions/command">
-            <CommandButton size="sm">Chthonic Command</CommandButton>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin/factions/command">
+              <CommandButton size="sm">Chthonic Command</CommandButton>
+            </Link>
+            <Link href="/admin/media">
+              <CommandButton size="sm" variant="outline">
+                Owner Signal Deck
+              </CommandButton>
+            </Link>
+            <Link href="/admin/media/upload">
+              <CommandButton size="sm" variant="outline">
+                Upload Signal
+              </CommandButton>
+            </Link>
+          </div>
+          <p className="mt-3 font-mono text-[10px] text-muted-foreground">
+            Upload and manage Chthonic broadcasts. Signal Player never autoplays.
+          </p>
         </TerminalPanel>
       )}
 

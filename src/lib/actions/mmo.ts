@@ -114,6 +114,14 @@ export async function requestFactionJoinAction(
 ): Promise<ActionResult> {
   const user = await requireAuth();
 
+  const faction = await prisma.faction.findUnique({ where: { id: factionId } });
+  if (!faction || faction.isAlliance) {
+    return {
+      success: false,
+      error: "Alliance membership is recorded by the Archivist through the Dead Index.",
+    };
+  }
+
   const existing = await prisma.factionMembership.findUnique({
     where: { userId_factionId: { userId: user.id, factionId } },
   });
@@ -143,6 +151,14 @@ export async function approveFactionJoinAction(
 ): Promise<ActionResult> {
   const admin = await requireAdminUser();
   if (!admin.ok) return { success: false, error: "Unauthorized" };
+
+  const existing = await prisma.factionMembership.findUnique({
+    where: { id: membershipId },
+    include: { faction: true },
+  });
+  if (!existing || existing.faction.isAlliance) {
+    return { success: false, error: "Alliance membership cannot be approved via cell requests." };
+  }
 
   const membership = await prisma.factionMembership.update({
     where: { id: membershipId },

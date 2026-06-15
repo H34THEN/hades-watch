@@ -107,6 +107,22 @@ src/
 - **Not secure messaging** — in-world flavor only
 - Admin: `/admin/dead-drops`
 
+### Owner Signal Deck / Signal Player
+
+- Models: `MediaAlbum`, `MediaTrack`, `MediaVisibility`
+- Storage: `storage/uploads/audio/` (disk, not DB blobs — not in Git)
+- Owner upload: `/admin/media/upload`; management: `/admin/media`
+- Global client player: `SignalPlayer` + `SignalPlayerProvider` (no autoplay)
+- Streaming: `/api/media/audio/[trackId]` with range requests
+- See `docs/MEDIA_PLAYER.md`
+
+### Chthonic Alliance Membership
+
+- `chthonic-uprising` is `isAlliance: true` — not joinable via public request
+- Owner assigns alliance membership via `/admin/factions/command` (Chthonic Uprising Membership section)
+- Cell membership remains separate; dossier shows **Alliance Mark** distinct from cell
+- Owner seed: `db:seed:factions` upserts Owner users as alliance `LEADER` / The Archivist
+
 ### Phase 3 Systems (unchanged)
 
 - Transmissions, Events, Jitsi scaffolding — see prior sections in git history
