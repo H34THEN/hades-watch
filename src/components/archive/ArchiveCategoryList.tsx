@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArchiveNav } from "@/components/archive/ArchiveNav";
 import { LockedCard } from "@/components/archive/LockedCard";
 import { UnlockLoreButton } from "@/components/archive/UnlockLoreButton";
+import { WorldLoreMetadataInline } from "@/components/archive/WorldLoreMetadata";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import {
   ARCHIVE_CATEGORIES,
@@ -29,6 +30,17 @@ export async function ArchiveCategoryList({ categorySlug }: ArchiveCategoryListP
       <ArchiveNav active={categorySlug} />
       <h1 className="mb-2 font-mono text-3xl tracking-widest uppercase">{meta.title}</h1>
       <p className="mb-8 max-w-2xl text-sm text-muted-foreground">{meta.description}</p>
+      {categorySlug === "world" && (
+        <TerminalPanel title="archive.world.surface_breaks" className="mb-6 border-primary/20">
+          <p className="font-mono text-[10px] tracking-wider text-primary/80 uppercase">
+            World Lore Pack 001: The Surface Breaks
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Five early fractures in the Surface Order — civic necrosis, manufactured hunger, civic
+            exorcism, foreign flame, and annihilation theater. Filed for the Dead Index.
+          </p>
+        </TerminalPanel>
+      )}
       <TerminalPanel title={meta.terminalLabel} className="mb-8">
         <p className="font-mono text-sm text-muted-foreground">
           {readable.length} of {entries.length} dossiers accessible in this section
@@ -53,6 +65,7 @@ export async function ArchiveCategoryList({ categorySlug }: ArchiveCategoryListP
                   <h3 className="font-mono text-sm font-semibold uppercase text-primary">
                     {entry.title}
                   </h3>
+                  {entry.category === "WORLD_LORE" && <WorldLoreMetadataInline entry={entry} />}
                   {entry.deadIndexId && (
                     <p className="mt-1 font-mono text-xs text-emerald-500/70">{entry.deadIndexId}</p>
                   )}

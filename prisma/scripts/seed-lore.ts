@@ -1,12 +1,13 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../src/generated/prisma/client";
-import { LEADERS_LORE_FILE, ORIGIN_LORE_FILE } from "../../src/lib/archive/extract-lore-markdown";
+import { LEADERS_LORE_FILE, ORIGIN_LORE_FILE, WORLD_LORE_PACK_FILE } from "../../src/lib/archive/extract-lore-markdown";
 import { getCharacterLoreSeedEntries } from "../../src/lib/archive/character-lore";
 import {
   CANONICAL_LORE_ENTRIES,
   seedLoreEntries,
 } from "../../src/lib/lore/canonical-lore-seed";
+import { getWorldLorePackSeedEntries } from "../../src/lib/lore/world-lore-seed";
 import { existsSync } from "fs";
 import { join } from "path";
 
@@ -19,7 +20,7 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 async function assertLoreSourcesPresent() {
-  for (const file of [ORIGIN_LORE_FILE, LEADERS_LORE_FILE]) {
+  for (const file of [ORIGIN_LORE_FILE, LEADERS_LORE_FILE, WORLD_LORE_PACK_FILE]) {
     const path = join(process.cwd(), file);
     if (!existsSync(path)) {
       throw new Error(`Missing lore source file: ${path}`);
@@ -70,7 +71,11 @@ async function main() {
   });
   const factionRecords = Object.fromEntries(factions.map((f) => [f.slug, f.id]));
 
-  const entries = [...CANONICAL_LORE_ENTRIES, ...getCharacterLoreSeedEntries()];
+  const entries = [
+    ...CANONICAL_LORE_ENTRIES,
+    ...getCharacterLoreSeedEntries(),
+    ...getWorldLorePackSeedEntries(),
+  ];
   await seedLoreEntries(prisma, entries, factionRecords);
 
   for (const entry of entries) {

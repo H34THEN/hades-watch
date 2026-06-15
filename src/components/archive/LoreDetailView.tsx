@@ -6,6 +6,7 @@ import { UnlockLoreButton } from "@/components/archive/UnlockLoreButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getCategoryByLoreCategory } from "@/lib/archive/categories";
 import type { CharacterLoreMetadata } from "@/lib/archive/character-lore";
+import { WorldLoreMetadataPanel } from "@/components/archive/WorldLoreMetadata";
 
 type LoreEntryWithFaction = LoreEntry & {
   requiredFaction: Pick<Faction, "name" | "slug"> | null;
@@ -99,6 +100,7 @@ export function LoreDetailView({
             {entry.requiredFaction && <p>Cell: {entry.requiredFaction.name}</p>}
           </div>
         )}
+        {entry.category === "WORLD_LORE" && <WorldLoreMetadataPanel entry={entry} />}
         {entry.excerpt && !metadata && (
           <p className="mt-4 text-sm text-muted-foreground">{entry.excerpt}</p>
         )}

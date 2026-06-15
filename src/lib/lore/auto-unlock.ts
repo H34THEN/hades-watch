@@ -1,9 +1,11 @@
 import { CHARACTER_LORE_SLUGS } from "@/lib/archive/character-lore-slugs";
 import { ORIGIN_LORE_SLUG } from "@/lib/factions/origin-dossier";
+import { SURFACE_BREAKS_WORLD_LORE_SLUGS } from "@/lib/lore/world-lore-pack";
 
 export const AUTO_UNLOCK_LORE_SLUGS = new Set<string>([
   ORIGIN_LORE_SLUG,
   ...CHARACTER_LORE_SLUGS,
+  ...SURFACE_BREAKS_WORLD_LORE_SLUGS,
 ]);
 
 export function isAutoUnlockLoreSlug(slug: string): boolean {

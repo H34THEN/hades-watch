@@ -29,7 +29,8 @@ Full dossier content lives in `body` (markdown). Extended profile fields can mig
 | Content | File | Slug(s) |
 |---------|------|---------|
 | Chthonic Uprising origin | `docs/lore/CHTHONIC_UPRISING_ORIGIN.md` | `the-chthonic-uprising` |
-| Leader dossiers | `docs/lore/LEADERS_OF_THE_CHTHONIC_UPRISING.md` | `heathen-the-archivist`, `dr-ione-vey`, `cassian-nyx`, `brontes-vale`, `mara-kallix`, `rhea-spite` |
+| Leader dossiers | `docs/lore/LEADERS_OF_THE_CHTHONIC_UPRISING.md` | `heathen-the-archivist`, … |
+| Surface Breaks world pack | `docs/lore/WORLD_LORE_PACK_001_SURFACE_BREAKS.md` | `the-jackal-ledger`, `the-bronze-gate-levies`, `the-white-lantern-hunts`, `the-two-new-fires`, `the-thunder-casket-posts` |
 
 ## Code
 
@@ -52,6 +53,7 @@ These slugs are readable without an explicit unlock step when clearance/faction 
 
 - `the-chthonic-uprising`
 - All six character leader slugs (see `src/lib/archive/character-lore-slugs.ts`)
+- Surface Breaks world lore pack: five entries (see `src/lib/lore/world-lore-pack.ts`)
 
 ## VPS Deploy
 
