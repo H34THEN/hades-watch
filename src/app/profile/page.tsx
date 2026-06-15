@@ -1,4 +1,3 @@
-import { ResendVerificationButton } from "@/components/auth/ResendVerificationButton";
 import { ProfileSettingsForm } from "@/components/forms/ProfileSettingsForm";
 import { DossierIdentitySection } from "@/components/profile/DossierIdentitySection";
 import { FactionClearanceSection } from "@/components/profile/FactionClearanceSection";
@@ -35,15 +34,6 @@ export default async function ProfilePage() {
         Classified operative identity — field record and operational history.
       </p>
 
-      {!user.emailVerified && (
-        <SystemAlert
-          title="Email Unverified"
-          message="Your email is not verified. Some features may be restricted in production."
-          variant="warning"
-          className="mb-8"
-        />
-      )}
-
       <DossierIdentitySection dossier={dossier} />
       <FactionClearanceSection dossier={dossier} />
       <SignalSoundtrackSection dossier={dossier} />
@@ -52,11 +42,6 @@ export default async function ProfilePage() {
 
       <TerminalPanel title="operative.settings">
         <ProfileSettingsForm user={user} />
-        {!user.emailVerified && (
-          <div className="mt-4 border-t border-border/40 pt-4">
-            <ResendVerificationButton />
-          </div>
-        )}
       </TerminalPanel>
     </div>
   );
