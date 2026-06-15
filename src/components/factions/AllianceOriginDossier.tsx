@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FactionCellCard } from "@/components/factions/FactionCellCard";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { CommandButton } from "@/components/terminal/CommandButton";
+import { ARCHIVE_LEADER_INDEX } from "@/lib/archive/character-lore-slugs";
 import { CHTHONIC_FACTIONS } from "@/lib/factions/chthonic-data";
 import {
   BEFORE_THE_DESCENT_SUMMARY,
@@ -39,9 +40,14 @@ export function AllianceOriginDossier({
         <div className="mt-4 whitespace-pre-line text-sm leading-relaxed text-foreground/85 italic">
           {DEAD_INDEX_OPENING_EXCERPT}
         </div>
-        <Link href={`/archive/lore/${ORIGIN_LORE_SLUG}`} className="mt-4 inline-block">
+        <Link href={`/archive/factions/${ORIGIN_LORE_SLUG}`} className="mt-4 inline-block">
           <CommandButton size="sm" variant="outline">
             Read Full Origin in Archive
+          </CommandButton>
+        </Link>
+        <Link href="/archive/characters" className="mt-4 ml-2 inline-block">
+          <CommandButton size="sm" variant="outline">
+            Leader Dossiers
           </CommandButton>
         </Link>
       </TerminalPanel>
@@ -114,6 +120,25 @@ export function AllianceOriginDossier({
         <p className="whitespace-pre-line text-sm leading-relaxed text-foreground/80">
           {WHAT_WE_FIGHT_FOR_EXCERPT}
         </p>
+      </TerminalPanel>
+
+      <TerminalPanel title="origin.leaders" className="border-primary/20">
+        <p className="mb-4 text-sm text-muted-foreground">
+          Six founding leaders. Each dossier is a Dead Index record in Character Lore.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {ARCHIVE_LEADER_INDEX.map((leader) => (
+            <Link
+              key={leader.slug}
+              href={`/archive/characters/${leader.slug}`}
+              className="rounded border border-border/40 p-3 hover:border-primary/40"
+            >
+              <p className="font-mono text-sm font-semibold uppercase text-primary">{leader.title}</p>
+              <p className="font-mono text-[10px] text-emerald-500/70">{leader.deadIndexId}</p>
+              <p className="mt-1 font-mono text-[10px] text-muted-foreground">{leader.faction}</p>
+            </Link>
+          ))}
+        </div>
       </TerminalPanel>
 
       <div>

@@ -9,6 +9,7 @@ import {
   DEV_LORE_ENTRIES,
   seedLoreEntries,
 } from "../src/lib/lore/canonical-lore-seed";
+import { getCharacterLoreSeedEntries } from "../src/lib/archive/character-lore";
 
 function hashCipherAnswer(answer: string): string {
   return createHash("sha256").update(answer.trim().toLowerCase()).digest("hex");
@@ -197,6 +198,7 @@ async function seedPhase4Content() {
   console.log("  ✓ Missions");
 
   await seedLoreEntries(prisma, CANONICAL_LORE_ENTRIES, factionRecords);
+  await seedLoreEntries(prisma, getCharacterLoreSeedEntries(), factionRecords);
   await seedLoreEntries(prisma, DEV_LORE_ENTRIES, factionRecords);
   console.log("  ✓ Lore entries");
 

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../src/generated/prisma/client";
+import { getCharacterLoreSeedEntries } from "../../src/lib/archive/character-lore";
 import {
   CANONICAL_LORE_ENTRIES,
   seedLoreEntries,
@@ -17,9 +18,27 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log("Seeding canonical lore (production-safe)...");
 
-  await seedLoreEntries(prisma, CANONICAL_LORE_ENTRIES);
+  const factions = await prisma.faction.findMany({
+    where: {
+      slug: {
+        in: [
+          "chthonic-uprising",
+          "asclepian-veil",
+          "oracular-circuit",
+          "myrmidon-grinders",
+          "daedalus-foundry",
+          "styx-rats",
+        ],
+      },
+    },
+    select: { id: true, slug: true },
+  });
+  const factionRecords = Object.fromEntries(factions.map((f) => [f.slug, f.id]));
 
-  for (const entry of CANONICAL_LORE_ENTRIES) {
+  const entries = [...CANONICAL_LORE_ENTRIES, ...getCharacterLoreSeedEntries()];
+  await seedLoreEntries(prisma, entries, factionRecords);
+
+  for (const entry of entries) {
     console.log(`  ✓ ${entry.slug}`);
   }
 

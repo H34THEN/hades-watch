@@ -8,6 +8,7 @@ import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { requestFactionJoinAction } from "@/lib/actions/mmo";
 import { POSITION_LABELS } from "@/lib/factions/chthonic-data";
+import { getLeaderArchivePath } from "@/lib/archive/categories";
 
 interface FactionDetailPageProps {
   faction: {
@@ -73,6 +74,7 @@ export function FactionDetailClient({
   }
 
   const titles = faction.titles;
+  const leaderArchivePath = getLeaderArchivePath(faction.slug);
   const positionRanks = titles
     ? [
         { key: "INITIATE", label: titles.starting },
@@ -172,6 +174,13 @@ export function FactionDetailClient({
           )}
           {faction.leaderLore && (
             <p className="mt-3 text-sm leading-relaxed text-foreground/80">{faction.leaderLore}</p>
+          )}
+          {leaderArchivePath && (
+            <Link href={leaderArchivePath} className="mt-4 inline-block">
+              <CommandButton size="sm" variant="outline">
+                Dead Index Dossier
+              </CommandButton>
+            </Link>
           )}
         </TerminalPanel>
       )}

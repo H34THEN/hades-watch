@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { RoleName } from "@/generated/prisma/client";
+import type { LoreCategory, RoleName } from "@/generated/prisma/client";
+import { getArchiveEntryPath } from "@/lib/archive/categories";
 import { isAutoUnlockLoreSlug } from "@/lib/lore/auto-unlock";
 import { writeAuditLog } from "@/lib/audit";
 import { matchesClearance } from "@/lib/clearance";
@@ -14,14 +15,17 @@ export type ActionResult =
   | { success: true }
   | { success: false; error: string };
 
-export async function getLoreForUser(userId: string, roles: RoleName[]) {
+export async function getLoreForUser(userId: string, roles: RoleName[], category?: LoreCategory) {
   const character = await prisma.character.findUnique({
     where: { userId },
     select: { factionId: true },
   });
 
   const entries = await prisma.loreEntry.findMany({
-    where: { status: "Published" },
+    where: {
+      status: "Published",
+      ...(category ? { category } : {}),
+    },
     orderBy: { publishedAt: "desc" },
     include: { requiredFaction: { select: { name: true, slug: true } } },
   });
@@ -34,10 +38,12 @@ export async function getLoreForUser(userId: string, roles: RoleName[]) {
 
   return entries.map((entry) => {
     const roleOk = matchesClearance(entry.requiredRole, roles);
+    const autoUnlock = isAutoUnlockLoreSlug(entry.slug);
     const factionOk =
+      autoUnlock ||
       !entry.requiredFactionId ||
       entry.requiredFactionId === character?.factionId;
-    const unlocked = unlockedIds.has(entry.id) || isAutoUnlockLoreSlug(entry.slug);
+    const unlocked = unlockedIds.has(entry.id) || autoUnlock;
     const accessible = roleOk && factionOk;
     return { ...entry, accessible, unlocked, canRead: accessible && unlocked };
   });
@@ -56,7 +62,9 @@ export async function getLoreBySlug(slug: string, userId: string, roles: RoleNam
   });
 
   const roleOk = matchesClearance(entry.requiredRole, roles);
+  const autoUnlock = isAutoUnlockLoreSlug(slug);
   const factionOk =
+    autoUnlock ||
     !entry.requiredFactionId ||
     entry.requiredFactionId === character?.factionId;
 
@@ -64,7 +72,7 @@ export async function getLoreBySlug(slug: string, userId: string, roles: RoleNam
     where: { userId_loreEntryId: { userId, loreEntryId: entry.id } },
   });
 
-  const unlocked = !!unlock || isAutoUnlockLoreSlug(slug);
+  const unlocked = !!unlock || autoUnlock;
 
   return {
     entry,
@@ -102,8 +110,15 @@ export async function unlockLoreAction(loreEntryId: string): Promise<ActionResul
     targetId: loreEntryId,
   });
 
+  revalidatePath("/archive");
   revalidatePath("/archive/lore");
+  revalidatePath("/archive/characters");
+  revalidatePath("/archive/world");
+  revalidatePath("/archive/factions");
+  revalidatePath("/archive/mythos-and-ethos");
+  revalidatePath("/archive/state-of-affairs");
   revalidatePath(`/archive/lore/${entry.slug}`);
+  revalidatePath(getArchiveEntryPath(entry.slug, entry.category));
   return { success: true };
 }
 

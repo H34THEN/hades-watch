@@ -69,6 +69,14 @@ enum LoreStatus {
   Archived
 }
 
+enum LoreCategory {
+  CHARACTER_LORE
+  WORLD_LORE
+  FACTION_LORE
+  MYTHOS_AND_ETHOS
+  CURRENT_NEWS_AND_STATE_OF_AFFAIRS
+}
+
 enum DeadDropStatus {
   Draft
   Active
@@ -565,17 +573,20 @@ model MissionParticipation {
 }
 
 model LoreEntry {
-  id               String     @id @default(cuid())
-  slug             String     @unique
+  id               String        @id @default(cuid())
+  slug             String        @unique
   title            String
   excerpt          String?
-  body             String     @db.Text
-  status           LoreStatus @default(Draft)
+  body             String        @db.Text
+  status           LoreStatus    @default(Draft)
+  category         LoreCategory?
+  deadIndexId      String?
+  loreMetadata     Json?
   requiredRole     RoleName?
   requiredFactionId String?
   authorId         String?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
   publishedAt      DateTime?
 
   author          User?            @relation("LoreAuthor", fields: [authorId], references: [id], onDelete: SetNull)
@@ -584,6 +595,7 @@ model LoreEntry {
 
   @@index([status])
   @@index([slug])
+  @@index([category])
 }
 
 model UserLoreUnlock {

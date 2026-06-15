@@ -36,6 +36,8 @@ export default async function DashboardPage() {
     ]);
 
   const readableLore = lore.filter((e) => e.canRead).length;
+  const characterLore = lore.filter((e) => e.category === "CHARACTER_LORE");
+  const readableCharacters = characterLore.filter((e) => e.canRead).length;
   const readableDrops = deadDrops.filter((d) => d.readable).length;
 
   return (
@@ -145,9 +147,16 @@ export default async function DashboardPage() {
           </Link>
         </DashboardCard>
         <DashboardCard title="Archive" description={`${readableLore}/${lore.length} lore unlocked`} icon={<span>◫</span>}>
-          <Link href="/archive">
-            <CommandButton size="sm">Enter Archive</CommandButton>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/archive">
+              <CommandButton size="sm">Archive Hub</CommandButton>
+            </Link>
+            <Link href="/archive/characters">
+              <CommandButton size="sm" variant="outline">
+                Character Lore ({readableCharacters})
+              </CommandButton>
+            </Link>
+          </div>
         </DashboardCard>
         <DashboardCard title="Dead Drops" description={`${readableDrops} readable`} icon={<span>◇</span>}>
           <Link href="/dead-drops">

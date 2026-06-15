@@ -1,23 +1,27 @@
 import { notFound } from "next/navigation";
 import { LoreDetailView } from "@/components/archive/LoreDetailView";
-import { getArchiveCategoryPath } from "@/lib/archive/categories";
+import { getCategoryByRouteSlug } from "@/lib/archive/categories";
 import { getLoreBySlug } from "@/lib/actions/lore";
 import { requireAuth } from "@/lib/auth/session";
 
-export const metadata = { title: "Lore Entry" };
+interface ArchiveLoreDetailProps {
+  categorySlug: string;
+  slug: string;
+}
 
-export default async function LoreDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export async function ArchiveLoreDetail({ categorySlug, slug }: ArchiveLoreDetailProps) {
   const user = await requireAuth();
-  const { slug } = await params;
-  const result = await getLoreBySlug(slug, user.id, user.roles);
+  const meta = getCategoryByRouteSlug(categorySlug);
+  if (!meta) notFound();
 
+  const result = await getLoreBySlug(slug, user.id, user.roles);
   if (!result) notFound();
 
   const { entry, accessible, unlocked, canRead } = result;
+
+  if (entry.category && entry.category !== meta.loreCategory) {
+    notFound();
+  }
 
   if (!canRead && accessible && unlocked) notFound();
 
@@ -27,8 +31,8 @@ export default async function LoreDetailPage({
       accessible={accessible}
       unlocked={unlocked}
       canRead={canRead}
-      backHref={getArchiveCategoryPath(entry.category)}
-      backLabel="Archive"
+      backHref={`/archive/${categorySlug}`}
+      backLabel={meta.title}
     />
   );
 }

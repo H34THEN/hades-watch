@@ -92,9 +92,11 @@ src/
 
 ### Lore Archive
 
-- Models: `LoreEntry`, `UserLoreUnlock`
-- Routes: `/archive`, `/archive/lore`, `/archive/lore/[slug]`
-- Locked entries show locked cards; accessible entries require unlock action
+- Models: `LoreEntry` (`category`, `deadIndexId`, `loreMetadata`), `UserLoreUnlock`
+- Routes: `/archive`, `/archive/lore`, `/archive/[category]`, `/archive/[category]/[slug]`
+- Categories: Character, World, Faction, Mythos and Ethos, Current News — see [ARCHIVE_LORE_TAXONOMY.md](ARCHIVE_LORE_TAXONOMY.md)
+- Seed: `db:seed:lore` (production-safe, idempotent)
+- Locked entries show locked cards; accessible entries require unlock action (auto-unlock for origin + leaders)
 - Admin: `/admin/lore`
 
 ### Dead Drops / Ciphers (Roleplay Only)
