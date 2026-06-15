@@ -56,11 +56,13 @@ export interface ProfileWorldData {
     motto: string | null;
     favoriteSignal: string | null;
     speciesName: string;
+    poseSlug: string;
     layers: { key: string; src: string; zIndex: number }[];
     skinColor: string | null;
     hairColor: string | null;
     skinColorHex: string | null;
     hairColorHex: string | null;
+    hasCustomBackground: boolean;
   } | null;
   spotifyEmbedUrl: string | null;
 }
@@ -70,7 +72,31 @@ function assetUrl(assetId: string | null | undefined): string | null {
   return `/api/profile-assets/${assetId}`;
 }
 
-function avatarFromRecord(
+function avatarPartUrl(partId: string): string {
+  return `/api/avatar-parts/${partId}`;
+}
+
+async function resolveCustomPartUrls(
+  customPartIds: unknown,
+  userId: string,
+): Promise<Partial<Record<string, string>>> {
+  if (!customPartIds || typeof customPartIds !== "object") return {};
+  const entries = Object.entries(customPartIds as Record<string, string>).filter(([, id]) => id);
+  if (entries.length === 0) return {};
+  const ids = entries.map(([, id]) => id);
+  const parts = await prisma.avatarUserPart.findMany({
+    where: { id: { in: ids }, userId },
+    select: { id: true, category: true },
+  });
+  const byId = new Map(parts.map((p) => [p.id, p]));
+  const urls: Partial<Record<string, string>> = {};
+  for (const [cat, id] of entries) {
+    if (byId.has(id)) urls[cat] = avatarPartUrl(id);
+  }
+  return urls;
+}
+
+async function avatarFromRecord(
   record: {
     displayName: string | null;
     tagline: string | null;
@@ -80,6 +106,7 @@ function avatarFromRecord(
     favoriteSignal: string | null;
     speciesSlug: string;
     bodySlug: string;
+    poseSlug?: string | null;
     skinColor: string | null;
     eyeSlug: string | null;
     eyeColor: string | null;
@@ -89,12 +116,18 @@ function avatarFromRecord(
     accessorySlugs: unknown;
     backgroundSlug: string | null;
     customBackgroundAssetId: string | null;
+    customPartIds?: unknown;
+    userId?: string;
   } | null,
-): ProfileWorldData["avatar"] {
+): Promise<ProfileWorldData["avatar"]> {
   if (!record) return null;
+  const customPartUrls = record.userId
+    ? await resolveCustomPartUrls(record.customPartIds, record.userId)
+    : {};
   const selection: AvatarSelection = {
     speciesSlug: record.speciesSlug,
     bodySlug: record.bodySlug,
+    poseSlug: record.poseSlug ?? "pose-neutral",
     skinColor: record.skinColor,
     eyeSlug: record.eyeSlug,
     eyeColor: record.eyeColor,
@@ -106,6 +139,7 @@ function avatarFromRecord(
       : [],
     backgroundSlug: record.backgroundSlug,
     customBackgroundUrl: assetUrl(record.customBackgroundAssetId),
+    customPartUrls,
   };
   const species = AVATAR_SPECIES.find((s) => s.slug === record.speciesSlug);
   return {
@@ -116,11 +150,13 @@ function avatarFromRecord(
     motto: record.motto,
     favoriteSignal: record.favoriteSignal,
     speciesName: species?.name ?? record.speciesSlug,
+    poseSlug: record.poseSlug ?? "pose-neutral",
     layers: resolveAvatarLayers(selection),
     skinColor: record.skinColor,
     hairColor: record.hairColor,
     skinColorHex: AVATAR_SKIN_COLORS.find((c) => c.slug === record.skinColor)?.color ?? null,
     hairColorHex: AVATAR_HAIR_COLORS.find((c) => c.slug === record.hairColor)?.color ?? null,
+    hasCustomBackground: !!record.customBackgroundAssetId,
   };
 }
 
@@ -188,13 +224,17 @@ export async function getProfileWorldForUser(
     rssFeeds,
     showRelicZone: customization?.showRelicZone !== false,
     showRssZone: customization?.showRssZone !== false,
-    avatar: avatarFromRecord(avatar),
+    avatar: avatar
+      ? await avatarFromRecord({ ...avatar, userId })
+      : null,
     spotifyEmbedUrl: user?.spotifyEmbedUrl ?? null,
   };
 }
 
 export async function getPublicProfileByHandle(handle: string, viewerId?: string) {
   const normalized = handle.toLowerCase().trim();
+  const RESERVED = new Set(["edit", "avatar", "bases", "your-callsign"]);
+  if (RESERVED.has(normalized)) return null;
   const character = await prisma.character.findFirst({
     where: {
       callsign: { equals: normalized, mode: "insensitive" },

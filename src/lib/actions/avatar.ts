@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { writeAuditLog } from "@/lib/audit";
 import { requireApprovedAuth } from "@/lib/auth/session";
@@ -18,6 +19,22 @@ function parseAccessorySlugs(raw: FormDataEntryValue | null): string[] {
     .map((s) => s.trim())
     .filter(Boolean)
     .slice(0, 5);
+}
+
+function parseCustomPartIds(raw: FormDataEntryValue | null): Record<string, string> | null {
+  const value = String(raw ?? "").trim();
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(value) as Record<string, string>;
+    if (!parsed || typeof parsed !== "object") return null;
+    const cleaned: Record<string, string> = {};
+    for (const [key, id] of Object.entries(parsed)) {
+      if (typeof id === "string" && id.trim()) cleaned[key] = id.trim();
+    }
+    return Object.keys(cleaned).length > 0 ? cleaned : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function saveAvatarAction(formData: FormData): Promise<ActionResult> {
@@ -40,14 +57,25 @@ export async function saveAvatarAction(formData: FormData): Promise<ActionResult
     outfitSlug: String(formData.get("outfitSlug") ?? "").trim() || null,
     accessorySlugs: parseAccessorySlugs(formData.get("accessorySlugs")),
     backgroundSlug: String(formData.get("backgroundSlug") ?? "bg-underwatch-default").trim(),
+    poseSlug: String(formData.get("poseSlug") ?? "pose-neutral").trim(),
     customBackgroundAssetId:
       String(formData.get("customBackgroundAssetId") ?? "").trim() || null,
+    customPartIds: parseCustomPartIds(formData.get("customPartIds")),
   };
 
   await prisma.userAvatar.upsert({
     where: { userId: user.id },
-    create: { userId: user.id, ...data },
-    update: data,
+    create: {
+      userId: user.id,
+      ...data,
+      customPartIds: data.customPartIds as Prisma.InputJsonValue,
+      accessorySlugs: data.accessorySlugs,
+    },
+    update: {
+      ...data,
+      customPartIds: data.customPartIds as Prisma.InputJsonValue,
+      accessorySlugs: data.accessorySlugs,
+    },
   });
 
   await writeAuditLog({ action: "avatar.save", actorId: user.id });
@@ -64,10 +92,12 @@ export async function resetAvatarAction(): Promise<ActionResult> {
     create: {
       userId: user.id,
       ...selection,
+      poseSlug: selection.poseSlug ?? "pose-neutral",
       accessorySlugs: [],
     },
     update: {
       ...selection,
+      poseSlug: selection.poseSlug ?? "pose-neutral",
       accessorySlugs: [],
       displayName: null,
       tagline: null,
@@ -76,6 +106,7 @@ export async function resetAvatarAction(): Promise<ActionResult> {
       motto: null,
       favoriteSignal: null,
       customBackgroundAssetId: null,
+      customPartIds: Prisma.JsonNull,
     },
   });
   revalidatePath("/profile");

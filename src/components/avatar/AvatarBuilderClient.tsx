@@ -1,8 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AvatarPreview } from "@/components/avatar/AvatarPreview";
+import type { AvatarPartCategory } from "@/generated/prisma/client";
+import { AvatarHudFrame } from "@/components/avatar/AvatarHudFrame";
+import { AvatarAssetDownloadCard } from "@/components/avatar/AvatarAssetDownloadCard";
+import { AvatarPartUploader } from "@/components/avatar/AvatarPartUploader";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,11 +22,19 @@ import {
   AVATAR_EYES,
   AVATAR_HAIR,
   AVATAR_HAIR_COLORS,
+  AVATAR_POSES,
   AVATAR_SKIN_COLORS,
   AVATAR_SPECIES,
   resolveAvatarLayers,
   type AvatarSelection,
 } from "@/lib/avatar/avatar-assets";
+
+export interface AvatarUserPartRef {
+  id: string;
+  category: AvatarPartCategory;
+  label: string;
+  visibility: string;
+}
 
 export interface AvatarBuilderInitial {
   displayName: string;
@@ -33,6 +45,7 @@ export interface AvatarBuilderInitial {
   favoriteSignal: string;
   speciesSlug: string;
   bodySlug: string;
+  poseSlug: string;
   skinColor: string;
   eyeSlug: string;
   eyeColor: string;
@@ -42,37 +55,66 @@ export interface AvatarBuilderInitial {
   accessorySlugs: string[];
   backgroundSlug: string;
   customBackgroundAssetId: string;
+  customPartIds: Record<string, string>;
 }
 
 interface AvatarBuilderClientProps {
   initial: AvatarBuilderInitial;
+  userParts: AvatarUserPartRef[];
+  sharedParts: AvatarUserPartRef[];
 }
 
-type TabId = "body" | "species" | "face" | "hair" | "clothing" | "accessories" | "background" | "lore";
+type TabId =
+  | "body"
+  | "species"
+  | "pose"
+  | "face"
+  | "hair"
+  | "clothing"
+  | "accessories"
+  | "background"
+  | "uploads"
+  | "lore";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "body", label: "Body" },
   { id: "species", label: "Species" },
+  { id: "pose", label: "Pose" },
   { id: "face", label: "Face" },
   { id: "hair", label: "Hair" },
   { id: "clothing", label: "Clothing" },
   { id: "accessories", label: "Accessories" },
   { id: "background", label: "Background" },
+  { id: "uploads", label: "Uploads" },
   { id: "lore", label: "Lore" },
 ];
 
-export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
+function partUrl(id: string) {
+  return `/api/avatar-parts/${id}`;
+}
+
+export function AvatarBuilderClient({ initial, userParts, sharedParts }: AvatarBuilderClientProps) {
   const router = useRouter();
   const [tab, setTab] = useState<TabId>("body");
   const [state, setState] = useState(initial);
+  const [parts, setParts] = useState(userParts);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const customPartUrls = useMemo(() => {
+    const urls: Partial<Record<string, string>> = {};
+    for (const [cat, id] of Object.entries(state.customPartIds)) {
+      if (id) urls[cat] = partUrl(id);
+    }
+    return urls;
+  }, [state.customPartIds]);
 
   const selection: AvatarSelection = useMemo(
     () => ({
       speciesSlug: state.speciesSlug,
       bodySlug: state.bodySlug,
+      poseSlug: state.poseSlug,
       skinColor: state.skinColor,
       eyeSlug: state.eyeSlug,
       eyeColor: state.eyeColor,
@@ -84,25 +126,26 @@ export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
       customBackgroundUrl: state.customBackgroundAssetId
         ? `/api/profile-assets/${state.customBackgroundAssetId}`
         : null,
+      customPartUrls,
     }),
-    [state],
+    [state, customPartUrls],
   );
 
   const layers = useMemo(() => resolveAvatarLayers(selection), [selection]);
   const skinHex = AVATAR_SKIN_COLORS.find((c) => c.slug === state.skinColor)?.color;
   const hairHex = AVATAR_HAIR_COLORS.find((c) => c.slug === state.hairColor)?.color;
+  const speciesName = AVATAR_SPECIES.find((s) => s.slug === state.speciesSlug)?.name;
 
   function save() {
     setError(null);
     setSuccess(null);
     const formData = new FormData();
-    Object.entries(state).forEach(([key, value]) => {
-      if (key === "accessorySlugs") {
-        formData.set(key, (value as string[]).join(","));
-      } else {
-        formData.set(key, String(value ?? ""));
-      }
+    const { customPartIds, accessorySlugs, ...rest } = state;
+    Object.entries(rest).forEach(([key, value]) => {
+      formData.set(key, String(value ?? ""));
     });
+    formData.set("accessorySlugs", accessorySlugs.join(","));
+    formData.set("customPartIds", JSON.stringify(customPartIds));
     startTransition(async () => {
       const result = await saveAvatarAction(formData);
       if (!result.success) {
@@ -138,15 +181,38 @@ export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
     });
   }
 
+  function assignCustomPart(category: AvatarPartCategory, partId: string) {
+    setState((s) => ({
+      ...s,
+      customPartIds: { ...s.customPartIds, [category]: partId },
+    }));
+  }
+
+  function clearCustomPart(category: AvatarPartCategory) {
+    setState((s) => {
+      const next = { ...s.customPartIds };
+      delete next[category];
+      return { ...s, customPartIds: next };
+    });
+  }
+
+  const allCustomParts = [...parts, ...sharedParts.filter((p) => !parts.some((u) => u.id === p.id))];
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-      <div className="space-y-4 lg:sticky lg:top-8 lg:self-start">
-        <TerminalPanel title="mirror.preview">
-          <AvatarPreview layers={layers} skinColor={skinHex} hairColor={hairHex} />
-          <p className="mt-3 font-mono text-[10px] text-muted-foreground">
-            Layer-stacked preview · replace art in public/avatar-assets/
-          </p>
-        </TerminalPanel>
+    <div className="grid gap-8 xl:grid-cols-[minmax(340px,42%)_1fr]">
+      <div className="space-y-4 xl:sticky xl:top-8 xl:self-start">
+        <AvatarHudFrame
+          layers={layers}
+          skinColor={skinHex}
+          hairColor={hairHex}
+          poseSlug={state.poseSlug}
+          status={{
+            speciesName,
+            poseSlug: state.poseSlug,
+            hasBackground: !!state.customBackgroundAssetId,
+            loadStatus: layers.length > 0 ? "stable" : "empty",
+          }}
+        />
         <div className="flex flex-wrap gap-2">
           <CommandButton onClick={save} disabled={isPending}>
             {isPending ? "Saving…" : "Save Avatar"}
@@ -154,6 +220,11 @@ export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
           <CommandButton variant="outline" onClick={reset} disabled={isPending}>
             Reset Default
           </CommandButton>
+          <Link href="/profile/avatar/bases">
+            <CommandButton variant="outline" size="sm">
+              Base Downloads
+            </CommandButton>
+          </Link>
         </div>
         {error && <SystemAlert title="Error" message={error} variant="error" />}
         {success && <SystemAlert title="Saved" message={success} variant="success" />}
@@ -178,16 +249,26 @@ export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
         {tab === "body" && (
           <div className="grid gap-2 sm:grid-cols-2">
             {AVATAR_BODIES.map((body) => (
-              <button
-                key={body.slug}
-                type="button"
-                onClick={() => setState((s) => ({ ...s, bodySlug: body.slug }))}
-                className={`border p-2 text-left font-mono text-xs ${
-                  state.bodySlug === body.slug ? "border-primary" : "border-border/50"
-                }`}
-              >
-                {body.label}
-              </button>
+              <div key={body.slug} className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => setState((s) => ({ ...s, bodySlug: body.slug }))}
+                  className={`w-full border p-2 text-left font-mono text-xs ${
+                    state.bodySlug === body.slug ? "border-primary" : "border-border/50"
+                  }`}
+                >
+                  {body.label}
+                </button>
+                {body.downloadPath && (
+                  <a
+                    href={body.downloadPath}
+                    download
+                    className="block font-mono text-[9px] text-primary hover:underline"
+                  >
+                    Download base
+                  </a>
+                )}
+              </div>
             ))}
             <div className="sm:col-span-2">
               <Label className="text-xs uppercase">Skin Color</Label>
@@ -222,6 +303,26 @@ export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
               >
                 <p className="font-mono text-sm text-primary">{species.name}</p>
                 <p className="text-xs text-muted-foreground">{species.description}</p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {tab === "pose" && (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {AVATAR_POSES.map((pose) => (
+              <button
+                key={pose.slug}
+                type="button"
+                onClick={() => setState((s) => ({ ...s, poseSlug: pose.slug }))}
+                className={`border p-3 text-left font-mono text-xs ${
+                  state.poseSlug === pose.slug ? "border-primary bg-primary/5" : "border-border/50"
+                }`}
+              >
+                <p className="text-primary">{pose.label}</p>
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Pose art placeholders use CSS transform until full pose layers ship.
+                </p>
               </button>
             ))}
           </div>
@@ -303,6 +404,23 @@ export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
             >
               Initiate Coat
             </button>
+            {allCustomParts
+              .filter((p) => p.category === "OUTFIT")
+              .map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => assignCustomPart("OUTFIT", p.id)}
+                  className={`border p-2 text-left font-mono text-xs ${
+                    state.customPartIds.OUTFIT === p.id ? "border-primary" : "border-border/50"
+                  }`}
+                >
+                  {p.label}
+                  <span className="ml-1 text-[9px] text-muted-foreground">
+                    ({p.visibility === "SHARED" ? "shared" : "private"})
+                  </span>
+                </button>
+              ))}
           </div>
         )}
 
@@ -370,6 +488,85 @@ export function AvatarBuilderClient({ initial }: AvatarBuilderClientProps) {
                 }}
               />
             </div>
+          </div>
+        )}
+
+        {tab === "uploads" && (
+          <div className="space-y-6">
+            <AvatarPartUploader
+              onUploaded={(partId, category) => {
+                setParts((prev) => [
+                  ...prev,
+                  { id: partId, category, label: "New upload", visibility: "PRIVATE" },
+                ]);
+                assignCustomPart(category, partId);
+                setSuccess("Custom part uploaded.");
+              }}
+            />
+            <TerminalPanel title="your.parts">
+              {parts.length === 0 ? (
+                <p className="font-mono text-xs text-muted-foreground">No custom parts uploaded yet.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {parts.map((p) => (
+                    <li key={p.id} className="flex items-center justify-between gap-2 font-mono text-xs">
+                      <span>
+                        {p.label} · {p.category}
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          className="text-primary hover:underline"
+                          onClick={() => assignCustomPart(p.category, p.id)}
+                        >
+                          Equip
+                        </button>
+                        <button
+                          type="button"
+                          className="text-muted-foreground hover:underline"
+                          onClick={() => clearCustomPart(p.category)}
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </TerminalPanel>
+            {sharedParts.length > 0 && (
+              <TerminalPanel title="community.shared">
+                <ul className="space-y-2">
+                  {sharedParts.map((p) => (
+                    <li key={p.id} className="flex items-center justify-between font-mono text-xs">
+                      <span>
+                        {p.label} · {p.category}
+                      </span>
+                      <button
+                        type="button"
+                        className="text-primary hover:underline"
+                        onClick={() => assignCustomPart(p.category, p.id)}
+                      >
+                        Equip
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </TerminalPanel>
+            )}
+            <TerminalPanel title="official.bases">
+              <p className="mb-3 font-mono text-[10px] text-muted-foreground">
+                Download bases to draw compatible custom layers.
+              </p>
+              <div className="grid gap-2">
+                {AVATAR_BODIES.slice(0, 2).map((asset) => (
+                  <AvatarAssetDownloadCard key={asset.slug} asset={asset} />
+                ))}
+                <Link href="/profile/avatar/bases" className="font-mono text-xs text-primary hover:underline">
+                  View full base library →
+                </Link>
+              </div>
+            </TerminalPanel>
           </div>
         )}
 

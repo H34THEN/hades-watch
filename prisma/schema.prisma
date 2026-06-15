@@ -183,12 +183,29 @@ enum NetNeighborStatus {
   HIDDEN
 }
 
+enum AvatarPartCategory {
+  BODY
+  POSE
+  SPECIES_FEATURE
+  EYES
+  HAIR
+  OUTFIT
+  ACCESSORY
+  BACKGROUND
+  OVERLAY
+}
+
 enum UserProfileAssetKind {
   PORTRAIT
   BANNER
   BACKGROUND
   RELIC_IMAGE
   AVATAR_BACKGROUND
+}
+
+enum AvatarPartVisibility {
+  PRIVATE
+  SHARED
 }
 
 enum InviteVerificationMethod {
@@ -268,6 +285,7 @@ model User {
   profileCustomization    UserProfileCustomization?
   userAvatar              UserAvatar?
   profileAssets           UserProfileAsset[]
+  avatarUserParts         AvatarUserPart[]
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -1053,10 +1071,31 @@ model UserAvatar {
   outfitSlug              String?
   accessorySlugs          Json?
   backgroundSlug          String?  @default("bg-underwatch-default")
+  poseSlug                String   @default("pose-neutral")
   customBackgroundAssetId String?
+  customPartIds           Json?
   layerConfig             Json?
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AvatarUserPart {
+  id         String               @id @default(cuid())
+  userId     String
+  category   AvatarPartCategory
+  slug       String
+  label      String
+  path       String
+  visibility AvatarPartVisibility @default(PRIVATE)
+  mimeType   String?
+  sizeBytes  Int?
+  createdAt  DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, slug])
+  @@index([userId, category])
+  @@index([visibility, category])
 }

@@ -98,12 +98,13 @@
 
 ## Phase 12 — Profile Worlds & Avatar Builder
 
-- **Profile Worlds** — full-page `/profile` layout with banner, portrait, dossier panels, relic iframe
+- **Profile Worlds** — full-width `/profile` with dossier panels + dominant mirror chamber HUD
 - **Edit** — `/profile/edit` for HTML/CSS, RSS, uploads, world metadata
-- **Avatar Builder** — `/profile/avatar` with 5 species, layered preview, placeholder art in `public/avatar-assets/`
-- **Public profiles** — `/profile/[handle]` for approved viewers when character `isPublic`
-- Models: `UserAvatar`, `UserProfileAsset`, extended `UserProfileCustomization`
-- See `docs/PROFILE_WORLDS.md`, `docs/AVATAR_BUILDER.md`
+- **Avatar Builder** — `/profile/avatar` with poses, custom part uploads, HUD preview
+- **Base downloads** — `/profile/avatar/bases` for official creator parts
+- **Public profiles** — `/profile/[handle]` by character callsign when `isPublic`
+- Models: `UserAvatar` (pose, customPartIds), `AvatarUserPart`, `UserProfileAsset`, `UserProfileCustomization`
+- See `docs/PROFILE_WORLDS.md`, `docs/PROFILE_WORLD.md`, `docs/AVATAR_BUILDER.md`
 
 ## Phase 11 — Old-Web Social Features
 

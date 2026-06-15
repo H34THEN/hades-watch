@@ -94,6 +94,7 @@ export type AuditAction =
   | "profile.world.update"
   | "profile.asset.upload"
   | "avatar.save"
+  | "avatar.part.upload"
   | "alliance.membership.assign"
   | "alliance.membership.remove";
 

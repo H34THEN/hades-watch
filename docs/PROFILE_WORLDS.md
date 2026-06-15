@@ -8,21 +8,23 @@ Full-page operative shrines — MySpace-era personal pages inside the Hades Watc
 |-------|--------|---------|
 | `/profile` | Authenticated | Your full-page Profile World |
 | `/profile/edit` | Approved | Edit world fields, uploads, relic HTML/CSS |
-| `/profile/avatar` | Approved | Gaia-style layered avatar builder |
+| `/profile/avatar` | Approved | Layered avatar builder + mirror chamber HUD |
+| `/profile/avatar/bases` | Approved | Download official base parts |
 | `/profile/[handle]` | Approved | Public world by character callsign (when `isPublic`) |
 
-## Layout
+Public handle = `Character.callsign` (case-insensitive). Reserved slugs (`edit`, `avatar`, `bases`) are not valid public handles.
 
-The profile uses the **full browser width**, not a slim dossier column:
+## Layout (v2)
 
-- Profile header / banner
-- Portrait or avatar preview
-- Identity dossier, faction standing, badges
-- Mission records
-- Net neighbor buttons / links
-- Spotify signal (if configured)
-- Sandboxed **Relic Zone** iframe (custom HTML/CSS)
-- RSS signals (server-rendered inside relic iframe when enabled)
+Full-width profile world (`max-w-[1600px]`):
+
+- **Desktop:** dossier panels left; dominant **AvatarHudFrame** right (sticky, ~72vh)
+- **Mobile:** avatar HUD first, then dossier stack
+- Banner, portrait thumbnail, identity header, faction, badges, soundtrack, relic zone
+
+See [PROFILE_WORLD.md](./PROFILE_WORLD.md) for HUD implementation notes.
+
+Previously (v1): narrow header with small avatar — replaced by mirror chamber viewport.
 
 Empty states:
 
@@ -79,7 +81,8 @@ Served via `/api/profile-assets/[assetId]` — owner, moderators, or viewers of 
 
 - `UserProfileCustomization` — HTML/CSS, RSS, links, buttons, asset IDs, world metadata
 - `UserProfileAsset` — uploaded images
-- `UserAvatar` — layered avatar selections
+- `UserAvatar` — layered avatar selections, pose, custom part IDs
+- `AvatarUserPart` — user-uploaded avatar layers (private or shared)
 
 ## Security Warning (UI)
 
@@ -91,6 +94,7 @@ Moderator+ can disable relic zones via `/admin/social` (existing flow).
 
 ## Related
 
+- [PROFILE_WORLD.md](PROFILE_WORLD.md)
 - [AVATAR_BUILDER.md](AVATAR_BUILDER.md)
 - [SOCIAL_FEATURES.md](SOCIAL_FEATURES.md)
 - `src/lib/queries/profile-world.ts`

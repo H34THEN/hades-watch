@@ -30,9 +30,10 @@ src/
     net-neighbors/             # Old-web banner wall
     moderation/                # Moderation console
     admin/                     # Admin console + subpages
-    profile/                   # Operative dossier (signed-in user)
+    profile/                   # Profile world, edit, avatar, public [handle]
   components/
-    profile/                   # Dossier sections, Spotify form, badges
+    profile/                   # ProfileWorldView, relic sandbox, edit client
+    avatar/                    # AvatarHudFrame, builder, layered preview
     moderation/                # Report actions, nav
     mmo/                       # Character form, MMO nav
     archive/                   # Locked cards, unlock button
@@ -80,8 +81,8 @@ src/
 
 - Chat: `ChatRoom`, `ChatMessage` — HTTPS temporary chat, 24h retention, not E2EE
 - Net Neighbors: `NetNeighbor` — moderated banner submissions, `storage/uploads/net-neighbors/`
-- Profile: `UserProfileCustomization`, `UserProfileAsset`, `UserAvatar` — full-page worlds on `/profile`
-- See [PROFILE_WORLDS.md](PROFILE_WORLDS.md), [AVATAR_BUILDER.md](AVATAR_BUILDER.md), [SOCIAL_FEATURES.md](SOCIAL_FEATURES.md)
+- Profile: `UserProfileCustomization`, `UserProfileAsset`, `UserAvatar`, `AvatarUserPart` — full-page worlds on `/profile` with mirror chamber HUD
+- See [PROFILE_WORLDS.md](PROFILE_WORLDS.md), [PROFILE_WORLD.md](PROFILE_WORLD.md), [AVATAR_BUILDER.md](AVATAR_BUILDER.md), [SOCIAL_FEATURES.md](SOCIAL_FEATURES.md)
 
 ## Chthonic Uprising Factions (Phase 9)
 

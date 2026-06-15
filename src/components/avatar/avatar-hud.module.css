@@ -1,0 +1,236 @@
+.avatarHud {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  isolation: isolate;
+}
+
+@media (min-width: 1024px) {
+  .avatarHud {
+    min-height: 72vh;
+  }
+}
+
+.hudFrame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  clip-path: polygon(
+    0 12px,
+    12px 0,
+    calc(100% - 48px) 0,
+    100% 48px,
+    100% calc(100% - 20px),
+    calc(100% - 20px) 100%,
+    20px 100%,
+    0 calc(100% - 20px)
+  );
+  background: linear-gradient(145deg, rgba(12, 8, 10, 0.95) 0%, rgba(4, 6, 8, 0.98) 55%, rgba(20, 4, 8, 0.92) 100%);
+  border: 1px solid rgba(177, 18, 58, 0.45);
+  box-shadow:
+    0 0 40px rgba(177, 18, 58, 0.12),
+    inset 0 0 60px rgba(0, 0, 0, 0.6);
+}
+
+.hudFrame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.02) 2px,
+    rgba(255, 255, 255, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.hudReticle {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 72%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(177, 18, 58, 0.25);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hudReticle::after {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border: 1px solid rgba(56, 248, 168, 0.12);
+  border-radius: 50%;
+}
+
+.hudScanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(177, 18, 58, 0.7), transparent);
+  animation: hudScan 4s ease-in-out infinite;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+@keyframes hudScan {
+  0% {
+    top: 8%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  85% {
+    opacity: 0.7;
+  }
+  100% {
+    top: 92%;
+    opacity: 0;
+  }
+}
+
+.hudCornerTL,
+.hudCornerBR {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: rgba(177, 18, 58, 0.8);
+  border-style: solid;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hudCornerTL {
+  top: 10px;
+  left: 10px;
+  border-width: 2px 0 0 2px;
+}
+
+.hudCornerBR {
+  bottom: 10px;
+  right: 10px;
+  border-width: 0 2px 2px 0;
+}
+
+.hudRailLeft {
+  position: absolute;
+  left: 6px;
+  top: 15%;
+  bottom: 15%;
+  width: 3px;
+  background: linear-gradient(180deg, transparent, rgba(177, 18, 58, 0.6), transparent);
+  z-index: 5;
+}
+
+.hudRailRight {
+  position: absolute;
+  right: 6px;
+  top: 20%;
+  bottom: 25%;
+  width: 2px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(56, 248, 168, 0.4) 0,
+    rgba(56, 248, 168, 0.4) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  z-index: 5;
+}
+
+.hudTopPlate {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 16px 100%);
+  background: linear-gradient(90deg, rgba(177, 18, 58, 0.35), rgba(20, 4, 8, 0.9));
+  padding: 6px 20px 8px;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 220, 220, 0.9);
+}
+
+.hudSideLabel {
+  position: absolute;
+  z-index: 6;
+  font-family: ui-monospace, monospace;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(177, 18, 58, 0.7);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.hudSideLabelLeft {
+  left: 14px;
+  top: 28%;
+}
+
+.hudSideLabelRight {
+  right: 14px;
+  top: 35%;
+  color: rgba(56, 248, 168, 0.5);
+}
+
+.hudBottomStrip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.85), transparent);
+  border-top: 1px solid rgba(177, 18, 58, 0.3);
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hudChip {
+  padding: 2px 8px;
+  border: 1px solid rgba(177, 18, 58, 0.4);
+  color: rgba(255, 200, 200, 0.85);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hudChipAccent {
+  border-color: rgba(56, 248, 168, 0.35);
+  color: rgba(56, 248, 168, 0.85);
+}
+
+.hudViewport {
+  position: absolute;
+  inset: 36px 24px 48px 24px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hudEmpty {
+  text-align: center;
+  padding: 2rem;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  color: rgba(200, 180, 180, 0.65);
+  letter-spacing: 0.05em;
+}

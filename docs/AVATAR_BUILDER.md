@@ -2,9 +2,14 @@
 
 Gaia Online–style layered character identity for Hades Watch operatives.
 
-## Route
+## Routes
 
-`/profile/avatar` — approved users only.
+| Route | Purpose |
+|-------|---------|
+| `/profile/avatar` | Builder + mirror chamber HUD preview |
+| `/profile/avatar/bases` | Download official base parts |
+
+Approved users only.
 
 ## Species (MVP)
 
@@ -26,8 +31,60 @@ Gaia Online–style layered character identity for Hades Watch operatives.
 6. Hair
 7. Outfit
 8. Accessories
+9. User custom part overlays (per category)
 
-Preview uses absolutely positioned `<img>` layers in React — no server-side compositing in MVP.
+Preview uses `AvatarLayeredPreview` inside `AvatarHudFrame` — no server-side compositing in MVP.
+
+## Poses
+
+Pose slugs on `UserAvatar.poseSlug`. MVP uses CSS transforms until per-pose art ships:
+
+| Slug | Label |
+|------|-------|
+| `pose-neutral` | Neutral Stance |
+| `pose-crossed` | Crossed Arms |
+| `pose-ready` | Ready Stance |
+| `pose-seated` | Seated Terminal |
+| `pose-caster` | Signal Caster |
+
+Add pose layer art later under `public/avatar-assets/poses/` and extend `AVATAR_POSES` in `avatar-assets.ts`.
+
+## Official Base Downloads
+
+Users download creator-provided bases from `/profile/avatar/bases` or per-part links in the builder.
+
+Registry: `AVATAR_OFFICIAL_DOWNLOADS` in `src/lib/avatar/avatar-assets.ts`. Each option may set `downloadPath` (defaults to `imagePath`).
+
+### Where to place official art
+
+```txt
+public/avatar-assets/bodies/          # species base bodies
+public/avatar-assets/species/         # horns, leaves, snakes, etc.
+public/avatar-assets/eyes/
+public/avatar-assets/hair/
+public/avatar-assets/outfits/
+public/avatar-assets/accessories/
+public/avatar-assets/backgrounds/
+public/avatar-assets/poses/           # future pose layers
+public/avatar-assets/hud/             # optional HUD image overlays
+public/avatar-assets/placeholders/
+```
+
+## User Custom Parts
+
+Model: `AvatarUserPart` — category, label, path, visibility (`PRIVATE` | `SHARED`).
+
+Storage:
+
+```txt
+storage/uploads/avatar-parts/{userId}/
+```
+
+Served via `/api/avatar-parts/[partId]`. Private parts: owner + moderators. Shared parts: approved users.
+
+Equipped parts stored on `UserAvatar.customPartIds` as JSON `{ "OUTFIT": "partId", ... }`.
+
+Upload in builder **Uploads** tab (`AvatarPartUploader`). Formats: GIF, PNG, JPEG, WebP (max 5 MB). SVG blocked.
 
 ## Asset Registry
 
@@ -98,16 +155,30 @@ No real-world identity required.
 
 ## Model
 
-`UserAvatar` in `prisma/schema.prisma` — one record per user.
+- `UserAvatar` — selections, `poseSlug`, `customPartIds`, lore fields
+- `AvatarUserPart` — user-uploaded layers
 
 ## Actions
 
-- `saveAvatarAction` — persist selections
+- `saveAvatarAction` — persist selections, pose, custom parts
 - `resetAvatarAction` — restore defaults
+- `uploadAvatarPartAction` — upload private/shared custom part
+- `deleteAvatarPartAction` — remove owned part
+
+## HUD Components
+
+```txt
+src/components/avatar/AvatarHudFrame.tsx
+src/components/avatar/AvatarLayeredPreview.tsx
+src/components/avatar/AvatarAssetDownloadCard.tsx
+src/components/avatar/AvatarPartUploader.tsx
+src/components/avatar/avatar-hud.module.css
+```
 
 ## Future Work
 
 - Server-side flatten avatar to single PNG
-- Pose variants
+- Per-pose layer art (not just CSS transform)
 - Faction flair layers tied to membership
 - Export/share card image
+- Moderation queue for shared parts
