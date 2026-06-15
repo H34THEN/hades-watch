@@ -18,12 +18,14 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 const ROLES: { name: RoleName; description: string }[] = [
-  { name: "Owner", description: "Full platform authority" },
+  { name: "Owner", description: "Full platform authority — The Archivist" },
   { name: "Admin", description: "Administrative operations" },
   { name: "Moderator", description: "Community moderation" },
   { name: "Expert", description: "Subject matter specialist" },
+  { name: "Operative", description: "Approved standard operative" },
   { name: "Gamer", description: "Game-layer participant" },
   { name: "Member", description: "Standard community member" },
+  { name: "Recruit", description: "Pending or limited recruit access" },
   { name: "Guest", description: "Limited access visitor" },
 ];
 
@@ -122,74 +124,53 @@ async function seedPhase3Content() {
 async function seedPhase4Content() {
   console.log("Seeding Phase 4 content...");
 
-  const factions = [
-    {
-      name: "Ember Cell",
-      slug: "ember-cell",
-      description:
-        "Underground signal runners who trade in heat, rumor, and last-resort extraction routes.",
-    },
-    {
-      name: "Null Choir",
-      slug: "null-choir",
-      description:
-        "Cryptographers and liturgical hackers who treat silence as a weapon and hymns as payloads.",
-    },
-    {
-      name: "Archive Wraiths",
-      slug: "archive-wraiths",
-      description:
-        "Custodians of forbidden records. They do not steal secrets — they remember what others delete.",
-    },
+  // Canonical factions are seeded via: npm run db:seed:factions
+  const factionSlugs = [
+    "asclepian-veil",
+    "oracular-circuit",
+    "myrmidon-grinders",
+    "daedalus-foundry",
+    "styx-rats",
   ];
 
   const factionRecords: Record<string, string> = {};
-
-  for (const f of factions) {
-    const record = await prisma.faction.upsert({
-      where: { slug: f.slug },
-      update: { description: f.description },
-      create: f,
-    });
-    factionRecords[f.slug] = record.id;
+  for (const slug of factionSlugs) {
+    const record = await prisma.faction.findUnique({ where: { slug } });
+    if (record) factionRecords[slug] = record.id;
   }
 
-  // Migrate legacy Void Runners stub if present
-  const voidRunners = await prisma.faction.findUnique({ where: { name: "Void Runners" } });
-  if (voidRunners && !voidRunners.slug) {
-    await prisma.faction.update({
-      where: { id: voidRunners.id },
-      data: { slug: "void-runners" },
-    });
+  if (Object.keys(factionRecords).length === 0) {
+    console.log("  ⚠ No Chthonic factions found — run npm run db:seed:factions first");
+  } else {
+    console.log(`  ✓ ${Object.keys(factionRecords).length} factions linked`);
   }
-
-  console.log("  ✓ Factions");
 
   const missions = [
     {
-      slug: "signal-beneath-the-ash",
-      title: "Signal Beneath the Ash",
+      slug: "veil-triage-protocol",
+      title: "Veil Triage Protocol",
       description:
-        "Intercept a repeating carrier wave buried under municipal noise. Trace its origin without tripping municipal watchdogs.",
-      factionSlug: "ember-cell",
+        "Route emergency care resources to a dissent cluster flagged for predictive denial. Stabilize without triggering municipal watchdogs.",
+      factionSlug: "asclepian-veil",
     },
     {
-      slug: "dead-channel-recon",
-      title: "Dead Channel Recon",
+      slug: "oracle-static-decode",
+      title: "Oracle Static Decode",
       description:
-        "A broadcast tower went dark six hours ago. Recon the site and determine whether the silence is sabotage or surrender.",
-      factionSlug: "null-choir",
+        "A black-box prophecy engine is broadcasting probability spikes. Decode the static and poison the training feed.",
+      factionSlug: "oracular-circuit",
     },
     {
-      slug: "the-oracle-node-flickers",
-      title: "The Oracle Node Flickers",
+      slug: "cerberus-gate-hold",
+      title: "Cerberus Gate Hold",
       description:
-        "Archive indices are desyncing. Stabilize the oracle node before corrupted entries rewrite community history.",
-      factionSlug: "archive-wraiths",
+        "A protest corridor is about to be sealed. Hold the line, marshal evacuation routes, and keep the vulnerable moving.",
+      factionSlug: "myrmidon-grinders",
     },
   ];
 
   for (const m of missions) {
+    if (!factionRecords[m.factionSlug]) continue;
     await prisma.quest.upsert({
       where: { slug: m.slug },
       update: {
@@ -231,7 +212,7 @@ async function seedPhase4Content() {
       excerpt: "Every index has an observer.",
       body: "Archive Wraiths insist the stacks are alive. Not sentient — attentive. Delete a file and something remembers the shape of the absence.\n\nRead carefully. The archive logs readers as faithfully as it logs writers.",
       requiredRole: "Gamer" as RoleName | null,
-      factionSlug: "archive-wraiths",
+      factionSlug: "oracular-circuit",
     },
   ];
 

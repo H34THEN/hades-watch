@@ -5,8 +5,10 @@ export const ROLE_HIERARCHY: Record<RoleName, number> = {
   Admin: 80,
   Moderator: 60,
   Expert: 40,
+  Operative: 25,
   Gamer: 30,
   Member: 20,
+  Recruit: 15,
   Guest: 10,
 };
 

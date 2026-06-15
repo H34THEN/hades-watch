@@ -97,6 +97,17 @@
 - Admin approval queue at `/admin/users`
 - `/pending-approval` for queued operatives
 
+## Phase 9 — Chthonic Uprising Factions
+
+- Parent alliance + five baseline cells (canonical lore)
+- `FactionPosition` ranks separate from site roles
+- Badge models and faction page lore display
+- Admin user assignment: role, status, faction, position
+- Profile dossier: faction position, reputation, DB badges
+- Seed: `db:seed:factions`, `db:seed:test-users` (explicit)
+- Cleanup: `db:cleanup-test-users` before production
+- See `docs/FACTIONS.md`, `docs/TEST_USERS.md`, `FactionsLoreBuilder.md`
+
 ## Future
 
 - Wire SMTP transport (nodemailer or provider SDK)

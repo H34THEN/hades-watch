@@ -35,8 +35,10 @@ const createInviteSchema = z.object({
     "Admin",
     "Moderator",
     "Expert",
+    "Operative",
     "Gamer",
     "Member",
+    "Recruit",
     "Guest",
   ]),
   maxUses: z.coerce.number().int().min(1).max(1000),
@@ -313,4 +315,178 @@ export async function getInviteCodes() {
       verificationRequirement: true,
     },
   });
+}
+
+const assignRoleSchema = z.object({
+  userId: z.string(),
+  role: z.enum([
+    "Owner",
+    "Admin",
+    "Moderator",
+    "Expert",
+    "Operative",
+    "Gamer",
+    "Member",
+    "Recruit",
+    "Guest",
+  ]),
+});
+
+export async function assignUserRoleAction(
+  userId: string,
+  role: string,
+): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  const parsed = assignRoleSchema.safeParse({ userId, role });
+  if (!parsed.success) {
+    return { success: false, error: "Invalid role assignment." };
+  }
+
+  const roleRecord = await prisma.role.findUnique({
+    where: { name: parsed.data.role as RoleName },
+  });
+  if (!roleRecord) {
+    return { success: false, error: "Role not found." };
+  }
+
+  await prisma.userRole.deleteMany({ where: { userId } });
+  await prisma.userRole.create({
+    data: { userId, roleId: roleRecord.id },
+  });
+
+  await writeAuditLog({
+    action: "user.role.assign",
+    actorId: admin.id,
+    targetType: "user",
+    targetId: userId,
+    metadata: { role: parsed.data.role },
+  });
+
+  revalidatePath("/admin/users");
+  return { success: true };
+}
+
+const accountStatusSchema = z.enum(["Pending", "Approved", "Rejected"]);
+
+export async function assignUserAccountStatusAction(
+  userId: string,
+  status: string,
+): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  const parsed = accountStatusSchema.safeParse(status);
+  if (!parsed.success) {
+    return { success: false, error: "Invalid account status." };
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      accountStatus: parsed.data,
+      ...(parsed.data === "Approved"
+        ? { approvedAt: new Date(), approvalSource: "ADMIN_ASSIGN" }
+        : {}),
+      ...(parsed.data === "Rejected" ? { disabled: true } : {}),
+    },
+  });
+
+  await writeAuditLog({
+    action: "user.status.assign",
+    actorId: admin.id,
+    targetType: "user",
+    targetId: userId,
+    metadata: { status: parsed.data },
+  });
+
+  revalidatePath("/admin/users");
+  return { success: true };
+}
+
+const factionPositionSchema = z.enum([
+  "INITIATE",
+  "MEMBER",
+  "SPECIALIST",
+  "CELL_LEAD",
+  "LIEUTENANT",
+  "LEADER",
+]);
+
+export async function assignUserFactionAction(
+  userId: string,
+  factionId: string,
+  position: string,
+  displayTitle?: string,
+): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  const parsedPosition = factionPositionSchema.safeParse(position);
+  if (!parsedPosition.success) {
+    return { success: false, error: "Invalid faction position." };
+  }
+
+  const faction = await prisma.faction.findUnique({ where: { id: factionId } });
+  if (!faction || faction.isAlliance) {
+    return { success: false, error: "Faction not found." };
+  }
+
+  const title =
+    displayTitle?.trim() ||
+    null;
+
+  await prisma.factionMembership.upsert({
+    where: { userId_factionId: { userId, factionId } },
+    create: {
+      userId,
+      factionId,
+      status: "Approved",
+      position: parsedPosition.data,
+      displayTitle: title,
+      isPrimary: true,
+    },
+    update: {
+      status: "Approved",
+      position: parsedPosition.data,
+      displayTitle: title,
+      isPrimary: true,
+    },
+  });
+
+  await prisma.character.updateMany({
+    where: { userId },
+    data: { factionId },
+  });
+
+  await writeAuditLog({
+    action: "user.faction.assign",
+    actorId: admin.id,
+    targetType: "user",
+    targetId: userId,
+    metadata: { factionId, position: parsedPosition.data },
+  });
+
+  revalidatePath("/admin/users");
+  revalidatePath("/profile");
+  return { success: true };
+}
+
+export async function removeUserFactionAction(userId: string): Promise<ActionResult> {
+  const admin = await requireAdmin();
+
+  await prisma.factionMembership.updateMany({
+    where: { userId, isPrimary: true },
+    data: { status: "Left", isPrimary: false },
+  });
+
+  await prisma.character.updateMany({
+    where: { userId },
+    data: { factionId: null },
+  });
+
+  await writeAuditLog({
+    action: "user.faction.remove",
+    actorId: admin.id,
+    targetType: "user",
+    targetId: userId,
+  });
+
+  revalidatePath("/admin/users");
+  return { success: true };
 }

@@ -63,6 +63,15 @@ src/
 - `UserVerificationClaim` — registration verification result (preview only)
 - See [BETA_ACCESS_MODEL.md](BETA_ACCESS_MODEL.md)
 
+## Chthonic Uprising Factions (Phase 9)
+
+- Parent alliance: **The Chthonic Uprising** (`chthonic-uprising`) — led by The Archivist (Owner)
+- Five baseline cells with full lore metadata in `Faction` model
+- `FactionPosition` enum on `FactionMembership` (separate from site `RoleName`)
+- `Badge` / `UserBadge` for awardable faction badges
+- Seed scripts: `db:seed:factions`, `db:seed:test-users`, `db:cleanup-test-users`
+- See [FACTIONS.md](FACTIONS.md) and [TEST_USERS.md](TEST_USERS.md)
+
 ## Phase 4 Systems
 
 ### Moderation Workflow

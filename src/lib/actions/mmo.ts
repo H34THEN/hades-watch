@@ -86,15 +86,39 @@ export async function upsertCharacterAction(
 
 export async function getFactions() {
   return prisma.faction.findMany({
+    where: { isAlliance: false },
     orderBy: { name: "asc" },
     include: { _count: { select: { characters: true, memberships: true } } },
   });
 }
 
+export async function getAlliance() {
+  return prisma.faction.findFirst({
+    where: { isAlliance: true },
+    include: {
+      cells: {
+        where: { isAlliance: false },
+        orderBy: { name: "asc" },
+        select: { id: true, slug: true, name: true, tagline: true },
+      },
+    },
+  });
+}
+
+export async function getFactionsForAdmin() {
+  return prisma.faction.findMany({
+    where: { isAlliance: false },
+    orderBy: { name: "asc" },
+    select: { id: true, slug: true, name: true },
+  });
+}
+
 export async function getFactionBySlug(slug: string) {
-  return prisma.faction.findUnique({
+  const faction = await prisma.faction.findUnique({
     where: { slug },
     include: {
+      alliance: { select: { name: true, slug: true, motto: true } },
+      badgeRecords: { orderBy: { name: "asc" } },
       quests: { where: { status: "Available" } },
       characters: {
         where: { isPublic: true },
@@ -104,6 +128,43 @@ export async function getFactionBySlug(slug: string) {
       _count: { select: { memberships: true, characters: true } },
     },
   });
+  if (!faction || faction.isAlliance) return null;
+
+  const rivalry = faction.rivalrySlug
+    ? await prisma.faction.findUnique({
+        where: { slug: faction.rivalrySlug },
+        select: { name: true, slug: true },
+      })
+    : null;
+  const synergy = faction.synergySlug
+    ? await prisma.faction.findUnique({
+        where: { slug: faction.synergySlug },
+        select: { name: true, slug: true },
+      })
+    : null;
+
+  return {
+    ...faction,
+    coreValues: Array.isArray(faction.coreValues)
+      ? (faction.coreValues as string[])
+      : null,
+    palette:
+      faction.palette && typeof faction.palette === "object" && !Array.isArray(faction.palette)
+        ? (faction.palette as Record<string, string>)
+        : null,
+    typicalMissions: Array.isArray(faction.typicalMissions)
+      ? (faction.typicalMissions as string[])
+      : null,
+    badges: Array.isArray(faction.badges) ? (faction.badges as string[]) : null,
+    titles:
+      faction.titles &&
+      typeof faction.titles === "object" &&
+      !Array.isArray(faction.titles)
+        ? (faction.titles as { starting: string; advanced: string[] })
+        : null,
+    rivalry,
+    synergy,
+  };
 }
 
 export async function requestFactionJoinAction(

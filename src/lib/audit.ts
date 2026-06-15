@@ -63,7 +63,11 @@ export type AuditAction =
   | "mission.complete"
   | "cipher.solved"
   | "user.disable"
-  | "user.enable";
+  | "user.enable"
+  | "user.role.assign"
+  | "user.status.assign"
+  | "user.faction.assign"
+  | "user.faction.remove";
 
 interface AuditEntry {
   action: AuditAction;

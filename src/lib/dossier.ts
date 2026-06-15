@@ -26,8 +26,10 @@ const CLEARANCE_BY_ROLE: Partial<Record<RoleName, ClearanceInfo>> = {
   Admin: { level: 5, label: "Clearance 5 — Oracle", shortLabel: "Oracle" },
   Moderator: { level: 4, label: "Clearance 4 — Archivist", shortLabel: "Archivist" },
   Expert: { level: 4, label: "Clearance 4 — Archivist", shortLabel: "Archivist" },
+  Operative: { level: 3, label: "Clearance 3 — Operative", shortLabel: "Operative" },
   Gamer: { level: 3, label: "Clearance 3 — Operative", shortLabel: "Operative" },
   Member: { level: 2, label: "Clearance 2 — Initiate", shortLabel: "Initiate" },
+  Recruit: { level: 1, label: "Clearance 1 — Witness", shortLabel: "Witness" },
   Guest: { level: 1, label: "Clearance 1 — Witness", shortLabel: "Witness" },
 };
 
@@ -36,8 +38,10 @@ const ROLE_PRIORITY: RoleName[] = [
   "Admin",
   "Moderator",
   "Expert",
+  "Operative",
   "Gamer",
   "Member",
+  "Recruit",
   "Guest",
 ];
 

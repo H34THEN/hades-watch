@@ -1,4 +1,4 @@
-import type { RoleName } from "@/generated/prisma/client";
+import type { FactionPosition, RoleName } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   canViewFullInviteLineage,
@@ -56,7 +56,12 @@ export interface DossierData {
     name: string;
     slug: string;
     status: string;
+    position: FactionPosition | null;
+    displayTitle: string | null;
+    reputation: number;
   } | null;
+  dbBadges: { name: string; slug: string; color: string | null }[];
+  accountStatus: string;
   pendingFactionRequest: { name: string; slug: string } | null;
   spotify: {
     embedUrl: string;
@@ -114,6 +119,10 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
         take: 10,
       },
       loreUnlocks: true,
+      userBadges: {
+        include: { badge: true },
+        orderBy: { awardedAt: "desc" },
+      },
     },
   });
 
@@ -127,7 +136,9 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
   const clearance = getClearanceForRoles(roles);
   const showFullInvites = canViewFullInviteLineage(roles);
 
-  const approvedMembership = user.factionMemberships.find((m) => m.status === "Approved");
+  const approvedMembership = user.factionMemberships.find(
+    (m) => m.status === "Approved" && m.isPrimary,
+  ) ?? user.factionMemberships.find((m) => m.status === "Approved");
   const pendingMembership = user.factionMemberships.find((m) => m.status === "Pending");
 
   const faction =
@@ -164,6 +175,14 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
     activeMissions,
     loreUnlockCount,
   });
+
+  for (const ub of user.userBadges) {
+    badges.push({
+      id: `db-${ub.badge.slug}`,
+      label: ub.badge.name,
+      description: ub.badge.slug,
+    });
+  }
 
   const redemption = user.inviteRedemption;
   const entryInvite = redemption?.invite;
@@ -212,6 +231,7 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
     earnedTitles,
     badges,
     clearance,
+    accountStatus: user.accountStatus,
     entryVerification: getEntryVerificationDisplay(
       user.verificationClaim?.status ?? "NOT_REQUIRED",
     ),
@@ -220,8 +240,16 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
           name: faction.name,
           slug: faction.slug,
           status: factionStatus ?? (user.character?.factionId ? "Linked" : "Active"),
+          position: approvedMembership?.position ?? null,
+          displayTitle: approvedMembership?.displayTitle ?? null,
+          reputation: approvedMembership?.reputation ?? 0,
         }
       : null,
+    dbBadges: user.userBadges.map((ub) => ({
+      name: ub.badge.name,
+      slug: ub.badge.slug,
+      color: ub.badge.color,
+    })),
     pendingFactionRequest: pendingMembership
       ? { name: pendingMembership.faction.name, slug: pendingMembership.faction.slug }
       : null,

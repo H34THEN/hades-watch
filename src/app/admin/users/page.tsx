@@ -6,6 +6,7 @@ import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { writeAuditLog } from "@/lib/audit";
 import { getAdminUsers } from "@/lib/actions/phase4";
+import { getFactionsForAdmin } from "@/lib/actions/mmo";
 import { getHighestRole, isAdmin } from "@/lib/auth/roles";
 import { getSessionUser } from "@/lib/auth/session";
 
@@ -29,7 +30,7 @@ export default async function AdminUsersPage() {
     );
   }
 
-  const users = await getAdminUsers();
+  const [users, factions] = await Promise.all([getAdminUsers(), getFactionsForAdmin()]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
@@ -42,7 +43,7 @@ export default async function AdminUsersPage() {
       </div>
 
       <TerminalPanel title="user.registry">
-        <AdminUsersPanel users={users} />
+        <AdminUsersPanel users={users} factions={factions} />
       </TerminalPanel>
     </div>
   );

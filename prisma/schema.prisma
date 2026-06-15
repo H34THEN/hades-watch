@@ -14,8 +14,10 @@ enum RoleName {
   Admin
   Moderator
   Expert
+  Operative
   Gamer
   Member
+  Recruit
   Guest
 }
 
@@ -88,6 +90,15 @@ enum MissionParticipationStatus {
   Dropped
 }
 
+enum FactionPosition {
+  INITIATE
+  MEMBER
+  SPECIALIST
+  CELL_LEAD
+  LIEUTENANT
+  LEADER
+}
+
 enum UserAccountStatus {
   Pending
   Approved
@@ -124,6 +135,7 @@ model User {
   accountStatus UserAccountStatus @default(Pending)
   approvedAt    DateTime?
   approvalSource String?
+  isTestAccount Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -151,6 +163,7 @@ model User {
   cipherSolves            CipherSolve[]
   inviteRedemption        InviteRedemption?
   verificationClaim       UserVerificationClaim?
+  userBadges              UserBadge[]
   spotifyPlaylistId       String?
   spotifyPlaylistUrl      String?
   spotifyEmbedUrl         String?
@@ -436,32 +449,84 @@ model PasswordResetToken {
 }
 
 model Faction {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  name        String   @unique
-  description String?  @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String   @unique
+  description      String?  @db.Text
+  tagline          String?
+  archetype        String?
+  leaderName       String?
+  leaderTitle      String?
+  leaderLore       String?  @db.Text
+  coreValues       Json?
+  palette          Json?
+  symbol           String?  @db.Text
+  motto            String?
+  rivalrySlug      String?
+  synergySlug      String?
+  themeUnlock      String?
+  typicalMissions  Json?
+  reputationFlavor String?  @db.Text
+  badges           Json?
+  titles           Json?
+  isAlliance       Boolean  @default(false)
+  allianceId       String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  characters  Character[]
-  quests      Quest[]
-  memberships FactionMembership[]
-  loreEntries LoreEntry[]
+  alliance     Faction?  @relation("FactionAlliance", fields: [allianceId], references: [id], onDelete: SetNull)
+  cells        Faction[] @relation("FactionAlliance")
+  characters   Character[]
+  quests       Quest[]
+  memberships  FactionMembership[]
+  loreEntries  LoreEntry[]
+  badgeRecords Badge[]
 }
 
 model FactionMembership {
-  id        String                  @id @default(cuid())
-  userId    String
-  factionId String
-  status    FactionMembershipStatus @default(Pending)
-  createdAt DateTime                @default(now())
-  updatedAt DateTime                @updatedAt
+  id           String                  @id @default(cuid())
+  userId       String
+  factionId    String
+  status       FactionMembershipStatus @default(Pending)
+  position     FactionPosition         @default(INITIATE)
+  displayTitle String?
+  reputation   Int                     @default(0)
+  isPrimary    Boolean                 @default(true)
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   faction Faction @relation(fields: [factionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, factionId])
   @@index([status])
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  factionId   String?
+  color       String?
+  createdAt   DateTime @default(now())
+
+  faction   Faction?    @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  userBadges UserBadge[]
+}
+
+model UserBadge {
+  id          String   @id @default(cuid())
+  userId      String
+  badgeId     String
+  awardedAt   DateTime @default(now())
+  awardedById String?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
 }
 
 model Quest {

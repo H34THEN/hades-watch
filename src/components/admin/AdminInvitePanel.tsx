@@ -40,7 +40,9 @@ interface AdminInvitePanelProps {
 }
 
 const ROLES: RoleName[] = [
+  "Recruit",
   "Member",
+  "Operative",
   "Gamer",
   "Expert",
   "Moderator",

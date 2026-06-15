@@ -6,8 +6,10 @@ export type RoleName =
   | "Admin"
   | "Moderator"
   | "Expert"
+  | "Operative"
   | "Gamer"
   | "Member"
+  | "Recruit"
   | "Guest";
 
 const roleStyles: Record<RoleName, string> = {
@@ -15,8 +17,10 @@ const roleStyles: Record<RoleName, string> = {
   Admin: "border-primary text-primary bg-primary/10",
   Moderator: "border-accent-foreground/50 text-accent-foreground",
   Expert: "border-secondary-foreground/50 text-secondary-foreground",
+  Operative: "border-primary/50 text-primary",
   Gamer: "border-primary/40 text-primary/80",
   Member: "border-border text-muted-foreground",
+  Recruit: "border-muted text-muted-foreground/70",
   Guest: "border-muted text-muted-foreground/60",
 };
 

@@ -208,8 +208,18 @@ export async function getAdminUsers() {
       accountStatus: true,
       approvedAt: true,
       approvalSource: true,
+      isTestAccount: true,
       character: { select: { callsign: true, faction: { select: { name: true } } } },
       userRoles: { include: { role: true } },
+      factionMemberships: {
+        where: { status: "Approved", isPrimary: true },
+        include: { faction: { select: { id: true, name: true, slug: true } } },
+        take: 1,
+      },
+      userBadges: {
+        include: { badge: { select: { name: true, slug: true, color: true } } },
+        take: 10,
+      },
       verificationClaim: {
         select: {
           status: true,
