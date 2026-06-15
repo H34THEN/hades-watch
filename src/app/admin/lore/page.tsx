@@ -5,7 +5,7 @@ import { AccessDenied } from "@/components/layout/AccessDenied";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { writeAuditLog } from "@/lib/audit";
-import { getAllLoreAdmin } from "@/lib/actions/lore";
+import { getAllLoreAdmin } from "@/lib/lore/queries";
 import { getHighestRole, isAdmin } from "@/lib/auth/roles";
 import { getSessionUser } from "@/lib/auth/session";
 

@@ -25,7 +25,10 @@
     "db:reset": "prisma migrate reset",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "media:import-track": "tsx prisma/scripts/import-media-track.ts"
+    "media:import-track": "tsx prisma/scripts/import-media-track.ts",
+    "db:verify:world-lore": "prisma generate && tsx prisma/scripts/verify-world-lore.ts",
+    "db:diagnose:world-lore": "prisma generate && tsx prisma/scripts/diagnose-world-lore-access.ts",
+    "deploy:verify": "bash scripts/verify-production-deploy.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

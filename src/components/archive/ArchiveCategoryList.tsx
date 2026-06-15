@@ -10,7 +10,7 @@ import {
   getArchiveEntryPath,
   getCategoryByRouteSlug,
 } from "@/lib/archive/categories";
-import { getLoreForUser } from "@/lib/actions/lore";
+import { getLoreForUser } from "@/lib/lore/queries";
 import { requireAuth } from "@/lib/auth/session";
 
 interface ArchiveCategoryListProps {

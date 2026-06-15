@@ -132,7 +132,7 @@ Wants=postgresql.service
 Type=simple
 User=hadeswatch
 Group=hadeswatch
-WorkingDirectory=/opt/hades-watch-next/.next/standalone
+WorkingDirectory=/opt/hades-watch-next/.next/standalone/.next/standalone
 EnvironmentFile=/opt/hades-watch-next/.env
 Environment=NODE_ENV=production
 Environment=PORT=3000

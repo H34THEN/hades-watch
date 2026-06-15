@@ -82,6 +82,15 @@ async function main() {
     console.log(`  ✓ ${entry.slug}`);
   }
 
+  const worldRows = await prisma.loreEntry.findMany({
+    where: { slug: { in: ["the-jackal-ledger", "the-bronze-gate-levies", "the-white-lantern-hunts", "the-two-new-fires", "the-thunder-casket-posts"] } },
+    select: { slug: true, category: true, status: true },
+  });
+  const missing = 5 - worldRows.filter((r) => r.status === "Published" && r.category === "WORLD_LORE").length;
+  if (missing > 0) {
+    console.warn(`\n  ! World lore pack incomplete (${5 - missing}/5 valid). Run: npm run db:verify:world-lore`);
+  }
+
   console.log("\nCanonical lore seed complete.");
 }
 

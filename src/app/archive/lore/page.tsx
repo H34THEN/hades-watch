@@ -4,7 +4,7 @@ import { UnlockLoreButton } from "@/components/archive/UnlockLoreButton";
 import { ArchiveNav } from "@/components/archive/ArchiveNav";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getArchiveEntryPath } from "@/lib/archive/categories";
-import { getLoreForUser } from "@/lib/actions/lore";
+import { getLoreForUser } from "@/lib/lore/queries";
 import { requireAuth } from "@/lib/auth/session";
 
 export const metadata = { title: "Lore Archive" };

@@ -6,7 +6,7 @@ import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getUpcomingEvents } from "@/lib/actions/events";
 import { getPublishedTransmissions } from "@/lib/actions/announcements";
-import { getLoreForUser } from "@/lib/actions/lore";
+import { getLoreForUser } from "@/lib/lore/queries";
 import { getModerationStats } from "@/lib/actions/moderation";
 import { getAvailableQuests, getUserCharacter } from "@/lib/actions/mmo";
 import { getDeadDropsForUser } from "@/lib/actions/phase4";

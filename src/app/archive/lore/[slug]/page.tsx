@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { LoreDetailView } from "@/components/archive/LoreDetailView";
 import { getArchiveCategoryPath } from "@/lib/archive/categories";
-import { getLoreBySlug } from "@/lib/actions/lore";
+import { getLoreBySlug } from "@/lib/lore/queries";
 import { requireAuth } from "@/lib/auth/session";
 
 export const metadata = { title: "Lore Entry" };

@@ -1,86 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { LoreCategory, RoleName } from "@/generated/prisma/client";
+import type { RoleName } from "@/generated/prisma/client";
 import { getArchiveEntryPath } from "@/lib/archive/categories";
-import { isAutoUnlockLoreSlug } from "@/lib/lore/auto-unlock";
 import { writeAuditLog } from "@/lib/audit";
-import { matchesClearance } from "@/lib/clearance";
 import { requireAdminUser } from "@/lib/auth/guards";
 import { requireAuth } from "@/lib/auth/session";
+import { getLoreBySlug } from "@/lib/lore/queries";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 
 export type ActionResult =
   | { success: true }
   | { success: false; error: string };
-
-export async function getLoreForUser(userId: string, roles: RoleName[], category?: LoreCategory) {
-  const character = await prisma.character.findUnique({
-    where: { userId },
-    select: { factionId: true },
-  });
-
-  const entries = await prisma.loreEntry.findMany({
-    where: {
-      status: "Published",
-      ...(category ? { category } : {}),
-    },
-    orderBy: { publishedAt: "desc" },
-    include: { requiredFaction: { select: { name: true, slug: true } } },
-  });
-
-  const unlocks = await prisma.userLoreUnlock.findMany({
-    where: { userId },
-    select: { loreEntryId: true },
-  });
-  const unlockedIds = new Set(unlocks.map((u) => u.loreEntryId));
-
-  return entries.map((entry) => {
-    const roleOk = matchesClearance(entry.requiredRole, roles);
-    const autoUnlock = isAutoUnlockLoreSlug(entry.slug);
-    const factionOk =
-      autoUnlock ||
-      !entry.requiredFactionId ||
-      entry.requiredFactionId === character?.factionId;
-    const unlocked = unlockedIds.has(entry.id) || autoUnlock;
-    const accessible = roleOk && factionOk;
-    return { ...entry, accessible, unlocked, canRead: accessible && unlocked };
-  });
-}
-
-export async function getLoreBySlug(slug: string, userId: string, roles: RoleName[]) {
-  const entry = await prisma.loreEntry.findUnique({
-    where: { slug },
-    include: { requiredFaction: true },
-  });
-  if (!entry || entry.status !== "Published") return null;
-
-  const character = await prisma.character.findUnique({
-    where: { userId },
-    select: { factionId: true },
-  });
-
-  const roleOk = matchesClearance(entry.requiredRole, roles);
-  const autoUnlock = isAutoUnlockLoreSlug(slug);
-  const factionOk =
-    autoUnlock ||
-    !entry.requiredFactionId ||
-    entry.requiredFactionId === character?.factionId;
-
-  const unlock = await prisma.userLoreUnlock.findUnique({
-    where: { userId_loreEntryId: { userId, loreEntryId: entry.id } },
-  });
-
-  const unlocked = !!unlock || autoUnlock;
-
-  return {
-    entry,
-    accessible: roleOk && factionOk,
-    unlocked,
-    canRead: roleOk && factionOk && unlocked,
-  };
-}
 
 export async function unlockLoreAction(loreEntryId: string): Promise<ActionResult> {
   const user = await requireAuth();
@@ -120,13 +52,6 @@ export async function unlockLoreAction(loreEntryId: string): Promise<ActionResul
   revalidatePath(`/archive/lore/${entry.slug}`);
   revalidatePath(getArchiveEntryPath(entry.slug, entry.category));
   return { success: true };
-}
-
-export async function getAllLoreAdmin() {
-  return prisma.loreEntry.findMany({
-    orderBy: { updatedAt: "desc" },
-    include: { requiredFaction: { select: { name: true } } },
-  });
 }
 
 export async function createLoreAction(formData: FormData): Promise<ActionResult> {

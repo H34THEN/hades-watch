@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { LoreDetailView } from "@/components/archive/LoreDetailView";
 import { getCategoryByRouteSlug } from "@/lib/archive/categories";
-import { getLoreBySlug } from "@/lib/actions/lore";
+import { getLoreBySlug } from "@/lib/lore/queries";
 import { requireAuth } from "@/lib/auth/session";
+import { SURFACE_BREAKS_WORLD_LORE_SLUGS } from "@/lib/lore/world-lore-pack";
 
 interface ArchiveLoreDetailProps {
   categorySlug: string;
@@ -19,7 +20,15 @@ export async function ArchiveLoreDetail({ categorySlug, slug }: ArchiveLoreDetai
 
   const { entry, accessible, unlocked, canRead } = result;
 
-  if (entry.category && entry.category !== meta.loreCategory) {
+  if (
+    entry.category &&
+    entry.category !== meta.loreCategory &&
+    !(
+      categorySlug === "world" &&
+      meta.loreCategory === "WORLD_LORE" &&
+      SURFACE_BREAKS_WORLD_LORE_SLUGS.includes(slug)
+    )
+  ) {
     notFound();
   }
 

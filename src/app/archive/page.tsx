@@ -9,7 +9,7 @@ import {
   GHOST_IN_TECH_SECTION,
   STATE_OF_AFFAIRS_SECTION,
 } from "@/lib/archive/signal-sections";
-import { getLoreForUser } from "@/lib/actions/lore";
+import { getLoreForUser } from "@/lib/lore/queries";
 import { requireAuth } from "@/lib/auth/session";
 
 export const metadata = { title: "Archive" };
