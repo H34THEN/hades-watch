@@ -36,7 +36,8 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
   const tagsRaw = String(formData.get("tags") ?? "");
   const submitterNote = stripUserText(String(formData.get("submitterNote") ?? ""), 500);
   const bannerFile = formData.get("banner");
-  const bannerStyle = parseBannerStyleForm(formData);
+  const builderIcon = formData.get("builderIcon");
+  let bannerStyle = parseBannerStyleForm(formData);
 
   if (!title || title.length < 2) {
     return { success: false, error: "Site title is required." };
@@ -46,10 +47,21 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
   if (!urlResult.ok) return { success: false, error: urlResult.error };
 
   let bannerPath: string | null = null;
+  let iconPath: string | null = null;
+
   if (bannerFile && typeof bannerFile !== "string" && bannerFile.size > 0) {
     const validation = validateBannerUpload(bannerFile);
     if (!validation.ok) return { success: false, error: validation.error };
     bannerPath = await saveBannerUpload(bannerFile);
+  }
+
+  if (builderIcon && typeof builderIcon !== "string" && builderIcon.size > 0) {
+    const validation = validateBannerUpload(builderIcon);
+    if (!validation.ok) return { success: false, error: validation.error };
+    iconPath = await saveBannerUpload(builderIcon);
+    if (bannerStyle) {
+      bannerStyle = { ...bannerStyle, iconPath };
+    }
   }
 
   if (!bannerPath && !bannerStyle) {

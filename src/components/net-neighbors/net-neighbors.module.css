@@ -82,8 +82,161 @@
 .bannerWall {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 6px;
   align-items: flex-start;
+  align-content: flex-start;
+}
+
+.bannerLinkCompact {
+  display: inline-block;
+  line-height: 0;
+  text-decoration: none;
+  transition: filter 0.15s, transform 0.15s;
+}
+
+.bannerLinkCompact:hover,
+.bannerLinkCompact:focus-visible {
+  filter: drop-shadow(0 0 6px rgba(56, 248, 168, 0.45));
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.buttonWrap {
+  display: inline-block;
+  line-height: 0;
+}
+
+.netNeighborButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 3px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+.netNeighborButtonImg {
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.bannerMainText {
+  display: block;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.bannerSubText {
+  display: block;
+  font-size: 6px;
+  line-height: 1;
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bannerTextBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: calc(100% - 4px);
+}
+
+.bannerGlyph {
+  font-size: 7px;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.bannerIcon {
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.bannerGlow {
+  box-shadow: 0 0 6px rgba(56, 248, 168, 0.25);
+}
+
+.cornerBrackets::before,
+.cornerBrackets::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border: 1px solid currentColor;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.cornerBrackets::before {
+  top: 1px;
+  left: 1px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.cornerBrackets::after {
+  bottom: 1px;
+  right: 1px;
+  border-left: none;
+  border-top: none;
+}
+
+.pixelBorder {
+  outline: 1px dashed rgba(255, 255, 255, 0.25);
+  outline-offset: -2px;
+}
+
+.warningStripe {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 3px,
+    rgba(255, 200, 0, 0.12) 3px,
+    rgba(255, 200, 0, 0.12) 6px
+  );
+}
+
+.terminalGrid {
+  background-image:
+    linear-gradient(rgba(56, 248, 168, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 248, 168, 0.06) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+.blinkingDot::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #38f8a8;
+  animation: nn-blink 1.2s step-end infinite;
+}
+
+@keyframes nn-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.underlineRail {
+  border-bottom: 2px solid currentColor;
 }
 
 .bannerLink {

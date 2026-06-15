@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,12 +14,15 @@ import styles from "./net-neighbors.module.css";
 interface NetNeighborSubmitFormProps {
   canSubmit: boolean;
   lockedMessage?: string;
+  redirectOnSuccess?: boolean;
 }
 
 export function NetNeighborSubmitForm({
   canSubmit,
   lockedMessage,
+  redirectOnSuccess = false,
 }: NetNeighborSubmitFormProps) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -34,7 +38,7 @@ export function NetNeighborSubmitForm({
           {lockedMessage ?? "Net Neighbor submissions open after operative approval."}
         </p>
         {lockedMessage?.includes("Sign in") && (
-          <Link href="/login" className="mt-4 inline-block">
+          <Link href="/login?callbackUrl=/net-neighbors/submit" className="mt-4 inline-block">
             <CommandButton size="sm">Sign In</CommandButton>
           </Link>
         )}
@@ -46,17 +50,22 @@ export function NetNeighborSubmitForm({
     e.preventDefault();
     setError(null);
     setSuccess(null);
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     startTransition(async () => {
       const result = await submitNetNeighborAction(formData);
       if (!result.success) {
         setError(result.error);
         return;
       }
+      if (redirectOnSuccess) {
+        router.push("/net-neighbors?submitted=1");
+        return;
+      }
       setSuccess(
         "Signal received. Your Net Neighbor submission is pending Underwatch review.",
       );
-      e.currentTarget.reset();
+      form.reset();
       setUseBuilder(false);
     });
   }

@@ -10,7 +10,12 @@ import {
 
 export const metadata = { title: "Net Neighbors" };
 
-export default async function NetNeighborsPage() {
+export default async function NetNeighborsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ submitted?: string }>;
+}) {
+  const { submitted } = await searchParams;
   const user = await getSessionUser();
   const [neighbors, recent, pendingCount] = await Promise.all([
     getApprovedNetNeighbors(),
@@ -40,6 +45,7 @@ export default async function NetNeighborsPage() {
       lockedMessage={lockedMessage}
       isModerator={!!user && isModerator(user.roles)}
       pendingCount={pendingCount}
+      showSubmittedSuccess={submitted === "1"}
     />
   );
 }

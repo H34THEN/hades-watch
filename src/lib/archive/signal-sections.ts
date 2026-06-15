@@ -32,7 +32,7 @@ export const GHOST_IN_TECH_SECTION: ArchiveSignalSection = {
     "A repo reliquary for GitHub and Codeberg tools, open source field gear, privacy projects, self-hosting resources, and strange useful code.",
   terminalLabel: "archive.ghost_in_tech",
   submitLabel: "Submit a Repo",
-  emptyMessage: "No repo signals filed yet. The forge is quiet.",
+  emptyMessage: "No repo relics have surfaced from the Ghost in Tech archive yet.",
 };
 
 export const ARCHIVE_SIGNAL_SECTIONS: ArchiveSignalSection[] = [

@@ -17,17 +17,22 @@ Net Neighbors are the small doors in the Underwatch wall. Follow at your own ris
 
 ## Submission Flow
 
-1. Approved logged-in user opens `/net-neighbors/submit`
-2. Provides title, URL (http/https only), optional description/tags/note
-3. Uploads banner (PNG/GIF/JPG/WEBP, max 2 MB) **or** forges a HUD signal button
-4. Row created with `status: PENDING`
-5. Moderator approves → appears on public wall ordered by `sortOrder`
+1. Approved user opens `/net-neighbors/submit`
+2. Uploads banner or forges HUD button (88×31 default)
+3. On success → redirect to `/net-neighbors?submitted=1` with success HUD message
+4. Row created as `PENDING`; moderator approves at `/admin/net-neighbors`
 
-**Locked states:**
-- Logged out → redirect to login (submit page) or styled message on wall
-- Pending approval → “Net Neighbor submissions open after operative approval.”
+## Banner Sizes
 
-**Success copy:** “Signal received. Your Net Neighbor submission is pending Underwatch review.”
+Default **88×31** old-web mini button. Also: 120×40, 180×60, 234×60.
+
+Public wall renders compact linked banners via `NetNeighborButton` — not large cards.
+
+## Banner Builder
+
+`bannerStyle` JSON (version 1) stores background, gradient preset, text, font, border, fancy details, and optional icon path.
+
+Builder previews **actual size** and **3× zoomed** preview on submit page.
 
 ## Moderation Statuses
 

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { NetNeighborGeneratedBanner } from "@/components/net-neighbors/NetNeighborGeneratedBanner";
+import { NetNeighborButton } from "@/components/net-neighbors/NetNeighborButton";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { SystemAlert } from "@/components/terminal/SystemAlert";
 import {
@@ -99,21 +99,27 @@ export function NetNeighborAdminPanel({
         ) : (
           pendingNeighbors.map((n) => (
             <div key={n.id} className="border border-border/50 p-4">
-              <div className="mb-3 flex flex-wrap items-start gap-4">
-                {n.bannerPath ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={`/api/net-neighbors/banners/${n.id}`}
-                    alt=""
-                    width={88}
-                    height={31}
-                    className="border border-border/40"
-                    style={{ imageRendering: "pixelated" }}
-                  />
-                ) : n.bannerStyle ? (
-                  <NetNeighborGeneratedBanner style={n.bannerStyle} />
-                ) : null}
+              <div className="mb-3 flex flex-wrap items-end gap-4">
                 <div>
+                  <p className="mb-1 font-mono text-[9px] text-muted-foreground">Actual size</p>
+                  <NetNeighborButton
+                    neighborId={n.id}
+                    title={n.title}
+                    bannerPath={n.bannerPath}
+                    bannerStyle={n.bannerStyle}
+                  />
+                </div>
+                <div>
+                  <p className="mb-1 font-mono text-[9px] text-muted-foreground">Zoomed 3×</p>
+                  <NetNeighborButton
+                    neighborId={n.id}
+                    title={n.title}
+                    bannerPath={n.bannerPath}
+                    bannerStyle={n.bannerStyle}
+                    zoom={3}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
                   <p className="font-mono text-primary">{n.title}</p>
                   <a
                     href={n.url}
@@ -187,20 +193,12 @@ export function NetNeighborAdminPanel({
                   dragOverId === n.id ? styles.dragOver : ""
                 }`}
               >
-                {n.bannerPath ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={`/api/net-neighbors/banners/${n.id}`}
-                    alt=""
-                    width={88}
-                    height={31}
-                    style={{ imageRendering: "pixelated" }}
-                  />
-                ) : n.bannerStyle ? (
-                  <NetNeighborGeneratedBanner style={n.bannerStyle} />
-                ) : (
-                  <span className="font-mono text-[8px]">{n.title}</span>
-                )}
+                <NetNeighborButton
+                  neighborId={n.id}
+                  title={n.title}
+                  bannerPath={n.bannerPath}
+                  bannerStyle={n.bannerStyle}
+                />
                 <p className="mt-1 max-w-[88px] truncate font-mono text-[9px] text-muted-foreground">
                   {n.title}
                 </p>
