@@ -6,6 +6,8 @@ import {
   parseRssFeedsInput,
 } from "@/lib/profile-customization/sanitize";
 import { parseSelectedItems } from "@/lib/avatar/avatar-registry";
+import { ensureUserCallsign } from "@/lib/profile/callsign-service";
+import { RESERVED_CALLSIGNS } from "@/lib/profile/callsign";
 import { buildRssEmbedHtml } from "@/lib/profile-customization/rss";
 import { buildProfileIframeDocument } from "@/lib/profile-customization/sanitize";
 import {
@@ -169,10 +171,15 @@ async function avatarFromRecord(
 
 export async function getProfileWorldForUser(
   userId: string,
-  options: { viewerId?: string; isPublicView?: boolean } = {},
+  options: { viewerId?: string; isPublicView?: boolean; ensureCallsign?: boolean } = {},
 ): Promise<ProfileWorldData | null> {
   const dossier = await getDossierForUser(userId);
   if (!dossier) return null;
+
+  const isOwner = options.viewerId === userId;
+  if (isOwner && options.ensureCallsign !== false) {
+    await ensureUserCallsign(prisma, userId);
+  }
 
   const [user, character, customization, avatar] = await Promise.all([
     prisma.user.findUnique({
@@ -184,7 +191,6 @@ export async function getProfileWorldForUser(
     prisma.userAvatar.findUnique({ where: { userId } }),
   ]);
 
-  const isOwner = options.viewerId === userId;
   const links = parseProfileLinksInput(customization?.links);
   const profileButtons = parseProfileButtonsInput(customization?.profileButtons);
   const feeds = parseRssFeedsInput(customization?.rssFeeds);
@@ -240,20 +246,24 @@ export async function getProfileWorldForUser(
 
 export async function getPublicProfileByHandle(handle: string, viewerId?: string) {
   const normalized = handle.toLowerCase().trim();
-  const RESERVED = new Set(["edit", "avatar", "bases", "your-callsign"]);
-  if (RESERVED.has(normalized)) return null;
+  if (RESERVED_CALLSIGNS.has(normalized)) return null;
+
   const character = await prisma.character.findFirst({
     where: {
       callsign: { equals: normalized, mode: "insensitive" },
-      isPublic: true,
       user: { accountStatus: "Approved", disabled: false, banned: false },
     },
-    select: { userId: true },
+    select: { userId: true, isPublic: true },
   });
   if (!character) return null;
+
+  const isOwner = viewerId === character.userId;
+  if (!character.isPublic && !isOwner) return null;
+
   return getProfileWorldForUser(character.userId, {
     viewerId,
-    isPublicView: true,
+    isPublicView: !isOwner,
+    ensureCallsign: false,
   });
 }
 

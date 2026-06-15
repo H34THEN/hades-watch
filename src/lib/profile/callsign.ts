@@ -2,12 +2,15 @@ export const RESERVED_CALLSIGNS = new Set([
   "edit",
   "avatar",
   "bases",
+  "settings",
+  "new",
+  "admin",
   "your-callsign",
   "profile",
-  "admin",
   "api",
   "login",
   "register",
+  "logout",
 ]);
 
 const CALLSIGN_RE = /^[a-z0-9][a-z0-9_-]{1,30}[a-z0-9]$/;

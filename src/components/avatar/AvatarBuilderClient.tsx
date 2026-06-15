@@ -271,7 +271,6 @@ export function AvatarBuilderClient({ initial, userParts, sharedParts }: AvatarB
     });
   }
 
-  const allCustomParts = [...parts, ...sharedParts.filter((p) => !parts.some((u) => u.id === p.id))];
   const activeItem = state.selectedItems.find((i) => i.category === activeTransformCategory);
   const downloadableBases = getDownloadableBases();
 

@@ -102,7 +102,9 @@
 - **Edit** — `/profile/edit` for HTML/CSS, RSS, uploads, world metadata
 - **Avatar Builder** — `/profile/avatar` with poses, custom part uploads, HUD preview
 - **Base downloads** — `/profile/avatar/bases` for official creator parts
-- **Public profiles** — `/profile/[handle]` by character callsign when `isPublic`
+- **Public profiles** — `/profile/[callsign]` by `Character.callsign`; auto-provisioned from codename
+- **Callsign backfill** — `npm run db:backfill:profile-slugs`
+- **Canonical seed** — `npm run db:seed` / `db:release` via `prisma/scripts/seed-all.ts`
 - Models: `UserAvatar` (pose, customPartIds), `AvatarUserPart`, `UserProfileAsset`, `UserProfileCustomization`
 - See `docs/PROFILE_WORLDS.md`, `docs/PROFILE_WORLD.md`, `docs/AVATAR_BUILDER.md`
 

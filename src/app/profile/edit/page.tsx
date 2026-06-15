@@ -4,6 +4,7 @@ import { AccessDenied } from "@/components/layout/AccessDenied";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { parseRssFeedsInput } from "@/lib/profile-customization/sanitize";
 import { getSessionUser, isApprovedUser } from "@/lib/auth/session";
+import { ensureUserCallsign, deriveCallsignSeed } from "@/lib/profile/callsign-service";
 import { prisma } from "@/lib/prisma";
 
 export const metadata = { title: "Edit Profile" };
@@ -19,13 +20,27 @@ export default async function ProfileEditPage() {
     );
   }
 
-  const [customization, character] = await Promise.all([
+  const [customization, character, dbUser] = await Promise.all([
     prisma.userProfileCustomization.findUnique({ where: { userId: user.id } }),
     prisma.character.findUnique({
       where: { userId: user.id },
       select: { callsign: true, isPublic: true },
     }),
+    prisma.user.findUnique({
+      where: { id: user.id },
+      select: { id: true, name: true, email: true },
+    }),
   ]);
+
+  await ensureUserCallsign(prisma, user.id);
+  const refreshedCharacter = await prisma.character.findUnique({
+    where: { userId: user.id },
+    select: { callsign: true, isPublic: true },
+  });
+
+  const suggestedCallsign = dbUser
+    ? deriveCallsignSeed(dbUser)
+    : "";
 
   return (
     <>
@@ -40,8 +55,9 @@ export default async function ProfileEditPage() {
       <ProfileEditClient
         user={user}
         initial={{
-          callsign: character?.callsign ?? "",
-          isPublic: character?.isPublic ?? true,
+          callsign: refreshedCharacter?.callsign ?? character?.callsign ?? "",
+          suggestedCallsign,
+          isPublic: refreshedCharacter?.isPublic ?? character?.isPublic ?? true,
           html: customization?.html ?? "",
           css: customization?.css ?? "",
           rssFeeds: parseRssFeedsInput(customization?.rssFeeds),

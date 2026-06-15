@@ -49,7 +49,25 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                   Avatar Builder
                 </CommandButton>
               </Link>
+              {world.handle ? (
+                <Link href={`/profile/${world.handle}`}>
+                  <CommandButton size="sm" variant="outline">
+                    View Public Profile
+                  </CommandButton>
+                </Link>
+              ) : (
+                <Link href="/profile/edit">
+                  <CommandButton size="sm" variant="outline">
+                    Set Callsign
+                  </CommandButton>
+                </Link>
+              )}
             </div>
+          )}
+          {showEditLinks && !world.handle && (
+            <p className="mb-4 font-mono text-xs text-muted-foreground">
+              Set your callsign to activate your public profile signal.
+            </p>
           )}
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,46%)] lg:items-start xl:grid-cols-[minmax(0,1fr)_minmax(420px,44%)]">

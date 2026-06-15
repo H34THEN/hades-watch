@@ -21,6 +21,7 @@ import type { SessionUser } from "@/lib/auth/session";
 
 export interface ProfileEditInitial {
   callsign: string;
+  suggestedCallsign?: string;
   isPublic: boolean;
   html: string;
   css: string;
@@ -146,8 +147,17 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
       <TerminalPanel title="operative.callsign">
         <form onSubmit={saveCallsign} className="space-y-4">
           <p className="font-mono text-[10px] text-muted-foreground">
-            Your public profile URL: /profile/<span className="text-primary">{callsign || "your-callsign"}</span>
+            Your public profile URL:{" "}
+            <span className="text-primary">
+              /profile/{callsign || initial.suggestedCallsign?.toLowerCase() || "your-callsign"}
+            </span>
           </p>
+          {initial.suggestedCallsign && !initial.callsign && (
+            <p className="font-mono text-[10px] text-muted-foreground">
+              Default derived from your operative codename:{" "}
+              <span className="text-primary">{initial.suggestedCallsign}</span>
+            </p>
+          )}
           <div>
             <Label htmlFor="callsign" className="text-xs uppercase">
               Callsign / Profile Slug
@@ -156,10 +166,13 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
               id="callsign"
               value={callsign}
               onChange={(e) => setCallsign(e.target.value)}
-              placeholder="slewfoot"
+              placeholder={initial.suggestedCallsign || "slewfoot"}
               maxLength={32}
               className="mt-1 font-mono"
             />
+            <p className="mt-1 font-mono text-[9px] text-muted-foreground">
+              Lowercase letters, numbers, hyphens, underscores. Must be unique.
+            </p>
           </div>
           <label className="flex items-center gap-2 font-mono text-xs">
             <input

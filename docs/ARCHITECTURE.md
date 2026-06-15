@@ -81,8 +81,20 @@ src/
 
 - Chat: `ChatRoom`, `ChatMessage` — HTTPS temporary chat, 24h retention, not E2EE
 - Net Neighbors: `NetNeighbor` — moderated banner submissions, `storage/uploads/net-neighbors/`
-- Profile: `UserProfileCustomization`, `UserProfileAsset`, `UserAvatar`, `AvatarUserPart` — full-page worlds on `/profile` with mirror chamber HUD
+- Profile: `Character.callsign` (unique public slug), `UserAvatar`, `AvatarUserPart`, `UserProfileCustomization`
+- Public profile: `/profile/[callsign]` — `Character.callsign`, auto-provisioned from `User.name` if missing
 - See [PROFILE_WORLDS.md](PROFILE_WORLDS.md), [PROFILE_WORLD.md](PROFILE_WORLD.md), [AVATAR_BUILDER.md](AVATAR_BUILDER.md), [SOCIAL_FEATURES.md](SOCIAL_FEATURES.md)
+
+## Database Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run db:generate` | Generate Prisma client only — no data changes |
+| `npm run db:deploy` | Apply migrations + regenerate client |
+| `npm run db:seed` / `db:seed:all` | Canonical production-safe seeds (factions, lore, archive, missions, chat) |
+| `npm run db:release` | `db:generate` + `db:deploy` + canonical seed |
+| `npm run db:backfill:profile-slugs` | Provision missing `Character.callsign` from codename |
+| `npm run db:seed:legacy` | Legacy dev seed (roles + dev invites when allowed) |
 
 ## Chthonic Uprising Factions (Phase 9)
 

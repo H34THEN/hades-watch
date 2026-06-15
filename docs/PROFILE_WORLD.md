@@ -12,11 +12,17 @@ See also: [PROFILE_WORLDS.md](./PROFILE_WORLDS.md) for relic zone, uploads, and 
 | `/profile/edit` | Edit dossier, relic, uploads |
 | `/profile/avatar` | Avatar builder with HUD preview |
 | `/profile/avatar/bases` | Download official base parts |
-| `/profile/[callsign]` | Public world (`Character.callsign`, `isPublic: true`) |
+| `/profile/[callsign]` | Public world by `Character.callsign` (when `isPublic` or owner) |
 
-Public URLs use the character **callsign** (case-insensitive), not the literal placeholder `your-callsign`.
+Public URLs use the character **callsign** (case-insensitive). Reserved: `edit`, `avatar`, `bases`, `settings`, `admin`, `new`, etc.
 
-Set callsign on `/profile/edit` or via MMO character creation (`/mmo/character`). Must be unique.
+Set callsign on `/profile/edit` or via MMO character creation. If missing, codename (`User.name`) is auto-provisioned as callsign on profile load.
+
+Backfill existing users:
+
+```bash
+npm run db:backfill:profile-slugs
+```
 
 ## Layout (v2)
 

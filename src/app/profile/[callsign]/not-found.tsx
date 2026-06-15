@@ -9,9 +9,17 @@ export default function ProfileNotFound() {
       <p className="mt-4 text-sm text-muted-foreground">
         No profile world matches that callsign, or the operative has set their dossier to private.
       </p>
+      <p className="mt-2 font-mono text-[10px] text-muted-foreground">
+        Set your callsign on <Link href="/profile/edit" className="text-primary hover:underline">/profile/edit</Link> to activate your public profile signal.
+      </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link href="/profile">
           <CommandButton size="sm">Your Profile World</CommandButton>
+        </Link>
+        <Link href="/profile/edit">
+          <CommandButton size="sm" variant="outline">
+            Edit Profile
+          </CommandButton>
         </Link>
         <Link href="/dashboard">
           <CommandButton size="sm" variant="outline">
