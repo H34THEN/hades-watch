@@ -1021,9 +1021,9 @@ type CharacterLoreProfile = {
     "role": "Founder / Keeper of the Dead Index"
   },
   {
-    "slug": "dr-circe-runic",
+    "slug": "circe-runic",
     "displayName": "Circe Runic",
-    "deadIndexId": "DI-0101-IONE-VEY",
+    "deadIndexId": "DI-0101-CIRCE-RUNIC",
     "factionSlug": "asclepian-veil",
     "category": "character-lore",
     "role": "Founder / Underclinic Commander"
@@ -1227,7 +1227,7 @@ Test:
 https://hadeswatch.com/archive
 https://hadeswatch.com/archive/characters
 https://hadeswatch.com/archive/characters/heathen-the-archivist
-https://hadeswatch.com/archive/characters/dr-circe-runic
+https://hadeswatch.com/archive/characters/circe-runic
 https://hadeswatch.com/archive/characters/cassian-nyx
 https://hadeswatch.com/archive/characters/brontes-vale
 https://hadeswatch.com/archive/characters/mara-kallix

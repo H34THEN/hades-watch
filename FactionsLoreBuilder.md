@@ -173,7 +173,7 @@ We keep the living from becoming data ghosts.
 
 ### Leader
 
-Dr. Ione Vey
+Circe Runic
 
 ### Leader Title
 
@@ -181,7 +181,7 @@ Veil-Cantor / Wound Archivist
 
 ### Leader Lore
 
-Dr. Ione Vey was once a corporate biomedical compliance officer assigned to audit “nonviable populations” for predictive triage contracts. After discovering that the city’s health algorithms were intentionally denying care to dissent clusters, she leaked the mortality models to the Archivist and vanished into the underworld.
+Circe Runic was once a corporate biomedical compliance officer assigned to audit “nonviable populations” for predictive triage contracts. After discovering that the city’s health algorithms were intentionally denying care to dissent clusters, she leaked the mortality models to the Archivist and vanished into the underworld.
 
 She now leads the Asclepian Veil: a network of underground clinics, encrypted care channels, emergency med caches, hormone access routes, disability support cells, and psychological first-aid nodes. She is calm, terrifyingly precise, and known for saying that survival is the first sabotage.
 

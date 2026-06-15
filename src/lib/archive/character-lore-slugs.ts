@@ -1,6 +1,6 @@
 export const CHARACTER_LORE_SLUGS = [
   "heathen-the-archivist",
-  "dr-ione-vey",
+  "circe-runic",
   "cassian-nyx",
   "brontes-vale",
   "mara-kallix",
@@ -15,9 +15,9 @@ export const ARCHIVE_LEADER_INDEX = [
     faction: "The Chthonic Uprising",
   },
   {
-    slug: "dr-ione-vey",
-    title: "Dr. Ione Vey",
-    deadIndexId: "DI-0101-IONE-VEY",
+    slug: "circe-runic",
+    title: "Circe Runic",
+    deadIndexId: "DI-0101-CIRCE-RUNIC",
     faction: "The Asclepian Veil",
   },
   {

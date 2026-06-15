@@ -113,7 +113,7 @@ No body is disposable. No proof packet should expose what it was meant to protec
       realWorldPurpose: `This mission encourages operatives to complete basic emergency response certifications through qualified organizations. It supports real-world care literacy while making clear that users should only provide care within their training, certification, consent boundaries, and local laws.
 
 The mission rewards preparation, not performance. The objective is to become more useful, calmer, and safer in moments where panic usually gets the microphone.`,
-      inUniverseContext: `Dr. Ione Vey founded the Asclepian Veil after discovering that mortality engines were denying care to whole populations marked as inefficient. The Veil built underclinics, med routes, privacy screens, and quiet systems of survival beneath the All-Seeing Census.
+      inUniverseContext: `Circe Runic founded the Asclepian Veil after discovering that mortality engines were denying care to whole populations marked as inefficient. The Veil built underclinics, med routes, privacy screens, and quiet systems of survival beneath the All-Seeing Census.
 
 A Black Clinic Readiness record marks an operative as someone who has taken the first real step toward care discipline. Not a savior. Not a surgeon. A trained witness with steadier hands than yesterday.`,
       objective: `Complete and document the required care-readiness badges:
@@ -149,7 +149,7 @@ This mission contains no violence, weapons, confrontation, unsafe protest tactic
         "The operative has affirmed the safety and scope-of-training note.",
       ],
       factionLeaderTransmission: {
-        speaker: "Dr. Ione Vey, Veil-Cantor / Wound Archivist",
+        speaker: "Circe Runic, Veil-Cantor / Wound Archivist",
         body: `You are not being asked to become a miracle.
 
 You are being asked to become less helpless when fear enters the room. Learn the rhythm. Learn the limits. Learn how to steady your breath before you touch another person's crisis.

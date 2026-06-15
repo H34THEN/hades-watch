@@ -78,7 +78,7 @@ export function isArchiveCategoryRoute(slug: string): boolean {
 /** Faction slug → character archive slug for leader dossier links */
 export const FACTION_LEADER_ARCHIVE_SLUGS: Record<string, string> = {
   "chthonic-uprising": "heathen-the-archivist",
-  "asclepian-veil": "dr-ione-vey",
+  "asclepian-veil": "circe-runic",
   "oracular-circuit": "cassian-nyx",
   "myrmidon-grinders": "brontes-vale",
   "daedalus-foundry": "mara-kallix",

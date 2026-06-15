@@ -74,10 +74,10 @@ export const CHTHONIC_FACTIONS: FactionSeedData[] = [
       "Healers, medics, caretakers, harm-reduction workers, field stabilizers, and trauma responders operating underground clinics beneath the surveillance regime.",
     tagline: "We keep the living from becoming data ghosts.",
     archetype: "Healers & Care Network",
-    leaderName: "Dr. Ione Vey",
+    leaderName: "Circe Runic",
     leaderTitle: "Veil-Cantor / Wound Archivist",
     leaderLore:
-      "Dr. Ione Vey was once a corporate biomedical compliance officer assigned to audit nonviable populations for predictive triage contracts. After discovering that the city's health algorithms were intentionally denying care to dissent clusters, she leaked the mortality models to the Archivist and vanished into the underworld.",
+      "Circe Runic was once a corporate biomedical compliance cryptographer assigned to audit nonviable populations for predictive triage contracts. After discovering that the city's health algorithms were intentionally denying care to dissent clusters, she leaked the mortality models to the Archivist and vanished into the underworld.",
     coreValues: [
       "Care is resistance",
       "No body is disposable",

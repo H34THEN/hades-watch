@@ -78,6 +78,14 @@ async function main() {
   ];
   await seedLoreEntries(prisma, entries, factionRecords);
 
+  const deprecatedLoreSlugs = ["dr-ione-vey"];
+  for (const slug of deprecatedLoreSlugs) {
+    const removed = await prisma.loreEntry.deleteMany({ where: { slug } });
+    if (removed.count > 0) {
+      console.log(`  ✗ removed deprecated lore: ${slug}`);
+    }
+  }
+
   for (const entry of entries) {
     console.log(`  ✓ ${entry.slug}`);
   }

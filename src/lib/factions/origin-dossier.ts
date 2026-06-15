@@ -45,7 +45,7 @@ export const FOUNDING_CELLS_SUMMARY = [
     slug: "asclepian-veil",
     function: "Survival",
     summary:
-      "Born the night a predictive triage model marked an entire dissent district as low recovery value. Dr. Ione Vey stole the mortality tables and built underground care routes. First oath: No body is disposable.",
+      "Born the night a predictive triage model marked an entire dissent district as low recovery value. Circe Runic stole the mortality tables and built underground care routes. First oath: No body is disposable.",
   },
   {
     slug: "oracular-circuit",
@@ -77,7 +77,7 @@ export const UPRISING_TIMELINE = [
   { year: "Year 0", event: "The Hollow Republic: civic shell intact, systems controlled by oracle vendors and Cloud-Titans." },
   { year: "Year 1", event: "The First Ledger Audits: care, libraries, disability support, and archives cut under efficiency review." },
   { year: "Year 2", event: "The All-Seeing Census Rollout: mandatory biometric identity for services, transit, clinics, schools, housing." },
-  { year: "Year 3", event: "The Mortality Table Leak: Dr. Ione Vey exposes predictive triage killings. The Asclepian Veil forms." },
+  { year: "Year 3", event: "The Mortality Table Leak: Circe Runic exposes predictive triage killings. The Asclepian Veil forms." },
   { year: "Year 3", event: "The Prophecy Loop Break: Cassian Nyx exposes Census models manufacturing unrest. The Oracular Circuit forms." },
   { year: "Year 4", event: "The Burning of the Civic Tablets: rights rewritten, emergency stewards installed. The Myrmidon Grinders emerge." },
   { year: "Year 4", event: "The First Hidden Door: Mara Kallix opens a smart-city extraction route. The Daedalus Foundry forms." },

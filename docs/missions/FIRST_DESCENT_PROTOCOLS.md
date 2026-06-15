@@ -51,7 +51,7 @@ The mission rewards preparation, not performance. The objective is to become mor
 
 ### In-Universe Context
 
-Dr. Ione Vey founded the Asclepian Veil after discovering that mortality engines were denying care to whole populations marked as inefficient. The Veil built underclinics, med routes, privacy screens, and quiet systems of survival beneath the All-Seeing Census.
+Circe Runic founded the Asclepian Veil after discovering that mortality engines were denying care to whole populations marked as inefficient. The Veil built underclinics, med routes, privacy screens, and quiet systems of survival beneath the All-Seeing Census.
 
 A Black Clinic Readiness record marks an operative as someone who has taken the first real step toward care discipline. Not a savior. Not a surgeon. A trained witness with steadier hands than yesterday.
 
@@ -114,7 +114,7 @@ A moderator, admin, or automated review system marks the mission complete when:
 
 ### Faction Leader Transmission
 
-**Dr. Ione Vey, Veil-Cantor / Wound Archivist**
+**Circe Runic, Veil-Cantor / Wound Archivist**
 
 You are not being asked to become a miracle.
 

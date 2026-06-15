@@ -47,6 +47,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/archive/characters/dr-ione-vey",
+        destination: "/archive/characters/circe-runic",
+        permanent: true,
+      },
+      {
+        source: "/archive/lore/dr-ione-vey",
+        destination: "/archive/characters/circe-runic",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

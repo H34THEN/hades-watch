@@ -26,7 +26,7 @@ The Dead Index is the underworld memory spine of the Uprising: erased names, sup
 
 | Faction | Slug | Leader |
 |---------|------|--------|
-| The Asclepian Veil | `asclepian-veil` | Dr. Ione Vey |
+| The Asclepian Veil | `asclepian-veil` | Circe Runic |
 | The Oracular Circuit | `oracular-circuit` | Cassian Nyx |
 | The Myrmidon Grinders | `myrmidon-grinders` | Brontes Vale |
 | The Daedalus Foundry | `daedalus-foundry` | Mara Kallix |

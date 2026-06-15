@@ -333,7 +333,7 @@ An archive can become another machine that eats the living if you build it witho
 
 I learned that slowly. I learned it from people who yelled at me and were right.
 
-Dr. Ione Vey taught me that privacy is medicine.
+Circe Runic taught me that privacy is medicine.
 
 Cassian Nyx taught me that a record without threat modeling is a trap.
 
@@ -408,15 +408,15 @@ Heathen was older. That one was mine.
 ## 9.1 The Asclepian Veil
 
 **Plain role:** Healers, medics, harm-reduction workers, field stabilizers  
-**Leader:** Dr. Ione Vey  
+**Leader:** Circe Runic  
 **Tagline:** We keep the living from becoming data ghosts.  
 **Function:** Survival
 
 The Veil was born the night a predictive triage model marked an entire dissent district as low recovery value.
 
-Dr. Ione Vey stole the mortality tables and brought them to us in a thermos case full of dry ice and sedatives. The tables proved the denials were not mistakes. The system had been trained to let certain people die quietly, especially the disabled, the poor, the undocumented, the trans, the elderly, the addicted, the grieving, the politically inconvenient, and anyone whose social graph touched resistance.
+Circe Runic stole the mortality tables and brought them to us in a thermos case full of dry ice and sedatives. The tables proved the denials were not mistakes. The system had been trained to let certain people die quietly, especially the disabled, the poor, the undocumented, the trans, the elderly, the addicted, the grieving, the politically inconvenient, and anyone whose social graph touched resistance.
 
-Ione did not ask for revenge first.
+Circe did not ask for revenge first.
 
 She asked for routes.
 
@@ -618,7 +618,7 @@ Unified biometric identity becomes mandatory for public services, transit, clini
 
 ## Year 3: The Mortality Table Leak
 
-Dr. Ione Vey discovers predictive triage models designed to deny care to dissent clusters and other marked populations. The leak becomes one of the first preserved Dead Index evidence chains. The Asclepian Veil begins forming around underground care routes.
+Circe Runic discovers predictive triage models designed to deny care to dissent clusters and other marked populations. The leak becomes one of the first preserved Dead Index evidence chains. The Asclepian Veil begins forming around underground care routes.
 
 ## Year 3: The Prophecy Loop Break
 
@@ -681,7 +681,7 @@ A distributed alert, evidence, care, and mission routing system links the cells.
 
 ## Faction Deep Dives
 
-- Dr. Ione Vey’s betrayal of the biomedical compliance ministry.
+- Circe Runic’s betrayal of the biomedical compliance ministry.
 - Cassian Nyx and the predictive lab childhood.
 - Brontes Vale’s erased dock strike.
 - Mara Kallix’s guilt over building the labyrinth.
@@ -774,7 +774,7 @@ Use this section as structured source material for implementation.
       "slug": "asclepian-veil",
       "name": "The Asclepian Veil",
       "function": "Survival",
-      "leader": "Dr. Ione Vey",
+      "leader": "Circe Runic",
       "tagline": "We keep the living from becoming data ghosts."
     },
     {
