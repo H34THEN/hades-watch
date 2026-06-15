@@ -22,9 +22,12 @@ interface LoreDetailViewProps {
 }
 
 function parseCharacterMetadata(entry: LoreEntry): CharacterLoreMetadata | null {
+  if (entry.category !== "CHARACTER_LORE") return null;
   if (!entry.loreMetadata || typeof entry.loreMetadata !== "object" || Array.isArray(entry.loreMetadata)) {
     return null;
   }
+  const raw = entry.loreMetadata as Record<string, unknown>;
+  if (!Array.isArray(raw.aliases)) return null;
   return entry.loreMetadata as unknown as CharacterLoreMetadata;
 }
 
@@ -94,14 +97,14 @@ export function LoreDetailView({
           <div className="mt-4 space-y-1 font-mono text-xs text-muted-foreground">
             {metadata.role && <p>Function: {metadata.role}</p>}
             {metadata.archetype && <p>Archetype: {metadata.archetype}</p>}
-            {metadata.aliases.length > 0 && (
+            {metadata.aliases.length > 0 ? (
               <p>Aliases: {metadata.aliases.join(" · ")}</p>
-            )}
+            ) : null}
             {entry.requiredFaction && <p>Cell: {entry.requiredFaction.name}</p>}
           </div>
         )}
         {entry.category === "WORLD_LORE" && <WorldLoreMetadataPanel entry={entry} />}
-        {entry.excerpt && !metadata && (
+        {entry.excerpt && entry.category !== "CHARACTER_LORE" && (
           <p className="mt-4 text-sm text-muted-foreground">{entry.excerpt}</p>
         )}
         <div className="mt-6 whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">
