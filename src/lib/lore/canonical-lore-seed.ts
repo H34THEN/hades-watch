@@ -1,6 +1,5 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 import type { LoreCategory, Prisma, PrismaClient, RoleName } from "@/generated/prisma/client";
+import { extractOriginArchiveBody, readMarkdownFile } from "@/lib/archive/extract-lore-markdown";
 import { ORIGIN_LORE_SLUG } from "@/lib/factions/origin-dossier";
 
 export interface CanonicalLoreSeedEntry {
@@ -65,10 +64,47 @@ export const DEV_LORE_ENTRIES: CanonicalLoreSeedEntry[] = [
 
 function resolveBody(entry: CanonicalLoreSeedEntry): string {
   if (entry.body) return entry.body;
+  if (entry.bodyFromFile === "docs/lore/CHTHONIC_UPRISING_ORIGIN.md") {
+    return extractOriginArchiveBody();
+  }
   if (entry.bodyFromFile) {
-    return readFileSync(join(process.cwd(), entry.bodyFromFile), "utf8");
+    return readMarkdownFile(entry.bodyFromFile);
   }
   return "";
+}
+
+function isStaleLoreClientError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  return /Unknown argument `(category|deadIndexId|loreMetadata)`/.test(error.message);
+}
+
+function buildLoreUpsertData(
+  entry: CanonicalLoreSeedEntry,
+  body: string,
+  factionRecords: Record<string, string>,
+  includeTaxonomy: boolean,
+) {
+  const base = {
+    title: entry.title,
+    excerpt: entry.excerpt,
+    body,
+    status: "Published" as const,
+    publishedAt: new Date(),
+    requiredRole: entry.requiredRole,
+    requiredFactionId:
+      entry.factionSlug && !entry.skipFactionRequirement
+        ? factionRecords[entry.factionSlug] ?? null
+        : null,
+  };
+
+  if (!includeTaxonomy) return base;
+
+  return {
+    ...base,
+    category: entry.category ?? null,
+    deadIndexId: entry.deadIndexId ?? null,
+    loreMetadata: entry.loreMetadata ?? undefined,
+  };
 }
 
 export async function seedLoreEntries(
@@ -76,41 +112,35 @@ export async function seedLoreEntries(
   entries: CanonicalLoreSeedEntry[],
   factionRecords: Record<string, string> = {},
 ) {
-  for (const l of entries) {
-    const body = resolveBody(l);
-    await prisma.loreEntry.upsert({
-      where: { slug: l.slug },
-      update: {
-        title: l.title,
-        excerpt: l.excerpt,
-        body,
-        status: "Published",
-        publishedAt: new Date(),
-        category: l.category ?? null,
-        deadIndexId: l.deadIndexId ?? null,
-        loreMetadata: l.loreMetadata ?? undefined,
-        requiredRole: l.requiredRole,
-        requiredFactionId:
-          l.factionSlug && !l.skipFactionRequirement
-            ? factionRecords[l.factionSlug] ?? null
-            : null,
-      },
-      create: {
-        slug: l.slug,
-        title: l.title,
-        excerpt: l.excerpt,
-        body,
-        status: "Published",
-        publishedAt: new Date(),
-        category: l.category ?? null,
-        deadIndexId: l.deadIndexId ?? null,
-        loreMetadata: l.loreMetadata ?? undefined,
-        requiredRole: l.requiredRole,
-        requiredFactionId:
-          l.factionSlug && !l.skipFactionRequirement
-            ? factionRecords[l.factionSlug] ?? null
-            : null,
-      },
-    });
+  let taxonomySupported = true;
+
+  for (const entry of entries) {
+    const body = resolveBody(entry);
+    const data = buildLoreUpsertData(entry, body, factionRecords, taxonomySupported);
+
+    try {
+      await prisma.loreEntry.upsert({
+        where: { slug: entry.slug },
+        update: data,
+        create: { slug: entry.slug, ...data },
+      });
+    } catch (error) {
+      if (!taxonomySupported || !isStaleLoreClientError(error)) {
+        throw error;
+      }
+
+      taxonomySupported = false;
+      console.warn(
+        "  ! Prisma client missing lore taxonomy fields — run: npm run db:deploy && npm run db:generate",
+      );
+      console.warn("  ! Seeding base lore without category/deadIndexId (re-run seed after generate)");
+
+      const fallback = buildLoreUpsertData(entry, body, factionRecords, false);
+      await prisma.loreEntry.upsert({
+        where: { slug: entry.slug },
+        update: fallback,
+        create: { slug: entry.slug, ...fallback },
+      });
+    }
   }
 }

@@ -1,11 +1,14 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../src/generated/prisma/client";
+import { LEADERS_LORE_FILE, ORIGIN_LORE_FILE } from "../../src/lib/archive/extract-lore-markdown";
 import { getCharacterLoreSeedEntries } from "../../src/lib/archive/character-lore";
 import {
   CANONICAL_LORE_ENTRIES,
   seedLoreEntries,
 } from "../../src/lib/lore/canonical-lore-seed";
+import { existsSync } from "fs";
+import { join } from "path";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -15,8 +18,40 @@ if (!connectionString) {
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
+async function assertLoreSourcesPresent() {
+  for (const file of [ORIGIN_LORE_FILE, LEADERS_LORE_FILE]) {
+    const path = join(process.cwd(), file);
+    if (!existsSync(path)) {
+      throw new Error(`Missing lore source file: ${path}`);
+    }
+  }
+}
+
+async function assertLoreTaxonomyColumns() {
+  const rows = await prisma.$queryRaw<{ column_name: string }[]>`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'LoreEntry'
+      AND column_name IN ('category', 'deadIndexId', 'loreMetadata')
+  `;
+
+  if (rows.length < 3) {
+    throw new Error(
+      [
+        "LoreEntry taxonomy columns are missing in the database.",
+        "Run: npm run db:deploy",
+        "Then: npm run db:generate && npm run db:seed:lore",
+      ].join("\n"),
+    );
+  }
+}
+
 async function main() {
   console.log("Seeding canonical lore (production-safe)...");
+
+  await assertLoreSourcesPresent();
+  await assertLoreTaxonomyColumns();
 
   const factions = await prisma.faction.findMany({
     where: {

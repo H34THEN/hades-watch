@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { LoreEntry, Faction } from "@/generated/prisma/client";
+import { ArchiveNav } from "@/components/archive/ArchiveNav";
 import { LockedCard } from "@/components/archive/LockedCard";
 import { UnlockLoreButton } from "@/components/archive/UnlockLoreButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
+import { getCategoryByLoreCategory } from "@/lib/archive/categories";
 import type { CharacterLoreMetadata } from "@/lib/archive/character-lore";
 
 type LoreEntryWithFaction = LoreEntry & {
@@ -34,10 +36,12 @@ export function LoreDetailView({
   backLabel = "Archive",
 }: LoreDetailViewProps) {
   const metadata = parseCharacterMetadata(entry);
+  const categorySlug = getCategoryByLoreCategory(entry.category)?.slug;
 
   if (!accessible) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
+        {categorySlug && <ArchiveNav active={categorySlug} />}
         <Link href={backHref} className="font-mono text-xs text-muted-foreground hover:text-primary">
           ← {backLabel}
         </Link>
@@ -51,6 +55,7 @@ export function LoreDetailView({
   if (!unlocked) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
+        {categorySlug && <ArchiveNav active={categorySlug} />}
         <Link href={backHref} className="font-mono text-xs text-muted-foreground hover:text-primary">
           ← {backLabel}
         </Link>
@@ -75,6 +80,7 @@ export function LoreDetailView({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
+      {categorySlug ? <ArchiveNav active={categorySlug} /> : null}
       <Link href={backHref} className="font-mono text-xs text-muted-foreground hover:text-primary">
         ← {backLabel}
       </Link>

@@ -55,14 +55,23 @@ These slugs are readable without an explicit unlock step when clearance/faction 
 
 ## VPS Deploy
 
+**Order matters.** Run migrate before seed; both regenerate the Prisma client.
+
 ```bash
 cd /opt/hades-watch-next
 git pull
 npm ci
-npm run db:deploy
-npm run db:seed:lore
+npm run db:deploy          # migrate + prisma generate
+npm run db:seed:lore       # also runs prisma generate
 npm run build
 systemctl restart hades-watch-next
+```
+
+If seed fails with `Unknown argument category`, the Prisma client is stale:
+
+```bash
+npm run db:deploy
+npm run db:seed:lore
 ```
 
 Test URLs:

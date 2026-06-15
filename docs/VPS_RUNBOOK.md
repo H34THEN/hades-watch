@@ -110,8 +110,10 @@ pg_dump -h localhost -U archivist -d hadeswatch_db -F c -f pre_deploy.dump
 ```bash
 # backup first
 git pull
-npm ci && npm run build
-npm run db:deploy
+npm ci
+npm run db:deploy          # migrate + prisma generate
+npm run db:seed:lore       # origin + character dossiers (after factions seed)
+npm run build
 sudo systemctl restart hades-watch   # or docker compose up -d --build web
 curl -s http://127.0.0.1:3000/api/health
 ```

@@ -1,6 +1,6 @@
 import type { Prisma } from "@/generated/prisma/client";
 import type { CanonicalLoreSeedEntry } from "@/lib/lore/canonical-lore-seed";
-import { extractLeaderSection } from "@/lib/archive/extract-leader-section";
+import { extractLeaderSection } from "@/lib/archive/extract-lore-markdown";
 
 export interface CharacterLoreMetadata {
   displayName: string;
