@@ -18,6 +18,8 @@ export const ALLOWED_AUDIO_MIMES = new Set([
   "audio/x-wav",
   "audio/ogg",
   "audio/vorbis",
+  "application/ogg",
+  "application/octet-stream",
 ]);
 
 export const ALLOWED_COVER_MIMES = new Set([

@@ -1,6 +1,7 @@
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, copyFile } from "fs/promises";
+import { existsSync } from "fs";
 import { randomBytes } from "crypto";
-import { extname } from "path";
+import { basename, extname } from "path";
 import {
   ALLOWED_AUDIO_EXTENSIONS,
   ALLOWED_AUDIO_MIMES,
@@ -44,7 +45,10 @@ export function validateAudioFile(file: File): { ok: true } | { ok: false; error
     return { ok: false, error: "Unsupported audio format. Use .mp3, .m4a, .wav, or .ogg." };
   }
   if (file.type && !ALLOWED_AUDIO_MIMES.has(file.type)) {
-    return { ok: false, error: "Invalid audio MIME type." };
+    return {
+      ok: false,
+      error: `Unsupported audio MIME type (${file.type}). Use .mp3, .m4a, .wav, or .ogg.`,
+    };
   }
   return { ok: true };
 }
@@ -62,16 +66,65 @@ export function validateCoverFile(file: File): { ok: true } | { ok: false; error
   return { ok: true };
 }
 
-export async function saveAudioFile(file: File): Promise<{ filePath: string; mimeType: string }> {
+export async function saveAudioFile(
+  file: File,
+  preferredName?: string,
+): Promise<{ filePath: string; mimeType: string; storedName: string }> {
   await ensureMediaDirs();
   const ext = sanitizeExtension(file.name, ALLOWED_AUDIO_EXTENSIONS) ?? ".mp3";
-  const storedName = `${randomBytes(16).toString("hex")}${ext}`;
+  const nameHint = preferredName
+    ? preferredName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 40)
+    : "";
+  const storedName = nameHint
+    ? `${randomBytes(8).toString("hex")}-${nameHint}${ext}`
+    : `${randomBytes(16).toString("hex")}${ext}`;
   const absolutePath = `${AUDIO_TRACKS_DIR}/${storedName}`;
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(absolutePath, buffer);
   return {
     filePath: `storage/uploads/audio/tracks/${storedName}`,
     mimeType: file.type || "audio/mpeg",
+    storedName,
+  };
+}
+
+export async function copyAudioFileFromPath(
+  sourcePath: string,
+  title?: string,
+): Promise<{ filePath: string; mimeType: string; storedName: string }> {
+  if (!existsSync(sourcePath)) {
+    throw new Error(`Source audio file not found: ${sourcePath}`);
+  }
+  await ensureMediaDirs();
+  const ext = sanitizeExtension(basename(sourcePath), ALLOWED_AUDIO_EXTENSIONS) ?? ".mp3";
+  const nameHint = title
+    ? title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 40)
+    : "";
+  const storedName = nameHint
+    ? `${randomBytes(8).toString("hex")}-${nameHint}${ext}`
+    : `${randomBytes(16).toString("hex")}${ext}`;
+  const absolutePath = `${AUDIO_TRACKS_DIR}/${storedName}`;
+  await copyFile(sourcePath, absolutePath);
+  const mimeType =
+    ext === ".mp3"
+      ? "audio/mpeg"
+      : ext === ".ogg"
+        ? "audio/ogg"
+        : ext === ".wav"
+          ? "audio/wav"
+          : "audio/mp4";
+  return {
+    filePath: `storage/uploads/audio/tracks/${storedName}`,
+    mimeType,
+    storedName,
   };
 }
 

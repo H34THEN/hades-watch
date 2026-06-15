@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CommandButton } from "@/components/terminal/CommandButton";
@@ -16,24 +16,43 @@ interface MediaUploadFormProps {
 
 export function MediaUploadForm({ albums }: MediaUploadFormProps) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [createAlbum, setCreateAlbum] = useState(false);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = formRef.current;
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const albumId = String(formData.get("albumId") ?? "").trim();
+    const newAlbumTitle = String(formData.get("newAlbumTitle") ?? "").trim();
+    if (albumId && newAlbumTitle) {
+      setError("Choose either an existing album or type a new album name — not both.");
+      setSuccess(false);
+      return;
+    }
+
     startTransition(async () => {
-      const result = await uploadMediaTrackAction(formData);
-      if (!result.success) {
-        setError(result.error);
-        setSuccess(false);
-      } else {
+      try {
+        const result = await uploadMediaTrackAction(formData);
+        if (!result.success) {
+          setError(result.error);
+          setSuccess(false);
+          return;
+        }
         setError(null);
         setSuccess(true);
+        form.reset();
         router.refresh();
-        e.currentTarget.reset();
+      } catch (err) {
+        console.error("[MediaUploadForm]", err);
+        setError(
+          "Upload failed unexpectedly. The signal could not be stored. Check file type, size, and server storage permissions.",
+        );
+        setSuccess(false);
       }
     });
   }
@@ -44,12 +63,12 @@ export function MediaUploadForm({ albums }: MediaUploadFormProps) {
       {success && (
         <SystemAlert
           title="Signal Filed"
-          message="Track uploaded to the Owner Signal Deck."
+          message="Track uploaded to the Owner Signal Deck. Open /admin/media to preview or use the Signal Player."
           variant="success"
           className="mb-4"
         />
       )}
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form ref={formRef} onSubmit={onSubmit} className="space-y-4" encType="multipart/form-data">
         <div>
           <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
             Audio file (.mp3, .m4a, .wav, .ogg · max 50 MB)
@@ -57,7 +76,7 @@ export function MediaUploadForm({ albums }: MediaUploadFormProps) {
           <input
             name="audio"
             type="file"
-            accept=".mp3,.m4a,.wav,.ogg,audio/*"
+            accept=".mp3,.m4a,.wav,.ogg,audio/mpeg,audio/*"
             required
             className="font-mono text-xs"
           />
@@ -70,6 +89,7 @@ export function MediaUploadForm({ albums }: MediaUploadFormProps) {
             <input
               name="title"
               required
+              placeholder="Salt on the Tongue Fixed"
               className="w-full rounded border border-border/50 bg-background px-2 py-1.5 font-mono text-sm"
             />
           </div>
@@ -84,50 +104,79 @@ export function MediaUploadForm({ albums }: MediaUploadFormProps) {
             />
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
-              Album
-            </label>
-            {!createAlbum ? (
+
+        <div className="rounded border border-border/40 p-4">
+          <p className="mb-3 font-mono text-[10px] tracking-widest text-primary/80 uppercase">
+            Album (optional)
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
+                Select existing album
+              </label>
               <select
                 name="albumId"
+                defaultValue=""
                 className="w-full rounded border border-border/50 bg-background px-2 py-1.5 font-mono text-sm"
               >
-                <option value="">No album</option>
+                <option value="">No album / unassigned track</option>
                 {albums.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.title}
                   </option>
                 ))}
               </select>
-            ) : (
+            </div>
+            <div>
+              <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
+                Or type new album name
+              </label>
               <input
                 name="newAlbumTitle"
-                placeholder="New album title"
+                placeholder="Album One"
                 className="w-full rounded border border-border/50 bg-background px-2 py-1.5 font-mono text-sm"
               />
-            )}
-            <button
-              type="button"
-              onClick={() => setCreateAlbum((v) => !v)}
-              className="mt-1 font-mono text-[10px] text-primary hover:underline"
-            >
-              {createAlbum ? "Select existing album" : "Create new album inline"}
-            </button>
+            </div>
           </div>
-          <div>
+          <p className="mt-2 font-mono text-[10px] text-muted-foreground">
+            Use one option only. Leave both empty for a standalone track.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
+                New album artist (optional)
+              </label>
+              <input
+                name="newAlbumArtistName"
+                placeholder="Heathen"
+                className="w-full rounded border border-border/50 bg-background px-2 py-1.5 font-mono text-sm"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
+                Track number
+              </label>
+              <input
+                name="trackNumber"
+                type="number"
+                min={1}
+                placeholder="1"
+                className="w-full rounded border border-border/50 bg-background px-2 py-1.5 font-mono text-sm"
+              />
+            </div>
+          </div>
+          <div className="mt-3">
             <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
-              Track number
+              New album description (optional)
             </label>
             <input
-              name="trackNumber"
-              type="number"
-              min={1}
+              name="newAlbumDescription"
+              placeholder="Chthonic Broadcast · Suno album"
               className="w-full rounded border border-border/50 bg-background px-2 py-1.5 font-mono text-sm"
             />
           </div>
         </div>
+
         <div>
           <label className="mb-1 block font-mono text-[10px] text-muted-foreground uppercase">
             Lore note / description
@@ -156,7 +205,7 @@ export function MediaUploadForm({ albums }: MediaUploadFormProps) {
         </div>
         <div className="flex flex-wrap gap-3">
           <CommandButton type="submit" disabled={isPending}>
-            Upload Signal
+            {isPending ? "Uploading Signal..." : "Upload Signal"}
           </CommandButton>
           <Link href="/admin/media">
             <CommandButton type="button" variant="outline">

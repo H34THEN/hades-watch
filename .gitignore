@@ -45,3 +45,7 @@ next-env.d.ts
 # uploaded media (persist on VPS, not in git)
 storage/uploads/audio/
 public/uploads/audio/
+/*.mp3
+/*.m4a
+/*.wav
+/*.ogg
