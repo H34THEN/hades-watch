@@ -63,6 +63,16 @@ src/
 - `UserVerificationClaim` — registration verification result (preview only)
 - See [BETA_ACCESS_MODEL.md](BETA_ACCESS_MODEL.md)
 
+## Navigation (Phase 10)
+
+- `src/lib/navigation/config.ts` — grouped nav sections with permission gates
+- `src/components/navigation/SiteHeader.tsx` — compact header, mobile drawer, desktop dropdowns
+- Mobile: upper-right menu trigger; logout in drawer account section
+- Desktop: COMMAND / MMO / ARCHIVE dropdowns; optional sidebar toggle
+- Admin links visible only to Owner/Admin; moderation to Moderator+
+- Pending users: Account group only (profile, pending approval)
+- No email verification gate on navigation
+
 ## Chthonic Uprising Factions (Phase 9)
 
 - Parent alliance: **The Chthonic Uprising** (`chthonic-uprising`) — led by The Archivist (Owner)

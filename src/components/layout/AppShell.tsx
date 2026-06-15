@@ -1,5 +1,5 @@
 import { SiteFooter } from "@/components/layout/SiteFooter";
-import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SiteHeader } from "@/components/navigation/SiteHeader";
 import { ThemeOverlays } from "@/components/theme/ThemeOverlays";
 import { cn } from "@/lib/utils";
 

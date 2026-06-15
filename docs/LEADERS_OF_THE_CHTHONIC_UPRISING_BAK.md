@@ -171,7 +171,7 @@ The first mistake was trying to save everything.
 
 The first lesson was consent.
 
-Circe Runic taught Heathen that privacy is medicine. Cassian Nyx taught them that records without threat models become traps. Brontes Vale taught them that truth needs logistics. Mara Kallix taught them that every archive needs exits. Rhea Spite taught them that grief needs walls to scream on.
+Dr. Ione Vey taught Heathen that privacy is medicine. Cassian Nyx taught them that records without threat models become traps. Brontes Vale taught them that truth needs logistics. Mara Kallix taught them that every archive needs exits. Rhea Spite taught them that grief needs walls to scream on.
 
 Heathen did not create the Uprising alone. The Uprising grew because nurses, punks, dockworkers, coders, disabled organizers, engineers, signal ghosts, broke students, burned-out parents, and the half-deleted kept showing up with proof and refusing to vanish.
 
@@ -248,15 +248,15 @@ No Marvel superhero styling, no perfect chosen-one glow, no medieval fantasy rob
 
 ---
 
-# 2. Circe Runic
+# 2. Dr. Ione Vey
 
 ## Dead Index ID
 
-`DI-0101-CIRCE-RUNIC`
+`DI-0101-IONE-VEY`
 
 ## Public Handle
 
-**Circe Runic**
+**Dr. Ione Vey**
 
 ## Known Aliases
 
@@ -264,7 +264,6 @@ No Marvel superhero styling, no perfect chosen-one glow, no medieval fantasy rob
 - Wound Archivist
 - Panacea Handler
 - The Doctor Under the Floor
-- Runebinder of the Black Clinic
 - Saint of Bad Paperwork, Styx Rat nickname
 
 ## Faction Alignment
@@ -273,47 +272,33 @@ No Marvel superhero styling, no perfect chosen-one glow, no medieval fantasy rob
 
 ## Rank or Function
 
-Founder and cell lead of the Asclepian Veil. Former biomedical compliance cryptographer turned underground care strategist, harm-reduction organizer, and medical privacy runebinder.
+Founder and leader of the Asclepian Veil. Former biomedical compliance officer turned underground care strategist.
 
 ## Profile Summary
 
-Circe Runic leads the Uprising’s healers, medics, harm-reduction workers, field stabilizers, privacy advocates, and underclinic operators.
+Dr. Ione Vey leads the Uprising’s healers, medics, harm-reduction workers, field stabilizers, privacy advocates, and underclinic operators.
 
 She is calm in a way that scares people who confuse panic with seriousness. She believes survival is the first sabotage and privacy is medicine.
 
-Circe does not treat care like charity. She treats it like infrastructure with a pulse.
-
 ## Appearance and Presence
 
-Circe wears a dark underclinic coat cut like a surgeon’s gown and a mourning veil, lined with emergency pomegranate red. The fabric is stitched with tiny green care-runes that double as consent markers, supply codes, and privacy wards. Her diagnostic gloves display no corporate logo. A serpent-and-fiberoptic staff sigil is tattooed along her wrist in green surgical light. Her hair is pinned with bone-white clips shaped like tiny splints and old civic keys.
+Ione wears a dark underclinic coat cut like a surgeon’s gown and a mourning veil, lined with emergency pomegranate red. Her diagnostic gloves display no corporate logo. A serpent-and-fiberoptic staff sigil is tattooed along her wrist in green surgical light. She keeps her hair pinned with bone-white clips shaped like tiny splints.
 
 Her voice lowers the room’s heart rate.
 
-When she enters a room, the loud people start whispering. The frightened people start breathing.
-
 ## Backstory
 
-Circe was trained to optimize care. That was the phrase.
+Ione was trained to optimize care. That was the phrase.
 
-Before the Veil, she worked inside a biomedical compliance ministry where care models decided who was “recoverable,” who was “resource-negative,” and who could be left to administrative silence. She did not begin as a saint. She began as a functionary with a talent for reading the runes hidden inside actuarial code.
+She worked inside a biomedical compliance ministry where care models decided who was “recoverable,” who was “resource-negative,” and who could be left to administrative silence. She audited populations the Surface Order called nonviable.
 
-The Surface Order called them clinical decision trees.
+Then she found the mortality tables.
 
-Circe called them death spells with billing codes.
-
-She audited populations the Surface Order called nonviable, then discovered the mortality tables were not evidence of system failure. They were evidence of system intent.
+The system was not failing. It was selecting.
 
 Dissent clusters. Disabled people. addicts. queer patients. elders. unpaid workers. people who missed rent. people whose social graphs touched mutual aid. people who had protested. people who had simply become expensive.
 
-The model was not confused.
-
-It was obedient.
-
-Circe leaked the tables to Heathen, walked out with three med caches, a stolen triage seal, and a packet of algorithmic denial keys, then vanished beneath a laundromat where the dryers masked the sound of the first Veil clinic generator.
-
-The first Veil oath was written in marker on a denied-care notice:
-
-> No body is disposable. No chart belongs to the gods.
+Ione leaked the tables to Heathen, walked out with three med caches, and vanished beneath a laundromat where the dryers masked the sound of the first Veil clinic generator.
 
 ## Escapades
 
@@ -321,37 +306,17 @@ The first Veil oath was written in marker on a denied-care notice:
 
 The first Asclepian Veil clinic ran behind six broken dryers, two working machines, and a wall of detergent boxes that hid a triage room. Patients entered with laundry bags and left with antibiotics, wound care, hormones, food vouchers, sleep plans, and their metadata scrubbed.
 
-Circe marked the clinic door with a sigil only visible under cheap ultraviolet nail lamps.
-
-The Rats called it witchcraft.
-
-The Circuit called it low-cost spectral routing.
-
-Circe called it a door.
-
 ### The Denial Reversal
 
-Circe forged an entire week of algorithmic approvals by exploiting an obsolete hospice billing pathway. The Surface Order later called it “mass resource misdirection.” The Veil called it Tuesday.
-
-The operation saved patients whose names had already been placed in the quiet-death queue.
-
-Circe kept the denial notices. Not as trophies. As evidence.
+Ione forged an entire week of algorithmic approvals by exploiting an obsolete hospice billing pathway. The Surface Order later called it “mass resource misdirection.” The Veil called it Tuesday.
 
 ### The Soft Quarantine
 
-During a Census sweep, Circe declared a false infectious hazard inside a housing block to keep private security out long enough for the Grinders to evacuate blacklisted families.
+During a Census sweep, Ione declared a false infectious hazard inside a housing block to keep private security out long enough for the Grinders to evacuate blacklisted families.
 
 No one got sick.
 
 That was the miracle.
-
-### The Runic Consent Lock
-
-After a witness’s clinic records were nearly exposed during a rushed archive transfer, Circe forced the Dead Index to adopt a new consent-state flagging system. Every sensitive care record now carries a privacy rune that determines who may view it, under what conditions, and whether the living person has consented to becoming evidence.
-
-Heathen hated the delay.
-
-Circe was right.
 
 ## Weaknesses and Tensions
 
@@ -359,18 +324,16 @@ Circe was right.
 - Can become clinically detached under stress
 - Distrusts spectacle
 - Overprotects patients and sometimes withholds operational information
-- Treats sleep like a prescription for other people only
 - Clashes with Grinders who romanticize injury
 - Clashes with Rats when jokes risk vulnerable people
-- Clashes with Heathen when the archive hungers faster than consent allows
 
 ## Faction Relationships
 
-- **Heathen:** Patient, friend, liability. Circe has override authority on Heathen’s rest protocols, whether Heathen admits it or not.
-- **Oracular Circuit:** Essential for privacy tools, metadata hygiene, consent locks, and anti-triage model analysis.
+- **Heathen:** Patient, friend, liability. Ione has override authority on Heathen’s rest protocols, whether Heathen admits it or not.
+- **Oracular Circuit:** Essential for privacy tools and metadata hygiene.
 - **Myrmidon Grinders:** Loved and scolded in equal measure.
-- **Daedalus Foundry:** Closest operational partner. Assistive tech, med devices, portable clinics, low-power refrigeration, blackout-safe care kits.
-- **Styx Rats:** Useful morale vectors, occasional infection-control nightmare. Rhea calls Circe “murder spreadsheet witch,” which Circe has not denied.
+- **Daedalus Foundry:** Closest operational partner. Assistive tech, med devices, portable clinics.
+- **Styx Rats:** Useful morale vectors, occasional infection-control nightmare.
 
 ## Dossier Quote
 
@@ -380,15 +343,15 @@ Circe was right.
 
 ```json
 {
-  "slug": "circe-runic",
-  "displayName": "Circe Runic",
-  "aliases": ["Veil-Cantor", "Wound Archivist", "Runebinder of the Black Clinic"],
+  "slug": "dr-ione-vey",
+  "displayName": "Dr. Ione Vey",
+  "aliases": ["Veil-Cantor", "Wound Archivist"],
   "factionSlug": "asclepian-veil",
-  "role": "Founder / Cell Lead / Underclinic Commander",
-  "archetype": "Forbidden medic, care-rune cryptographer, and privacy-care strategist",
+  "role": "Founder / Underclinic Commander",
+  "archetype": "Forbidden medic and privacy-care strategist",
   "clearanceFlavor": "Clearance 4 — Archivist",
   "startingTitle": "Veil-Cantor",
-  "advancedTitles": ["Black Clinic Keeper", "Panacea Handler", "Wound Archivist", "Runebinder"],
+  "advancedTitles": ["Black Clinic Keeper", "Panacea Handler", "Wound Archivist"],
   "badges": ["Ghost Triage", "No Body Disposable", "Panacea Node", "Privacy Is Medicine"],
   "profileTheme": "veil green, bone white, surgical silver, pomegranate red"
 }
@@ -398,22 +361,11 @@ Circe was right.
 
 **Prompt:**
 
-Hades Watch character portrait in a mature surreal sci-fi animation style, organic cyberpunk underworld resistance, techno-dystopian Greek myth, quiet atmospheric concept art, hand-painted texture, elegant flat-shaded forms, strange ecological details, muted palette with surgical green glow and pomegranate emergency accents, grounded human proportions, naturalistic imperfect face, practical scavenged clothing, worn tools, bio-mechanical myth-tech, soft cinematic lighting, environmental storytelling.
-
-Portrait of Circe Runic, leader and cell lead of the Asclepian Veil, an underground physician and medical privacy runebinder in her late 40s. Deep brown skin, angular cheekbones, sharp observant eyes, calm severe expression, silver-streaked coils gathered into short practical braids, visible exhaustion held behind discipline. She should feel older, exacting, and quietly terrifying, not fashionable.
-
-Her silhouette is clean but improvised: a matte black field-clinic coat over bone-white medical layers, soft green diagnostic seams, many small med pouches, sealed ampoule loops, folded privacy screens, and a translucent veil-like shoulder mantle made from repurposed sterile material. Her gloves are clipped to one wrist. A serpent-shaped fiber-optic diagnostic cord coils around her forearm like a living medical instrument. Tiny green care-runes are stitched into her coat as consent marks, triage codes, and privacy wards.
-
-Her technology should look practical, ritualized, and organic: compact trauma scanner, small pulse moth-like diagnostic drones, privacy sigils printed on fabric, analog labels, patched med cases, hand-coded prescription tabs, emergency injector flowers made from salvaged plastic and surgical steel.
-
-Environment: an underground clinic inside an abandoned transit bathhouse and laundromat, old tile walls, folding cots, medicine lockers, soft green light, handwritten consent notices, blackout curtains, water stains, mutual aid shelves, and a serpent-staff symbol painted on a privacy screen.
-
-Mood: care as sabotage, privacy as medicine, clinical precision, grief controlled by duty. Circe looks like someone who can save your life without asking the regime for permission.
+Cyberpunk underground doctor in a Greek-underworld resistance setting, Dr. Ione Vey, leader of the Asclepian Veil. Calm precise field medic wearing a black underclinic coat that blends surgeon gown and mourning veil, bone-white medical clips, green diagnostic glow, silver surgical tools, emergency pomegranate red inner lining. Serpent wrapped around fiber-optic staff sigil on wrist, privacy-tech medical tablet with no corporate logo. Background: hidden clinic behind laundromat machines, black clinic glass, medical occult cyberpunk, encrypted patient charts floating as green holograms, pomegranate emergency lights, soft human care amid dystopia. Mood: forbidden care, survival as sabotage, calm under pressure, no body disposable. Style: cinematic gothic cyberpunk character concept art, realistic, detailed cloth and medical tech, Greek underworld symbolism, humane and grounded.
 
 **Negative prompt:**
 
-No young punk girl, no generic white punk woman, no sexy nurse, no glossy hospital, no fashion model, no perfect makeup, no superhero medic armor, no sterile corporate clinic, no plague doctor mask, no medieval healer robe, no fantasy staff, no real medical brand logos, no real politician likeness, no same-face syndrome.
-
+No plague doctor mask, no medieval healer robe, no angelic halo, no fantasy staff, no glamorous superhero pose, no gore, no hospital stock-photo look, no real medical brand logos, no real politician likeness.
 
 ---
 
@@ -620,7 +572,7 @@ Brontes designed a supply system based on what each volunteer could actually car
 ## Faction Relationships
 
 - **Heathen:** Trust built through evacuation routes and hard truths.
-- **Asclepian Veil:** The Veil keeps the Grinders alive. Circe keeps Brontes honest.
+- **Asclepian Veil:** The Veil keeps the Grinders alive. Ione keeps Brontes honest.
 - **Oracular Circuit:** Operational respect, tactical unease.
 - **Daedalus Foundry:** Relies on their hardware, breaks half of it in field conditions.
 - **Styx Rats:** Protective older-sibling energy. The Rats start fires. Brontes gets them home.
@@ -853,7 +805,7 @@ Rhea baited a Cloud-Titan lifestyle platform into launching a fake resistance fa
 ## Faction Relationships
 
 - **Heathen:** Calls them graveyard modem. Would burn a city block to save them. Would deny it.
-- **Asclepian Veil:** Needs them more than she admits. Circe terrifies her.
+- **Asclepian Veil:** Needs them more than she admits. Ione terrifies her.
 - **Oracular Circuit:** Cassian calls her reckless. Rhea calls Cassian “spreadsheet Cassandra.”
 - **Myrmidon Grinders:** Favorite protectors. Brontes gets the Rats home when the joke grows teeth.
 - **Daedalus Foundry:** Supplies gadgets. Regrets it immediately.
@@ -897,11 +849,11 @@ No Harley Quinn copy, no clown makeup, no generic punk stock image, no superhero
 ```json
 {
   "heathen": {
-    "trusts": ["circe-runic", "cassian-nyx", "brontes-vale", "mara-kallix", "rhea-spite"],
+    "trusts": ["ione-vey", "cassian-nyx", "brontes-vale", "mara-kallix", "rhea-spite"],
     "conflicts": ["self", "titles", "over-responsibility"],
     "anchor": "The Dead Index"
   },
-  "circe-runic": {
+  "ione-vey": {
     "closest_synergy": ["mara-kallix", "cassian-nyx"],
     "recurring_tension": ["brontes-vale", "rhea-spite"],
     "anchor": "Privacy is medicine"
@@ -912,18 +864,18 @@ No Harley Quinn copy, no clown makeup, no generic punk stock image, no superhero
     "anchor": "No algorithm is divine"
   },
   "brontes-vale": {
-    "closest_synergy": ["rhea-spite", "circe-runic"],
+    "closest_synergy": ["rhea-spite", "ione-vey"],
     "recurring_tension": ["cassian-nyx", "self-sacrifice"],
     "anchor": "Carry your people"
   },
   "mara-kallix": {
-    "closest_synergy": ["circe-runic", "cassian-nyx"],
+    "closest_synergy": ["ione-vey", "cassian-nyx"],
     "recurring_tension": ["rhea-spite", "guilt"],
     "anchor": "Build the exit"
   },
   "rhea-spite": {
     "closest_synergy": ["brontes-vale", "mara-kallix"],
-    "recurring_tension": ["cassian-nyx", "circe-runic"],
+    "recurring_tension": ["cassian-nyx", "ione-vey"],
     "anchor": "Joy is sabotage"
   }
 }
@@ -1021,8 +973,8 @@ type CharacterLoreProfile = {
     "role": "Founder / Keeper of the Dead Index"
   },
   {
-    "slug": "dr-circe-runic",
-    "displayName": "Circe Runic",
+    "slug": "dr-ione-vey",
+    "displayName": "Dr. Ione Vey",
     "deadIndexId": "DI-0101-IONE-VEY",
     "factionSlug": "asclepian-veil",
     "category": "character-lore",
@@ -1091,7 +1043,7 @@ Hades Watch is a fictional cyberpunk Greek-underworld technocratic dystopia. The
 The leaders to add as character lore are:
 
 1. Heathen / The Archivist / Slewfoot
-2. Circe Runic
+2. Dr. Ione Vey
 3. Cassian Nyx
 4. Brontes Vale
 5. Mara Kallix
@@ -1227,7 +1179,7 @@ Test:
 https://hadeswatch.com/archive
 https://hadeswatch.com/archive/characters
 https://hadeswatch.com/archive/characters/heathen-the-archivist
-https://hadeswatch.com/archive/characters/dr-circe-runic
+https://hadeswatch.com/archive/characters/dr-ione-vey
 https://hadeswatch.com/archive/characters/cassian-nyx
 https://hadeswatch.com/archive/characters/brontes-vale
 https://hadeswatch.com/archive/characters/mara-kallix

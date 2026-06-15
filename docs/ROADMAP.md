@@ -88,6 +88,14 @@
 - Operational history: missions, ciphers, lore unlocks
 - See `docs/PROFILE_DOSSIER.md`
 
+## Phase 10 — Navigation Refactor
+
+- Grouped header navigation: Command, MMO, Archive, Account
+- Mobile slide-out drawer (`Open Underwatch Menu`) — logout moved into account section
+- Desktop compact dropdown groups + optional collapsible sidebar (localStorage preference)
+- Permission-aware links (admin/moderator/approved/pending)
+- See `src/lib/navigation/config.ts`
+
 ## Phase 10 — First Descent Mission Pack
 
 - **Mission Pack I: First Descent Protocols** — five nonviolent real-world readiness support missions
