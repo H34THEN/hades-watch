@@ -46,7 +46,9 @@ export interface MissionContentSections {
   profileBadgePlaceholderNotes: string;
 }
 
-export interface FirstDescentMissionDefinition {
+export type MissionSourceConfidence = "direct" | "adjacent" | "inferred";
+
+export interface MissionPackMissionDefinition {
   slug: string;
   title: string;
   description: string;
@@ -60,6 +62,7 @@ export interface FirstDescentMissionDefinition {
   requiredBadgeSlugs: string[];
   submissionType: MissionSubmissionType;
   reviewMode: MissionReviewMode;
+  sourceConfidence?: MissionSourceConfidence;
   nonviolenceClassification: string;
   loreUnlockSlug: string;
   optionalTitle?: string;
@@ -67,6 +70,9 @@ export interface FirstDescentMissionDefinition {
   sections: MissionContentSections;
   submissionFields: MissionSubmissionField[];
 }
+
+/** @deprecated Use MissionPackMissionDefinition */
+export type FirstDescentMissionDefinition = MissionPackMissionDefinition;
 
 export interface MissionBadgeRecord {
   slug: string;
@@ -97,6 +103,7 @@ export interface MissionDetailForUser {
   requiredBadgeSlugs: string[];
   submissionType: MissionSubmissionType | null;
   reviewMode: MissionReviewMode | null;
+  sourceConfidence: MissionSourceConfidence | null;
   nonviolenceClassification: string | null;
   safetyNotes: string | null;
   proofPrivacyNotes: string | null;

@@ -130,6 +130,18 @@
 - Seed: `db:seed:missions:first-descent` (production-safe, idempotent)
 - Canonical lore: `docs/missions/FIRST_DESCENT_PROTOCOLS.md`
 
+## Phase 11 — Underwatch Civic Action Protocols
+
+- **Mission Pack II:** nine safe, legal, nonviolent civic action support missions
+- **Source confidence:** `adjacent` / `inferred` / `direct` tracked per mission for provisional conversion upgrades
+- **Cross-faction completion:** any approved operative may complete any support mission
+- **Faction support reputation:** awards standing with the supported faction, not necessarily primary faction
+- **Profile mission badges:** square placeholders grouped by faction on operative dossier
+- **Private proof packets:** reviewer-only; never displayed on public profile or mission pages
+- **Nonviolent mission review:** admin/moderator approve/reject with audit logging
+- Seed: `db:seed:missions:underwatch-civic-action` (production-safe, idempotent)
+- Canonical design: `docs/missions/UNDERWATCH_CIVIC_ACTION_PROTOCOLS.md`
+
 ## Phase 8 — Out-of-Band Beta Verification
 
 - No-email beta access model (`docs/BETA_ACCESS_MODEL.md`)

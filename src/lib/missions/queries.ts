@@ -1,8 +1,6 @@
 import type { Prisma } from "@/generated/prisma/client";
-import {
-  FIRST_DESCENT_PACK_ID,
-  FIRST_DESCENT_MISSIONS,
-} from "@/lib/missions/first-descent-pack";
+import { FIRST_DESCENT_PACK_ID } from "@/lib/missions/first-descent-pack";
+import { getMissionDefinitionBySlug } from "@/lib/missions/registry";
 import type {
   MissionContentSections,
   MissionDetailForUser,
@@ -34,10 +32,14 @@ function parseRequiredBadgeSlugs(value: Prisma.JsonValue | null): string[] {
 }
 
 export async function getFirstDescentMissions() {
+  return getMissionsByPack(FIRST_DESCENT_PACK_ID);
+}
+
+export async function getMissionsByPack(packId: string) {
   return prisma.quest.findMany({
     where: {
       status: "Available",
-      missionPack: FIRST_DESCENT_PACK_ID,
+      missionPack: packId,
     },
     orderBy: { title: "asc" },
     include: {
@@ -58,7 +60,7 @@ export async function getMissionDetailForUser(
   });
   if (!quest || quest.status !== "Available") return null;
 
-  const packMission = FIRST_DESCENT_MISSIONS.find((m) => m.slug === slug);
+  const packMission = getMissionDefinitionBySlug(slug);
   const { sections, submissionFields } = parseMissionMetadata(quest.missionMetadata);
   const requiredBadgeSlugs =
     parseRequiredBadgeSlugs(quest.requiredBadgeSlugs) ||
@@ -125,6 +127,7 @@ export async function getMissionDetailForUser(
     requiredBadgeSlugs,
     submissionType: quest.submissionType,
     reviewMode: quest.reviewMode,
+    sourceConfidence: packMission?.sourceConfidence ?? null,
     nonviolenceClassification: quest.nonviolenceClassification,
     safetyNotes: quest.safetyNotes,
     proofPrivacyNotes: quest.proofPrivacyNotes,

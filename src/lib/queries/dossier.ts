@@ -79,6 +79,7 @@ export interface DossierData {
     isMissionCompletionBadge: boolean;
     verificationStatus: "Pending" | "Verified" | "Rejected";
     factionName: string | null;
+    factionSlug: string | null;
     awardedAt: Date;
   }[];
   accountStatus: string;
@@ -308,6 +309,7 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
         isMissionCompletionBadge: ub.badge.isMissionCompletionBadge,
         verificationStatus: ub.verificationStatus,
         factionName: ub.badge.faction?.name ?? null,
+        factionSlug: ub.badge.faction?.slug ?? null,
         awardedAt: ub.awardedAt,
       })),
     pendingFactionRequest: pendingMembership

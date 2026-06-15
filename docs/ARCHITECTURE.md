@@ -126,7 +126,8 @@ src/
 - Membership requests scaffolded (Pending/Approved/Rejected/Left)
 - Mission participation — join/leave/complete (Phase 5)
 - **First Descent Protocols** (Phase 10): real-world readiness support missions, cross-faction completion, private proof packets, moderator review — see [missions/FIRST_DESCENT_PROTOCOLS.md](missions/FIRST_DESCENT_PROTOCOLS.md)
-- Seed: `db:seed:missions:first-descent`
+- **Underwatch Civic Action Protocols** (Phase 11): nine safe civic action support missions, `sourceConfidence` tracking, ethical archiving and data minimization — see [missions/UNDERWATCH_CIVIC_ACTION_PROTOCOLS.md](missions/UNDERWATCH_CIVIC_ACTION_PROTOCOLS.md)
+- Seed: `db:seed:missions:first-descent`, `db:seed:missions:underwatch-civic-action`
 
 ### Lore Archive
 

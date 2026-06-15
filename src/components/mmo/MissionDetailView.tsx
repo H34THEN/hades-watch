@@ -39,6 +39,11 @@ export function MissionDetailView({ mission }: MissionDetailViewProps) {
         <p className="mt-3 font-mono text-[10px] text-emerald-500/80">
           {mission.nonviolenceClassification}
         </p>
+        {mission.sourceConfidence && (
+          <p className="mt-2 font-mono text-[10px] text-amber-400/80">
+            Source confidence: {mission.sourceConfidence}
+          </p>
+        )}
         {mission.latestSubmission && (
           <p className="mt-3 font-mono text-xs text-amber-400/90">
             Latest field record: {mission.latestSubmission.status} ·{" "}

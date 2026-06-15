@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { writeAuditLog } from "@/lib/audit";
 import { requireModeratorUser } from "@/lib/auth/guards";
 import { isApprovedUser, requireApprovedAuth } from "@/lib/auth/session";
-import { FIRST_DESCENT_MISSIONS } from "@/lib/missions/first-descent-pack";
+import { getMissionDefinitionBySlug } from "@/lib/missions/registry";
 import { getMissionDetailForUser } from "@/lib/missions/queries";
 import { prisma } from "@/lib/prisma";
 
@@ -181,7 +181,7 @@ export async function approveMissionSubmissionAction(
     return { success: false, error: "Submission not found or already reviewed." };
   }
 
-  const packMission = FIRST_DESCENT_MISSIONS.find((m) => m.slug === submission.quest.slug);
+  const packMission = getMissionDefinitionBySlug(submission.quest.slug);
   const requiredSlugs: string[] = Array.isArray(submission.quest.requiredBadgeSlugs)
     ? submission.quest.requiredBadgeSlugs.filter((s): s is string => typeof s === "string")
     : (packMission?.requiredBadgeSlugs ?? []);
@@ -211,6 +211,7 @@ export async function approveMissionSubmissionAction(
 
   const allComponentsVerified = verifiedComponentCount >= requiredSlugs.length;
   let missionCompleted = false;
+  let reputationAwarded = 0;
 
   if (allComponentsVerified && submission.quest.completionBadgeSlug) {
     const completionAwarded = await awardVerifiedBadge({
@@ -235,13 +236,14 @@ export async function approveMissionSubmissionAction(
       if (
         submission.quest.factionId &&
         submission.quest.reputationReward &&
-        (submission.quest.repeatable || priorCompletion?.status !== "Completed")
+        priorCompletion?.status !== "Completed"
       ) {
         await awardFactionSupportReputation(
           submission.userId,
           submission.quest.factionId,
           submission.quest.reputationReward,
         );
+        reputationAwarded = submission.quest.reputationReward;
       }
 
       await prisma.missionParticipation.upsert({
@@ -278,6 +280,7 @@ export async function approveMissionSubmissionAction(
       questSlug: submission.quest.slug,
       awarded,
       missionCompleted,
+      reputationAwarded,
     },
   });
 
