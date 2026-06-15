@@ -2,6 +2,22 @@ import type { FactionPosition } from "@/generated/prisma/client";
 
 export const ALLIANCE_SLUG = "chthonic-uprising";
 
+export const ARCHIVIST_LORE = {
+  operationalName: "Heathen",
+  titles: [
+    "The Archivist",
+    "Hades-Blood Regent",
+    "Keeper of the Dead Index",
+    "Sovereign of the Underwatch",
+    "Warden of the Five Cells",
+    "Chthonic Overlord",
+  ],
+  summary:
+    "Heathen, known operationally as the Archivist, is the Hades-blood sovereign of Hades Watch — not a surface king, but the underworld's keeper of memory, access, and consequence.",
+  doctrine:
+    "The Archivist governs the factions through the Dead Index: an encrypted archive of erased names, broken contracts, forbidden maps, and the living record of everyone the regime tried to bury. The Archivist's authority is not divine right. It is custodianship. Every faction answers to the Archivist because the Archivist preserves the truth that makes resistance possible.",
+};
+
 export const ALLIANCE_DATA = {
   slug: ALLIANCE_SLUG,
   name: "The Chthonic Uprising",

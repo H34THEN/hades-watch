@@ -70,6 +70,8 @@ src/
 - `FactionPosition` enum on `FactionMembership` (separate from site `RoleName`)
 - `Badge` / `UserBadge` for awardable faction badges
 - Seed scripts: `db:seed:factions`, `db:seed:test-users`, `db:cleanup-test-users`
+- Canonical fallback: `src/lib/factions/resolve.ts` (no 404 if seed missing)
+- Chthonic Command: `/admin/factions/command` — see [CHTHONIC_COMMAND.md](CHTHONIC_COMMAND.md)
 - See [FACTIONS.md](FACTIONS.md) and [TEST_USERS.md](TEST_USERS.md)
 
 ## Phase 4 Systems

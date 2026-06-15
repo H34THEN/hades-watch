@@ -61,7 +61,15 @@ export function FactionClearanceSection({ dossier }: FactionClearanceSectionProp
             </div>
           </>
         ) : (
-          <p className="text-muted-foreground italic">No faction binding recorded.</p>
+          <div>
+            <p className="text-muted-foreground italic">No faction binding recorded.</p>
+            <Link
+              href="/mmo/factions"
+              className="mt-3 inline-block font-mono text-xs text-primary hover:underline"
+            >
+              Browse Chthonic Uprising cells →
+            </Link>
+          </div>
         )}
         {dossier.pendingFactionRequest && (
           <p className="border-t border-border/40 pt-3 text-xs text-amber-400/90">

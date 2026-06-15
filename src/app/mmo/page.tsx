@@ -52,8 +52,8 @@ export default async function MmoPage() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <DashboardCard title="Factions" description={`${factions.length} allegiances`} icon={<span>◈</span>}>
-          <Link href="/mmo/factions"><CommandButton size="sm">Browse</CommandButton></Link>
+        <DashboardCard title="Faction Dossiers" description={`${factions.length} Chthonic cells`} icon={<span>◈</span>}>
+          <Link href="/mmo/factions"><CommandButton size="sm">View Dossiers</CommandButton></Link>
         </DashboardCard>
         <DashboardCard title="Missions" description={`${missions.length} available`} icon={<span>⚔</span>}>
           <Link href="/mmo/missions"><CommandButton size="sm">View Missions</CommandButton></Link>

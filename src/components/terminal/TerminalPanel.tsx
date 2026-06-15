@@ -4,6 +4,7 @@ interface TerminalPanelProps {
   children: React.ReactNode;
   title?: string;
   className?: string;
+  style?: React.CSSProperties;
   status?: "online" | "offline" | "warning";
 }
 
@@ -17,6 +18,7 @@ export function TerminalPanel({
   children,
   title,
   className,
+  style,
   status = "online",
 }: TerminalPanelProps) {
   return (
@@ -25,6 +27,7 @@ export function TerminalPanel({
         "overflow-hidden rounded-lg border border-border bg-card/80 font-mono shadow-[0_0_24px_var(--hw-glow)] backdrop-blur-sm",
         className,
       )}
+      style={style}
     >
       {title && (
         <div className="flex items-center gap-2 border-b border-border px-4 py-2 text-xs tracking-wider text-muted-foreground uppercase">

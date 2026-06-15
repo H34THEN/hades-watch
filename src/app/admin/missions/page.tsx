@@ -5,7 +5,7 @@ import { AccessDenied } from "@/components/layout/AccessDenied";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { writeAuditLog } from "@/lib/audit";
-import { getFactions } from "@/lib/actions/mmo";
+import { getFactionsForAdmin } from "@/lib/actions/mmo";
 import { prisma } from "@/lib/prisma";
 import { getHighestRole, isAdmin } from "@/lib/auth/roles";
 import { getSessionUser } from "@/lib/auth/session";
@@ -22,7 +22,7 @@ export default async function AdminMissionsPage() {
 
   const [missions, factions] = await Promise.all([
     prisma.quest.findMany({ orderBy: { updatedAt: "desc" }, include: { faction: { select: { name: true } } } }),
-    getFactions(),
+    getFactionsForAdmin(),
   ]);
 
   return (
@@ -38,7 +38,7 @@ export default async function AdminMissionsPage() {
       <TerminalPanel title="mission.registry">
         <AdminMissionPanel
           missions={missions}
-          factions={factions.map((f) => ({ id: f.id, name: f.name }))}
+          factions={factions}
         />
       </TerminalPanel>
     </div>

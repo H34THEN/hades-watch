@@ -11,7 +11,7 @@ import { POSITION_LABELS } from "@/lib/factions/chthonic-data";
 
 interface FactionDetailPageProps {
   faction: {
-    id: string;
+    id: string | null;
     slug: string;
     name: string;
     description: string | null;
@@ -36,9 +36,12 @@ interface FactionDetailPageProps {
     badgeRecords: { id: string; name: string; slug: string; color: string | null }[];
     quests: { id: string; slug: string; title: string }[];
     characters: { callsign: string; archetype: string | null }[];
+    dataSource?: "database" | "canonical";
     _count: { characters: number; memberships: number };
   };
   membershipStatus?: string | null;
+  isAdmin?: boolean;
+  canRequestJoin?: boolean;
 }
 
 const POSITION_ORDER = [
@@ -50,15 +53,21 @@ const POSITION_ORDER = [
   "LEADER",
 ] as const;
 
-export function FactionDetailClient({ faction, membershipStatus }: FactionDetailPageProps) {
+export function FactionDetailClient({
+  faction,
+  membershipStatus,
+  isAdmin = false,
+  canRequestJoin = false,
+}: FactionDetailPageProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const palette = faction.palette ?? {};
   const accent = Object.values(palette)[0] ?? undefined;
 
   function handleJoin() {
+    if (!faction.id) return;
     startTransition(async () => {
-      await requestFactionJoinAction(faction.id);
+      await requestFactionJoinAction(faction.id!);
       router.refresh();
     });
   }
@@ -90,7 +99,20 @@ export function FactionDetailClient({ faction, membershipStatus }: FactionDetail
         </p>
       )}
 
-      <TerminalPanel title={`faction.${faction.slug}`}>
+      <TerminalPanel
+        title={`faction.${faction.slug}`}
+        style={
+          accent
+            ? { borderColor: `${accent}44`, boxShadow: `0 0 32px ${accent}15` }
+            : undefined
+        }
+      >
+        <p className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground uppercase">
+          Classified Cell Dossier
+          {faction.dataSource === "canonical" && (
+            <span className="ml-2 text-amber-400">· Canonical Fallback</span>
+          )}
+        </p>
         <h1
           className="font-mono text-2xl tracking-widest uppercase"
           style={accent ? { color: accent } : undefined}
@@ -113,10 +135,28 @@ export function FactionDetailClient({ faction, membershipStatus }: FactionDetail
         </p>
         {membershipStatus ? (
           <p className="mt-2 font-mono text-xs text-primary">Your request: {membershipStatus}</p>
-        ) : (
+        ) : canRequestJoin ? (
           <CommandButton className="mt-6" onClick={handleJoin} disabled={isPending}>
-            Request Membership
+            Request Faction Assignment
           </CommandButton>
+        ) : (
+          <p className="mt-6 font-mono text-xs text-muted-foreground italic">
+            Faction assignment requests require live cell registration on the server.
+          </p>
+        )}
+        {isAdmin && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link href="/admin/factions/command">
+              <CommandButton size="sm" variant="outline">
+                Manage this Faction
+              </CommandButton>
+            </Link>
+            <Link href={`/mmo/factions/${faction.slug}`}>
+              <CommandButton size="sm" variant="outline">
+                Public Dossier
+              </CommandButton>
+            </Link>
+          </div>
         )}
       </TerminalPanel>
 

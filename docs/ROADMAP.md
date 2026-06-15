@@ -106,6 +106,8 @@
 - Profile dossier: faction position, reputation, DB badges
 - Seed: `db:seed:factions`, `db:seed:test-users` (explicit)
 - Cleanup: `db:cleanup-test-users` before production
+- Chthonic Command: `/admin/factions/command` — see `docs/CHTHONIC_COMMAND.md`
+- Canonical fallback prevents faction 404 when seed not run
 - See `docs/FACTIONS.md`, `docs/TEST_USERS.md`, `FactionsLoreBuilder.md`
 
 ## Future

@@ -1,74 +1,52 @@
-import Link from "next/link";
 import { MmoNav } from "@/components/mmo/MmoNav";
-import { TerminalPanel } from "@/components/terminal/TerminalPanel";
+import { AllianceHero } from "@/components/factions/AllianceHero";
+import { FactionCellCard } from "@/components/factions/FactionCellCard";
 import { getAlliance, getFactions } from "@/lib/actions/mmo";
-import { requireAuth } from "@/lib/auth/session";
+import { getSessionUser } from "@/lib/auth/session";
+import { usesCanonicalFallback } from "@/lib/factions/resolve";
 
 export const metadata = { title: "Factions" };
 
 export default async function FactionsPage() {
-  await requireAuth();
+  const user = await getSessionUser();
   const [factions, alliance] = await Promise.all([getFactions(), getAlliance()]);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
-      <h1 className="mb-4 font-mono text-3xl tracking-widest uppercase">Factions</h1>
+    <div className="mx-auto max-w-5xl px-4 py-16">
+      <h1 className="mb-2 font-mono text-3xl tracking-widest uppercase">Faction Dossiers</h1>
+      <p className="mb-6 font-mono text-xs text-muted-foreground">
+        Classified cell registry — The Chthonic Uprising
+      </p>
       <MmoNav active="/mmo/factions" />
 
       {alliance && (
-        <TerminalPanel title={`alliance.${alliance.slug}`} className="mb-6">
-          <h2 className="font-mono text-lg tracking-widest uppercase text-primary">
-            {alliance.name}
-          </h2>
-          {alliance.tagline && (
-            <p className="mt-2 font-mono text-xs italic text-muted-foreground">
-              &ldquo;{alliance.tagline}&rdquo;
-            </p>
-          )}
-          <p className="mt-3 text-sm leading-relaxed text-foreground/80">
-            {alliance.description}
-          </p>
-          {alliance.leaderName && (
-            <p className="mt-3 font-mono text-xs text-muted-foreground">
-              Led by {alliance.leaderName}
-              {alliance.leaderTitle ? ` — ${alliance.leaderTitle}` : ""}
-            </p>
-          )}
-          {alliance.motto && (
-            <p className="mt-2 font-mono text-[10px] tracking-wider text-primary/80 uppercase">
-              {alliance.motto}
-            </p>
-          )}
-        </TerminalPanel>
+        <AllianceHero
+          alliance={alliance}
+          roles={user?.roles}
+          showSeedWarning={usesCanonicalFallback(factions)}
+        />
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {factions.map((f) => {
-          const palette = (f.palette as Record<string, string> | null) ?? {};
-          const accent = Object.values(palette)[0];
-          return (
-            <Link key={f.id} href={`/mmo/factions/${f.slug}`}>
-              <TerminalPanel title={`faction.${f.slug}`}>
-                <h3
-                  className="font-mono text-sm font-semibold uppercase"
-                  style={accent ? { color: accent } : undefined}
-                >
-                  {f.name}
-                </h3>
-                {f.tagline && (
-                  <p className="mt-1 font-mono text-[10px] italic text-muted-foreground line-clamp-1">
-                    {f.tagline}
-                  </p>
-                )}
-                <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{f.description}</p>
-                <p className="mt-2 font-mono text-[10px] text-muted-foreground">
-                  {f._count.characters} operatives · {f._count.memberships} members
-                </p>
-              </TerminalPanel>
-            </Link>
-          );
-        })}
+      <div className="mb-4">
+        <h2 className="font-mono text-sm tracking-widest text-primary uppercase">
+          Five Founding Cells
+        </h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Survival · Signal · Force · Invention · Rupture
+        </p>
       </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {factions.map((f) => (
+          <FactionCellCard key={f.slug} faction={f} />
+        ))}
+      </div>
+
+      {factions.length === 0 && (
+        <p className="font-mono text-sm text-muted-foreground">
+          No faction dossiers available.
+        </p>
+      )}
     </div>
   );
 }

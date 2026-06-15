@@ -87,7 +87,10 @@ export default async function AdminPage() {
         <AdminCard title="Lore" description="Archive entries" status="online">
           <Link href="/admin/lore"><CommandButton size="sm">Manage</CommandButton></Link>
         </AdminCard>
-        <AdminCard title="Factions" description="Allegiances" status="online">
+        <AdminCard title="Faction Command" description="Chthonic Overlord console" status="online">
+          <Link href="/admin/factions/command"><CommandButton size="sm">Chthonic Command</CommandButton></Link>
+        </AdminCard>
+        <AdminCard title="Factions" description="Allegiance registry" status="online">
           <Link href="/admin/factions"><CommandButton size="sm">Manage</CommandButton></Link>
         </AdminCard>
         <AdminCard title="Missions" description="Quest registry" status="online">

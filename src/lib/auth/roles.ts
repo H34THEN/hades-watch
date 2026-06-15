@@ -23,6 +23,10 @@ export function isAdmin(roles: RoleName[]): boolean {
   return hasAnyRole(roles, ["Owner", "Admin"]);
 }
 
+export function isOwner(roles: RoleName[]): boolean {
+  return roles.includes("Owner");
+}
+
 export function isModerator(roles: RoleName[]): boolean {
   return hasAnyRole(roles, ["Owner", "Admin", "Moderator"]);
 }

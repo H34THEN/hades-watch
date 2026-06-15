@@ -6,7 +6,7 @@ import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { writeAuditLog } from "@/lib/audit";
 import { getFactions } from "@/lib/actions/mmo";
-import { getHighestRole, isAdmin } from "@/lib/auth/roles";
+import { getHighestRole, isAdmin, isOwner } from "@/lib/auth/roles";
 import { getSessionUser } from "@/lib/auth/session";
 
 export const metadata = { title: "Admin Factions" };
@@ -27,6 +27,11 @@ export default async function AdminFactionsPage() {
         <h1 className="font-mono text-3xl tracking-widest uppercase">Factions</h1>
         <div className="flex items-center gap-3">
           <RoleBadge role={getHighestRole(user.roles)} />
+          {isOwner(user.roles) && (
+            <Link href="/admin/factions/command">
+              <CommandButton size="sm">Chthonic Command</CommandButton>
+            </Link>
+          )}
           <Link href="/admin"><CommandButton size="sm" variant="outline">← Admin</CommandButton></Link>
         </div>
       </div>

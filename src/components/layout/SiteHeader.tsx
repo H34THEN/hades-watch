@@ -18,6 +18,7 @@ const publicLinks = [
 
 const authLinks = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/mmo/factions", label: "Factions" },
   { href: "/events", label: "Events" },
   { href: "/dashboard/transmissions", label: "Transmissions" },
   { href: "/mmo", label: "MMO" },

@@ -88,9 +88,30 @@ npm run db:cleanup-test-users
 
 ## Public Pages
 
-- `/mmo/factions` — alliance overview + cell grid
-- `/mmo/factions/{slug}` — full cell dossier (lore, ranks, badges, missions)
+- `/mmo/factions` — alliance overview + five cell grid (canonical fallback if unseeded)
+- `/mmo/factions/{slug}` — full cell dossier
 - `/mmo/factions/chthonic-uprising` — alliance detail
+
+Navigation: header **Factions**, dashboard **Enter the Chthonic Uprising**, profile link when unaffiliated.
+
+## Chthonic Command (Owner/Admin)
+
+- `/admin/factions/command` — Overlord oversight console
+- Owner: full assignment/reputation powers
+- Admin: read-only overview
+- See [CHTHONIC_COMMAND.md](CHTHONIC_COMMAND.md)
+
+## The Archivist / Owner Lore
+
+The **Owner** role maps to **The Archivist** (Heathen): Hades-blood sovereign, Keeper of the Dead Index, Warden of the Five Cells. Custodianship over the Dead Index — not surface kingship.
+
+## Troubleshooting 404s
+
+Faction pages use `src/lib/factions/resolve.ts` to fall back to canonical data when DB seed has not run. If you still see 404:
+
+1. Ensure you are logged in (`/mmo/*` requires auth)
+2. Run `npm run db:deploy` then `npm run db:seed:factions`
+3. Verify slug matches canonical list in this doc
 
 ## Source Data
 

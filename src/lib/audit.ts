@@ -67,7 +67,10 @@ export type AuditAction =
   | "user.role.assign"
   | "user.status.assign"
   | "user.faction.assign"
-  | "user.faction.remove";
+  | "user.faction.remove"
+  | "user.faction.reputation"
+  | "user.faction.primary"
+  | "user.badge.award";
 
 interface AuditEntry {
   action: AuditAction;

@@ -60,6 +60,7 @@ Full list is printed when `npm run db:seed:test-users` completes.
 
 - https://hadeswatch.com/mmo/factions
 - https://hadeswatch.com/mmo/factions/asclepian-veil
+- https://hadeswatch.com/admin/factions/command
 - https://hadeswatch.com/admin/users
 - https://hadeswatch.com/profile
 

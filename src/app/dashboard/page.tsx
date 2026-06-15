@@ -10,7 +10,7 @@ import { getLoreForUser } from "@/lib/actions/lore";
 import { getModerationStats } from "@/lib/actions/moderation";
 import { getAvailableQuests, getUserCharacter } from "@/lib/actions/mmo";
 import { getDeadDropsForUser } from "@/lib/actions/phase4";
-import { getHighestRole, isAdmin, isModerator } from "@/lib/auth/roles";
+import { getHighestRole, isAdmin, isModerator, isOwner } from "@/lib/auth/roles";
 import { requireAuth } from "@/lib/auth/session";
 import { getThemeById } from "@/lib/themes/registry";
 
@@ -22,6 +22,7 @@ export default async function DashboardPage() {
   const theme = user.themeId ? getThemeById(user.themeId) : null;
   const showMod = isModerator(user.roles);
   const showAdmin = isAdmin(user.roles);
+  const showOwner = isOwner(user.roles);
 
   const [transmissions, upcomingEvents, character, missions, lore, deadDrops, modStats] =
     await Promise.all([
@@ -121,12 +122,21 @@ export default async function DashboardPage() {
           </Link>
         </DashboardCard>
         <DashboardCard
+          title="Chthonic Uprising"
+          description="Enter the five founding cells"
+          icon={<span>☍</span>}
+        >
+          <Link href="/mmo/factions">
+            <CommandButton size="sm">Enter the Chthonic Uprising</CommandButton>
+          </Link>
+        </DashboardCard>
+        <DashboardCard
           title="Faction"
           description={character?.faction?.name ?? "Unaffiliated"}
           icon={<span>◈</span>}
         >
           <Link href="/mmo/factions">
-            <CommandButton size="sm">Browse Factions</CommandButton>
+            <CommandButton size="sm">Faction Dossiers</CommandButton>
           </Link>
         </DashboardCard>
         <DashboardCard title="Missions" description={`${missions.length} available`} icon={<span>⚔</span>}>
@@ -156,9 +166,21 @@ export default async function DashboardPage() {
           <div className="flex flex-wrap gap-2">
             <Link href="/admin"><CommandButton size="sm">Admin Console</CommandButton></Link>
             <Link href="/admin/users"><CommandButton size="sm" variant="outline">Users</CommandButton></Link>
+            <Link href="/admin/factions/command"><CommandButton size="sm" variant="outline">Faction Command</CommandButton></Link>
             <Link href="/admin/lore"><CommandButton size="sm" variant="outline">Lore</CommandButton></Link>
             <Link href="/admin/missions"><CommandButton size="sm" variant="outline">Missions</CommandButton></Link>
           </div>
+        </TerminalPanel>
+      )}
+
+      {showOwner && (
+        <TerminalPanel title="chthonic.overlord" className="mb-8 border-primary/20">
+          <p className="mb-3 font-mono text-xs text-muted-foreground">
+            Warden of the Five Cells — sovereign oversight of the Chthonic Uprising.
+          </p>
+          <Link href="/admin/factions/command">
+            <CommandButton size="sm">Chthonic Command</CommandButton>
+          </Link>
         </TerminalPanel>
       )}
 
