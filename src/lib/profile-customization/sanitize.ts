@@ -84,35 +84,51 @@ function isSafeImgSrc(src: string): boolean {
   return false;
 }
 
+function safeString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+/** sanitize-html crashes if transformTags returns undefined attribute values. */
+function compactAttribs(attribs: Record<string, string>): Record<string, string> {
+  const next: Record<string, string> = {};
+  for (const [key, value] of Object.entries(attribs)) {
+    if (typeof value === "string") next[key] = value;
+  }
+  return next;
+}
+
 export function sanitizeProfileHtml(raw: string): string {
-  return sanitizeHtml(raw, {
+  const html = safeString(raw);
+  return sanitizeHtml(html, {
     allowedTags: ALLOWED_TAGS,
     allowedAttributes: ALLOWED_ATTRIBUTES,
     allowedSchemes: ["http", "https", "mailto"],
     allowProtocolRelative: false,
     transformTags: {
-      a: (_tag, attribs) => ({
-        tagName: "a",
-        attribs: {
-          href: attribs.href && isSafeHref(attribs.href) ? attribs.href : "#",
-          title: attribs.title?.slice(0, 120),
+      a: (_tag, attribs) => {
+        const href =
+          attribs?.href && isSafeHref(attribs.href) ? attribs.href : "#";
+        const next: Record<string, string> = {
+          href,
           target: "_blank",
           rel: "noopener noreferrer",
-          class: attribs.class?.slice(0, 120),
-          id: attribs.id?.slice(0, 64),
-        },
-      }),
+        };
+        if (attribs?.title) next.title = attribs.title.slice(0, 120);
+        if (attribs?.class) next.class = attribs.class.slice(0, 120);
+        if (attribs?.id) next.id = attribs.id.slice(0, 64);
+        return { tagName: "a", attribs: compactAttribs(next) };
+      },
       img: (_tag, attribs) => {
         const next: Record<string, string> = {
-          src: attribs.src && isSafeImgSrc(attribs.src) ? attribs.src : "",
-          alt: attribs.alt?.slice(0, 200) ?? "",
+          src: attribs?.src && isSafeImgSrc(attribs.src) ? attribs.src : "",
+          alt: attribs?.alt ? attribs.alt.slice(0, 200) : "",
         };
-        if (attribs.title) next.title = attribs.title.slice(0, 120);
-        if (attribs.class) next.class = attribs.class.slice(0, 120);
-        if (attribs.id) next.id = attribs.id.slice(0, 64);
-        if (attribs.width?.match(/^\d{1,4}$/)) next.width = attribs.width;
-        if (attribs.height?.match(/^\d{1,4}$/)) next.height = attribs.height;
-        return { tagName: "img", attribs: next };
+        if (attribs?.title) next.title = attribs.title.slice(0, 120);
+        if (attribs?.class) next.class = attribs.class.slice(0, 120);
+        if (attribs?.id) next.id = attribs.id.slice(0, 64);
+        if (attribs?.width?.match(/^\d{1,4}$/)) next.width = attribs.width;
+        if (attribs?.height?.match(/^\d{1,4}$/)) next.height = attribs.height;
+        return { tagName: "img", attribs: compactAttribs(next) };
       },
     },
   });
@@ -129,7 +145,7 @@ const UNSAFE_CSS_PATTERNS = [
 ];
 
 export function sanitizeProfileCss(raw: string): string {
-  let css = raw.slice(0, PROFILE_CSS_MAX);
+  let css = safeString(raw).slice(0, PROFILE_CSS_MAX);
   for (const pattern of UNSAFE_CSS_PATTERNS) {
     css = css.replace(pattern, "/* blocked */");
   }
@@ -198,7 +214,7 @@ export function buildProfileIframeDocument(options: {
   rssHtml?: string;
 }): string {
   const css = sanitizeProfileCss(options.css);
-  const body = `${options.sanitizedHtml}${options.rssHtml ?? ""}`;
+  const body = `${safeString(options.sanitizedHtml)}${safeString(options.rssHtml)}`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>

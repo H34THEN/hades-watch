@@ -18,16 +18,24 @@ export async function updateProfileCallsignAction(formData: FormData): Promise<A
   const validated = validateCallsign(callsignRaw);
   if (!validated.ok) return { success: false, error: validated.error };
 
-  const existing = await prisma.character.findFirst({
-    where: {
-      callsign: { equals: validated.callsign, mode: "insensitive" },
-      NOT: { userId: user.id },
-    },
-    select: { id: true },
-  });
+  const [existing, current] = await Promise.all([
+    prisma.character.findFirst({
+      where: {
+        callsign: { equals: validated.callsign, mode: "insensitive" },
+        NOT: { userId: user.id },
+      },
+      select: { id: true },
+    }),
+    prisma.character.findUnique({
+      where: { userId: user.id },
+      select: { callsign: true },
+    }),
+  ]);
   if (existing) {
     return { success: false, error: "That callsign is already taken." };
   }
+
+  const oldCallsign = current?.callsign?.toLowerCase();
 
   await prisma.character.upsert({
     where: { userId: user.id },
@@ -51,5 +59,8 @@ export async function updateProfileCallsignAction(formData: FormData): Promise<A
   revalidatePath("/profile");
   revalidatePath("/profile/edit");
   revalidatePath(`/profile/${validated.callsign}`);
+  if (oldCallsign && oldCallsign !== validated.callsign) {
+    revalidatePath(`/profile/${oldCallsign}`);
+  }
   return { success: true };
 }

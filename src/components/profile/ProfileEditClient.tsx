@@ -40,7 +40,32 @@ interface ProfileEditClientProps {
   initial: ProfileEditInitial;
 }
 
-export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
+function normalizeRssFeeds(feeds?: RssFeedInput[]): RssFeedInput[] {
+  const base = Array.isArray(feeds) ? feeds : [];
+  if (base.length >= 5) return base.slice(0, 5);
+  return [...base, ...Array(5 - base.length).fill({ url: "", title: "" })];
+}
+
+function normalizeInitial(initial: ProfileEditInitial): ProfileEditInitial {
+  return {
+    callsign: initial.callsign ?? "",
+    suggestedCallsign: initial.suggestedCallsign ?? "",
+    isPublic: initial.isPublic ?? true,
+    html: initial.html ?? "",
+    css: initial.css ?? "",
+    rssFeeds: normalizeRssFeeds(initial.rssFeeds),
+    tagline: initial.tagline ?? "",
+    motto: initial.motto ?? "",
+    favoriteSignal: initial.favoriteSignal ?? "",
+    backgroundColor: initial.backgroundColor ?? "",
+    isEnabled: initial.isEnabled ?? true,
+    showRelicZone: initial.showRelicZone ?? true,
+    showRssZone: initial.showRssZone ?? true,
+  };
+}
+
+export function ProfileEditClient({ user, initial: rawInitial }: ProfileEditClientProps) {
+  const initial = normalizeInitial(rawInitial);
   const router = useRouter();
   const [html, setHtml] = useState(initial.html);
   const [css, setCss] = useState(initial.css);
@@ -54,11 +79,7 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
   const [isEnabled, setIsEnabled] = useState(initial.isEnabled);
   const [showRelicZone, setShowRelicZone] = useState(initial.showRelicZone);
   const [showRssZone, setShowRssZone] = useState(initial.showRssZone);
-  const [rssFeeds, setRssFeeds] = useState(
-    initial.rssFeeds.length >= 5
-      ? initial.rssFeeds
-      : [...initial.rssFeeds, ...Array(5 - initial.rssFeeds.length).fill({ url: "", title: "" })],
-  );
+  const [rssFeeds, setRssFeeds] = useState(initial.rssFeeds);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -106,8 +127,8 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
     formData.set("linksJson", "[]");
     formData.set("buttonsJson", "[]");
     rssFeeds.forEach((feed, i) => {
-      formData.set(`rssUrl${i}`, feed.url);
-      formData.set(`rssTitle${i}`, feed.title ?? "");
+      formData.set(`rssUrl${i}`, feed?.url ?? "");
+      formData.set(`rssTitle${i}`, feed?.title ?? "");
     });
     startTransition(async () => {
       const result = await updateProfileWorldAction(formData);
@@ -253,7 +274,7 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
           {rssFeeds.slice(0, 5).map((feed, i) => (
             <div key={i} className="mt-2 grid gap-2 sm:grid-cols-2">
               <Input
-                value={feed.url}
+                value={feed?.url ?? ""}
                 onChange={(e) => {
                   const next = [...rssFeeds];
                   next[i] = { ...next[i], url: e.target.value };
@@ -262,7 +283,7 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
                 placeholder="https://example.com/feed.xml"
               />
               <Input
-                value={feed.title ?? ""}
+                value={feed?.title ?? ""}
                 onChange={(e) => {
                   const next = [...rssFeeds];
                   next[i] = { ...next[i], title: e.target.value };

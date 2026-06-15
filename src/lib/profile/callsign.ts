@@ -11,6 +11,7 @@ export const RESERVED_CALLSIGNS = new Set([
   "login",
   "register",
   "logout",
+  "invite",
 ]);
 
 const CALLSIGN_RE = /^[a-z0-9][a-z0-9_-]{1,30}[a-z0-9]$/;

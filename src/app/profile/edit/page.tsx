@@ -11,7 +11,21 @@ export const metadata = { title: "Edit Profile" };
 
 export default async function ProfileEditPage() {
   const user = await getSessionUser();
-  if (!user || !isApprovedUser(user)) {
+  console.log("[profile/edit] auth user id present:", !!user?.id);
+
+  if (!user) {
+    console.log("[profile/edit] user found: false");
+    return (
+      <AccessDenied
+        title="Authentication Required"
+        message="Sign in to edit your profile world."
+      />
+    );
+  }
+
+  console.log("[profile/edit] user found: true");
+
+  if (!isApprovedUser(user)) {
     return (
       <AccessDenied
         title="Approval Required"
@@ -20,56 +34,62 @@ export default async function ProfileEditPage() {
     );
   }
 
-  const [customization, character, dbUser] = await Promise.all([
+  const [customization, callsignResult, dbUser] = await Promise.all([
     prisma.userProfileCustomization.findUnique({ where: { userId: user.id } }),
-    prisma.character.findUnique({
-      where: { userId: user.id },
-      select: { callsign: true, isPublic: true },
-    }),
+    ensureUserCallsign(prisma, user.id),
     prisma.user.findUnique({
       where: { id: user.id },
       select: { id: true, name: true, email: true },
     }),
   ]);
 
-  await ensureUserCallsign(prisma, user.id);
-  const refreshedCharacter = await prisma.character.findUnique({
-    where: { userId: user.id },
-    select: { callsign: true, isPublic: true },
-  });
+  console.log("[profile/edit] character found or created:", !!callsignResult?.callsign);
 
-  const suggestedCallsign = dbUser
-    ? deriveCallsignSeed(dbUser)
-    : "";
+  const callsign = callsignResult?.callsign ?? "";
+  const isPublic = callsignResult?.isPublic ?? true;
+  const suggestedCallsign = dbUser ? deriveCallsignSeed(dbUser) : "";
+  const rssFeeds = parseRssFeedsInput(customization?.rssFeeds);
+
+  const initial = {
+    callsign,
+    suggestedCallsign,
+    isPublic,
+    html: customization?.html ?? "",
+    css: customization?.css ?? "",
+    rssFeeds,
+    tagline: customization?.tagline ?? "",
+    motto: customization?.motto ?? "",
+    favoriteSignal: customization?.favoriteSignal ?? "",
+    backgroundColor: customization?.backgroundColor ?? "",
+    isEnabled: customization?.isEnabled ?? true,
+    showRelicZone: customization?.showRelicZone ?? true,
+    showRssZone: customization?.showRssZone ?? true,
+  };
+
+  console.log("[profile/edit] rendering ProfileEditClient");
 
   return (
     <>
       <div className="mx-auto flex w-full max-w-6xl flex-wrap justify-end gap-2 px-4 pt-6 md:px-8">
         <Link href="/profile">
-          <CommandButton size="sm" variant="outline">← Profile World</CommandButton>
+          <CommandButton size="sm" variant="outline">
+            ← Profile World
+          </CommandButton>
         </Link>
         <Link href="/profile/avatar">
-          <CommandButton size="sm" variant="outline">Avatar Builder</CommandButton>
+          <CommandButton size="sm" variant="outline">
+            Avatar Builder
+          </CommandButton>
         </Link>
+        {callsign ? (
+          <Link href={`/profile/${callsign}`}>
+            <CommandButton size="sm" variant="outline">
+              View Public Profile
+            </CommandButton>
+          </Link>
+        ) : null}
       </div>
-      <ProfileEditClient
-        user={user}
-        initial={{
-          callsign: refreshedCharacter?.callsign ?? character?.callsign ?? "",
-          suggestedCallsign,
-          isPublic: refreshedCharacter?.isPublic ?? character?.isPublic ?? true,
-          html: customization?.html ?? "",
-          css: customization?.css ?? "",
-          rssFeeds: parseRssFeedsInput(customization?.rssFeeds),
-          tagline: customization?.tagline ?? "",
-          motto: customization?.motto ?? "",
-          favoriteSignal: customization?.favoriteSignal ?? "",
-          backgroundColor: customization?.backgroundColor ?? "",
-          isEnabled: customization?.isEnabled ?? true,
-          showRelicZone: customization?.showRelicZone ?? true,
-          showRssZone: customization?.showRssZone ?? true,
-        }}
-      />
+      <ProfileEditClient user={user} initial={initial} />
     </>
   );
 }
