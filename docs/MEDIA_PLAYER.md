@@ -7,7 +7,8 @@ Hades Watch stores Chthonic broadcasts (Suno albums, underworld audio) on disk a
 | Route | Access | Purpose |
 |-------|--------|---------|
 | `/admin/media` | Admin+ (read), Owner (write) | Album/track registry |
-| `/admin/media/upload` | Owner only | Direct browser upload |
+| `/admin/media/upload` | Owner only | Direct browser upload via `POST /api/media/upload` |
+| `/api/media/upload` | Owner only | Multipart upload (Node runtime, preferred for large files) |
 | `/api/media/tracks` | Session-aware | Playlist for Signal Player |
 | `/api/media/audio/[trackId]` | Visibility-gated | Stream audio (range requests supported) |
 
@@ -104,7 +105,8 @@ Email verification is **not** used as a gate.
 
 | Symptom | Likely cause | Fix |
 |---------|----------------|-----|
-| Generic “Page couldn't load” after upload | Server action body exceeded 1 MB default | Deploy with `bodySizeLimit: '50mb'` in `next.config.ts`; on VPS also raise Nginx `client_max_body_size` if proxied |
+| Generic “Page couldn't load” or unexpected upload failure | Server action body limit or framework throw | Upload now uses `POST /api/media/upload`; redeploy and retry |
+| Generic “Page couldn't load” after upload | Server action body exceeded 1 MB default | Use API upload route; on VPS also raise Nginx `client_max_body_size` if proxied |
 | Inline “Upload Failed” with body size message | File > 50 MB or proxy limit | Use smaller file or raise limits consistently |
 | `tsx: not found` on VPS | Dev dependency missing | Run `npm ci --include=dev` before `media:import-track` |
 | Permission denied on upload | `storage/uploads/audio/` not writable | `mkdir -p` dirs and chown to service user |

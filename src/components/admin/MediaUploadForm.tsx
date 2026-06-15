@@ -6,12 +6,36 @@ import { useRouter } from "next/navigation";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { SystemAlert } from "@/components/terminal/SystemAlert";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
-import { uploadMediaTrackAction } from "@/lib/actions/media";
+import { describeUploadHttpError } from "@/lib/media/upload-errors";
 import { VISIBILITY_LABELS } from "@/lib/media/visibility";
 import type { MediaAlbum } from "@/generated/prisma/client";
 
 interface MediaUploadFormProps {
   albums: MediaAlbum[];
+}
+
+async function uploadViaApi(formData: FormData) {
+  const response = await fetch("/api/media/upload", {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+  });
+
+  let payload: { success?: boolean; error?: string; trackId?: string } | null = null;
+  try {
+    payload = (await response.json()) as { success?: boolean; error?: string; trackId?: string };
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok || !payload?.success) {
+    return {
+      success: false as const,
+      error: describeUploadHttpError(response.status, payload ?? undefined),
+    };
+  }
+
+  return { success: true as const, trackId: payload.trackId };
 }
 
 export function MediaUploadForm({ albums }: MediaUploadFormProps) {
@@ -35,25 +59,24 @@ export function MediaUploadForm({ albums }: MediaUploadFormProps) {
       return;
     }
 
+    const audio = formData.get("audio");
+    if (!(audio instanceof File) || audio.size === 0) {
+      setError("Audio file is required.");
+      setSuccess(false);
+      return;
+    }
+
     startTransition(async () => {
-      try {
-        const result = await uploadMediaTrackAction(formData);
-        if (!result.success) {
-          setError(result.error);
-          setSuccess(false);
-          return;
-        }
-        setError(null);
-        setSuccess(true);
-        form.reset();
-        router.refresh();
-      } catch (err) {
-        console.error("[MediaUploadForm]", err);
-        setError(
-          "Upload failed unexpectedly. The signal could not be stored. Check file type, size, and server storage permissions.",
-        );
+      const result = await uploadViaApi(formData);
+      if (!result.success) {
+        setError(result.error);
         setSuccess(false);
+        return;
       }
+      setError(null);
+      setSuccess(true);
+      form.reset();
+      router.refresh();
     });
   }
 

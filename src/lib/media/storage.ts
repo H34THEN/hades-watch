@@ -33,7 +33,16 @@ function sanitizeExtension(filename: string, allowed: Set<string>): string | nul
   return allowed.has(ext) ? ext : null;
 }
 
-export function validateAudioFile(file: File): { ok: true } | { ok: false; error: string } {
+export interface UploadableAudio {
+  name: string;
+  type: string;
+  size: number;
+  arrayBuffer(): Promise<ArrayBuffer>;
+}
+
+export function validateAudioUpload(
+  file: UploadableAudio,
+): { ok: true } | { ok: false; error: string } {
   if (!file || file.size === 0) {
     return { ok: false, error: "Audio file is required." };
   }
@@ -53,6 +62,11 @@ export function validateAudioFile(file: File): { ok: true } | { ok: false; error
   return { ok: true };
 }
 
+/** @deprecated use validateAudioUpload */
+export function validateAudioFile(file: File): { ok: true } | { ok: false; error: string } {
+  return validateAudioUpload(file);
+}
+
 export function validateCoverFile(file: File): { ok: true } | { ok: false; error: string } {
   if (!file || file.size === 0) {
     return { ok: false, error: "Cover file is empty." };
@@ -66,8 +80,8 @@ export function validateCoverFile(file: File): { ok: true } | { ok: false; error
   return { ok: true };
 }
 
-export async function saveAudioFile(
-  file: File,
+export async function saveAudioUpload(
+  file: UploadableAudio,
   preferredName?: string,
 ): Promise<{ filePath: string; mimeType: string; storedName: string }> {
   await ensureMediaDirs();
@@ -90,6 +104,14 @@ export async function saveAudioFile(
     mimeType: file.type || "audio/mpeg",
     storedName,
   };
+}
+
+/** @deprecated use saveAudioUpload */
+export async function saveAudioFile(
+  file: File,
+  preferredName?: string,
+): Promise<{ filePath: string; mimeType: string; storedName: string }> {
+  return saveAudioUpload(file, preferredName);
 }
 
 export async function copyAudioFileFromPath(

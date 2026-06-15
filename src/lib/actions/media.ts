@@ -5,15 +5,13 @@ import { unlink } from "fs/promises";
 import { writeAuditLog } from "@/lib/audit";
 import { getSessionUser, requireAdmin, type SessionUser } from "@/lib/auth/session";
 import { isOwner } from "@/lib/auth/roles";
-import { formatUploadError, resolveAlbumForUpload } from "@/lib/media/album-resolve";
 import {
   resolveStoredPath,
-  saveAudioFile,
   saveCoverFile,
   slugifyMediaTitle,
-  validateAudioFile,
   validateCoverFile,
 } from "@/lib/media/storage";
+import { uploadMediaTrackFromForm } from "@/lib/media/upload-track";
 import { canListMediaVisibility } from "@/lib/media/visibility";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
@@ -143,80 +141,12 @@ export async function uploadMediaTrackAction(formData: FormData): Promise<Action
   const gate = await requireOwnerMedia();
   if (!gate.ok) return { success: false, error: gate.error };
 
-  let savedFilePath: string | null = null;
+  const result = await uploadMediaTrackFromForm(formData, gate.user.id);
+  if (!result.success) return { success: false, error: result.error };
 
-  try {
-    const audio = formData.get("audio");
-    if (!(audio instanceof File)) {
-      return { success: false, error: "Audio file is required." };
-    }
-    const audioCheck = validateAudioFile(audio);
-    if (!audioCheck.ok) return { success: false, error: audioCheck.error };
-
-    const title = String(formData.get("title") ?? "").trim();
-    if (!title) return { success: false, error: "Title is required." };
-
-    const visibilityParsed = visibilitySchema.safeParse(
-      formData.get("visibility") || "APPROVED_USERS",
-    );
-    if (!visibilityParsed.success) return { success: false, error: "Invalid visibility." };
-
-    const albumResolved = await resolveAlbumForUpload({
-      albumId: String(formData.get("albumId") ?? "").trim() || null,
-      newAlbumTitle: String(formData.get("newAlbumTitle") ?? ""),
-      newAlbumArtistName: String(formData.get("newAlbumArtistName") ?? "").trim() || null,
-      newAlbumDescription: String(formData.get("newAlbumDescription") ?? "").trim() || null,
-      visibility: visibilityParsed.data,
-      createdById: gate.user.id,
-    });
-    if (!albumResolved.ok) return { success: false, error: albumResolved.error };
-
-    const trackNumberRaw = formData.get("trackNumber");
-    const trackNumber =
-      trackNumberRaw && String(trackNumberRaw).trim()
-        ? Number.parseInt(String(trackNumberRaw), 10)
-        : null;
-
-    const { filePath, mimeType } = await saveAudioFile(audio, title);
-    savedFilePath = filePath;
-    const slug = slugifyMediaTitle(title);
-
-    const track = await prisma.mediaTrack.create({
-      data: {
-        slug,
-        title,
-        artistName: String(formData.get("artistName") ?? "").trim() || null,
-        albumId: albumResolved.albumId,
-        trackNumber: Number.isFinite(trackNumber) ? trackNumber : null,
-        description: String(formData.get("description") ?? "").trim() || null,
-        filePath,
-        mimeType,
-        visibility: visibilityParsed.data,
-        uploadedById: gate.user.id,
-      },
-    });
-
-    await writeAuditLog({
-      action: "media.track.upload",
-      actorId: gate.user.id,
-      targetType: "media_track",
-      targetId: track.id,
-      metadata: { slug, title, albumId: albumResolved.albumId },
-    });
-
-    revalidatePath("/admin/media");
-    revalidatePath("/admin/media/upload");
-    return { success: true };
-  } catch (err) {
-    if (savedFilePath) {
-      try {
-        await unlink(resolveStoredPath(savedFilePath));
-      } catch {
-        // best-effort cleanup
-      }
-    }
-    return { success: false, error: formatUploadError(err) };
-  }
+  revalidatePath("/admin/media");
+  revalidatePath("/admin/media/upload");
+  return { success: true };
 }
 
 export async function updateMediaTrackAction(formData: FormData): Promise<ActionResult> {
