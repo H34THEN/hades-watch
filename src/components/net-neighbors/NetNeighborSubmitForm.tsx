@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,19 +14,16 @@ import styles from "./net-neighbors.module.css";
 interface NetNeighborSubmitFormProps {
   canSubmit: boolean;
   lockedMessage?: string;
-  redirectOnSuccess?: boolean;
 }
 
 export function NetNeighborSubmitForm({
   canSubmit,
   lockedMessage,
-  redirectOnSuccess = false,
 }: NetNeighborSubmitFormProps) {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [useBuilder, setUseBuilder] = useState(false);
+  const submittingRef = useRef(false);
 
   if (!canSubmit) {
     return (
@@ -48,25 +45,27 @@ export function NetNeighborSubmitForm({
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (submittingRef.current || isPending) return;
+
     setError(null);
-    setSuccess(null);
     const form = e.currentTarget;
     const formData = new FormData(form);
+    submittingRef.current = true;
+
     startTransition(async () => {
-      const result = await submitNetNeighborAction(formData);
-      if (!result.success) {
-        setError(result.error);
-        return;
+      try {
+        const result = await submitNetNeighborAction(formData);
+        if (result && !result.success) {
+          setError(result.error);
+        }
+      } catch (err) {
+        if (isRedirectError(err)) {
+          throw err;
+        }
+        setError("Submission failed. Please try again.");
+      } finally {
+        submittingRef.current = false;
       }
-      if (redirectOnSuccess) {
-        router.push("/net-neighbors?submitted=1");
-        return;
-      }
-      setSuccess(
-        "Signal received. Your Net Neighbor submission is pending Underwatch review.",
-      );
-      form.reset();
-      setUseBuilder(false);
     });
   }
 
@@ -142,9 +141,8 @@ export function NetNeighborSubmitForm({
         )}
 
         {error && <SystemAlert title="Submit Failed" message={error} variant="error" />}
-        {success && <SystemAlert title="Queued" message={success} variant="success" />}
         <CommandButton type="submit" disabled={isPending}>
-          {isPending ? "Submitting…" : "Submit Net Neighbor"}
+          {isPending ? "Submitting…" : "Submit Signal"}
         </CommandButton>
       </form>
     </div>

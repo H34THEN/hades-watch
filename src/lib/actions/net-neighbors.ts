@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { writeAuditLog } from "@/lib/audit";
 import { getApprovedUserForAction, getModeratorUserForAction } from "@/lib/auth/session";
 import { parseBannerStyleForm } from "@/lib/net-neighbors/banner-builder";
@@ -100,9 +101,10 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
 
   revalidatePath("/net-neighbors");
   revalidatePath("/net-neighbors/submit");
+  revalidatePath("/net-neighbors/thank-you");
   revalidatePath("/admin/net-neighbors");
   revalidatePath("/admin/social");
-  return { success: true };
+  redirect("/net-neighbors/thank-you");
 }
 
 export async function reviewNetNeighborAction(

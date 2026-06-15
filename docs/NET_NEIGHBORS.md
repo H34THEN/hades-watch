@@ -12,6 +12,7 @@ Net Neighbors are the small doors in the Underwatch wall. Follow at your own ris
 |-------|--------|---------|
 | `/net-neighbors` | Public | Approved signal wall (HUD layout) |
 | `/net-neighbors/submit` | Approved operatives | Submit a neighbor link/banner |
+| `/net-neighbors/thank-you` | Public | Submission confirmation + 5s return to wall |
 | `/admin/net-neighbors` | Moderator+ | Review, approve, reject, hide, reorder |
 | `/support` | Public | Donation relay placeholder (footer link) |
 
@@ -19,7 +20,7 @@ Net Neighbors are the small doors in the Underwatch wall. Follow at your own ris
 
 1. Approved user opens `/net-neighbors/submit`
 2. Uploads banner or forges HUD button (88×31 default)
-3. On success → redirect to `/net-neighbors?submitted=1` with success HUD message
+3. On success → redirect to `/net-neighbors/thank-you` (5s auto-return to wall)
 4. Row created as `PENDING`; moderator approves at `/admin/net-neighbors`
 
 ## Banner Sizes

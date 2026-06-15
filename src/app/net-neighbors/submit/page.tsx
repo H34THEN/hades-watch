@@ -33,7 +33,6 @@ export default async function NetNeighborsSubmitPage() {
               ? undefined
               : "Net Neighbor submissions open after operative approval."
           }
-          redirectOnSuccess
         />
       </div>
     </div>

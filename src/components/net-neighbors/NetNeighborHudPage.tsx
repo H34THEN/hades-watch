@@ -2,7 +2,6 @@ import Link from "next/link";
 import { NetNeighborBannerWall } from "@/components/net-neighbors/NetNeighborBannerWall";
 import { NetNeighborSubmitForm } from "@/components/net-neighbors/NetNeighborSubmitForm";
 import { CommandButton } from "@/components/terminal/CommandButton";
-import { SystemAlert } from "@/components/terminal/SystemAlert";
 import type { NetNeighborPublicCard } from "@/lib/queries/net-neighbors";
 import styles from "./net-neighbors.module.css";
 
@@ -22,7 +21,6 @@ interface NetNeighborHudPageProps {
   lockedMessage?: string;
   isModerator: boolean;
   pendingCount: number;
-  showSubmittedSuccess?: boolean;
 }
 
 export function NetNeighborHudPage({
@@ -33,7 +31,6 @@ export function NetNeighborHudPage({
   lockedMessage,
   isModerator,
   pendingCount,
-  showSubmittedSuccess = false,
 }: NetNeighborHudPageProps) {
   return (
     <div className={styles.hudPage}>
@@ -77,14 +74,6 @@ export function NetNeighborHudPage({
         </header>
 
         <div className={styles.hudGrid}>
-          {showSubmittedSuccess && (
-            <SystemAlert
-              title="Signal Received"
-              message="Signal received. Your Net Neighbor submission is pending Underwatch review."
-              variant="success"
-            />
-          )}
-
           <section className={`${styles.hudFrame} p-6`}>
             <h2 className="mb-2 font-mono text-xs tracking-[0.2em] text-primary uppercase">
               Approved Signal Wall
