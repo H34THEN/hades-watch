@@ -22,7 +22,7 @@ export type ActionResult =
 
 function parseRssFeedsFromForm(formData: FormData) {
   const feeds: { url: string; title?: string }[] = [];
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 5; i++) {
     const url = String(formData.get(`rssUrl${i}`) ?? "").trim();
     const title = String(formData.get(`rssTitle${i}`) ?? "").trim();
     if (!url) continue;
@@ -30,7 +30,7 @@ function parseRssFeedsFromForm(formData: FormData) {
     if (!validated.ok) continue;
     feeds.push({ url: validated.url, title: title || undefined });
   }
-  return feeds.slice(0, 3);
+  return feeds.slice(0, 5);
 }
 
 export async function updateProfileCustomizationAction(formData: FormData): Promise<ActionResult> {

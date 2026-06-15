@@ -80,8 +80,8 @@ src/
 
 - Chat: `ChatRoom`, `ChatMessage` — HTTPS temporary chat, 24h retention, not E2EE
 - Net Neighbors: `NetNeighbor` — moderated banner submissions, `storage/uploads/net-neighbors/`
-- Profile: `UserProfileCustomization` — sandboxed iframe HTML/CSS/RSS on `/profile`
-- See [SOCIAL_FEATURES.md](SOCIAL_FEATURES.md)
+- Profile: `UserProfileCustomization`, `UserProfileAsset`, `UserAvatar` — full-page worlds on `/profile`
+- See [PROFILE_WORLDS.md](PROFILE_WORLDS.md), [AVATAR_BUILDER.md](AVATAR_BUILDER.md), [SOCIAL_FEATURES.md](SOCIAL_FEATURES.md)
 
 ## Chthonic Uprising Factions (Phase 9)
 

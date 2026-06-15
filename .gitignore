@@ -45,6 +45,7 @@ next-env.d.ts
 # uploaded media (persist on VPS, not in git)
 storage/uploads/audio/
 storage/uploads/net-neighbors/
+storage/uploads/profiles/
 public/uploads/audio/
 /*.mp3
 /*.m4a

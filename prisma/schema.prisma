@@ -183,6 +183,14 @@ enum NetNeighborStatus {
   HIDDEN
 }
 
+enum UserProfileAssetKind {
+  PORTRAIT
+  BANNER
+  BACKGROUND
+  RELIC_IMAGE
+  AVATAR_BACKGROUND
+}
+
 enum InviteVerificationMethod {
   SIGNAL_SAFETY_NUMBER
   SIMPLEX_CONTACT
@@ -258,6 +266,8 @@ model User {
   netNeighborsSubmitted   NetNeighbor[] @relation("NetNeighborSubmittedBy")
   netNeighborsReviewed    NetNeighbor[] @relation("NetNeighborReviewedBy")
   profileCustomization    UserProfileCustomization?
+  userAvatar              UserAvatar?
+  profileAssets           UserProfileAsset[]
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -984,15 +994,69 @@ model NetNeighbor {
 }
 
 model UserProfileCustomization {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  html          String?  @db.Text
-  css           String?  @db.Text
-  sanitizedHtml String?  @db.Text
-  rssFeeds      Json?
-  isEnabled     Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  html                String?  @db.Text
+  css                 String?  @db.Text
+  sanitizedHtml       String?  @db.Text
+  rssFeeds            Json?
+  links               Json?
+  profileButtons      Json?
+  featuredBadgeSlugs  Json?
+  tagline             String?
+  motto               String?
+  favoriteSignal      String?
+  backgroundColor     String?
+  portraitAssetId     String?
+  bannerAssetId       String?
+  backgroundAssetId   String?
+  isEnabled           Boolean  @default(true)
+  showRelicZone       Boolean  @default(true)
+  showRssZone         Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserProfileAsset {
+  id           String               @id @default(cuid())
+  userId       String
+  kind         UserProfileAssetKind
+  path         String
+  mimeType     String?
+  sizeBytes    Int?
+  originalName String?
+  createdAt    DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
+}
+
+model UserAvatar {
+  id                      String   @id @default(cuid())
+  userId                  String   @unique
+  displayName             String?
+  tagline                 String?
+  bio                     String?  @db.Text
+  pronouns                String?
+  motto                   String?
+  favoriteSignal          String?
+  speciesSlug             String   @default("tiefling")
+  bodySlug                String   @default("body-base-a")
+  skinColor               String?
+  eyeSlug                 String?
+  eyeColor                String?
+  hairSlug                String?
+  hairColor               String?
+  outfitSlug              String?
+  accessorySlugs          Json?
+  backgroundSlug          String?  @default("bg-underwatch-default")
+  customBackgroundAssetId String?
+  layerConfig             Json?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

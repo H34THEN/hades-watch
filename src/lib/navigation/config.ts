@@ -61,7 +61,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     links: [
       { href: "/chat", label: "Chat Rooms", access: "approved", description: "HTTPS-protected temporary chat" },
       { href: "/net-neighbors", label: "Net Neighbors", access: "approved", description: "Old-web banner wall" },
-      { href: "/profile", label: "Profile Relic Zone", access: "approved", description: "Sandboxed profile customization" },
+      { href: "/profile", label: "Profile Worlds", access: "approved", description: "Full-page operative shrines" },
     ],
   },
   {
@@ -80,7 +80,9 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     label: "Account",
     terminalLabel: "ACCOUNT",
     links: [
-      { href: "/profile", label: "Profile / Dossier", access: "authenticated" },
+      { href: "/profile", label: "Profile World", access: "authenticated" },
+      { href: "/profile/edit", label: "Edit Profile", access: "approved" },
+      { href: "/profile/avatar", label: "Avatar Builder", access: "approved" },
       { href: "/pending-approval", label: "Pending Approval", access: "authenticated" },
     ],
   },
@@ -174,7 +176,7 @@ export function getActiveNavSection(pathname: string): NavSectionId | null {
   if (pathname.startsWith("/archive")) {
     return "archive";
   }
-  if (pathname === "/profile" || pathname.startsWith("/pending-approval")) {
+  if (pathname === "/profile" || pathname.startsWith("/profile/") || pathname.startsWith("/pending-approval")) {
     return "account";
   }
   return null;

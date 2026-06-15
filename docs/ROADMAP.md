@@ -96,6 +96,15 @@
 - Permission-aware links (admin/moderator/approved/pending)
 - See `src/lib/navigation/config.ts`
 
+## Phase 12 — Profile Worlds & Avatar Builder
+
+- **Profile Worlds** — full-page `/profile` layout with banner, portrait, dossier panels, relic iframe
+- **Edit** — `/profile/edit` for HTML/CSS, RSS, uploads, world metadata
+- **Avatar Builder** — `/profile/avatar` with 5 species, layered preview, placeholder art in `public/avatar-assets/`
+- **Public profiles** — `/profile/[handle]` for approved viewers when character `isPublic`
+- Models: `UserAvatar`, `UserProfileAsset`, extended `UserProfileCustomization`
+- See `docs/PROFILE_WORLDS.md`, `docs/AVATAR_BUILDER.md`
+
 ## Phase 11 — Old-Web Social Features
 
 - **Chat Rooms** (`/chat`) — HTTPS-protected temporary chat, 5 AIM-style rooms, 24h retention, alias support

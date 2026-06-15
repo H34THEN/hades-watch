@@ -91,6 +91,9 @@ export type AuditAction =
   | "net_neighbor.review"
   | "profile.customization.update"
   | "profile.customization.disable"
+  | "profile.world.update"
+  | "profile.asset.upload"
+  | "avatar.save"
   | "alliance.membership.assign"
   | "alliance.membership.remove";
 

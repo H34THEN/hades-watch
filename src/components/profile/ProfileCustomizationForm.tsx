@@ -28,8 +28,8 @@ export function ProfileCustomizationForm({ initial }: ProfileCustomizationFormPr
   const [isEnabled, setIsEnabled] = useState(initial?.isEnabled ?? true);
   const [rssFeeds, setRssFeeds] = useState(
     initial?.rssFeeds?.length
-      ? initial.rssFeeds
-      : [{ url: "", title: "" }, { url: "", title: "" }, { url: "", title: "" }],
+      ? [...initial.rssFeeds, ...Array(Math.max(0, 5 - initial.rssFeeds.length)).fill({ url: "", title: "" })]
+      : [{ url: "", title: "" }, { url: "", title: "" }, { url: "", title: "" }, { url: "", title: "" }, { url: "", title: "" }],
   );
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
