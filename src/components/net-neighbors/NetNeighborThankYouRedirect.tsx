@@ -26,7 +26,7 @@ export function NetNeighborThankYouRedirect() {
     <div className="mt-8 space-y-4">
       <p className="font-mono text-sm text-primary">
         {seconds > 0
-          ? `Returning to the Net Neighbor wall in ${seconds} second${seconds === 1 ? "" : "s"}…`
+          ? `Returning to the Net Neighbor wall in ${seconds}…`
           : "Returning now…"}
       </p>
       <p className="font-mono text-[10px] text-muted-foreground uppercase">

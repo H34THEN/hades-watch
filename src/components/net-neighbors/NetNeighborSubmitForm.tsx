@@ -1,14 +1,17 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useFormStatus } from "react-dom";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SystemAlert } from "@/components/terminal/SystemAlert";
 import { NetNeighborBannerBuilder } from "@/components/net-neighbors/NetNeighborBannerBuilder";
-import { submitNetNeighborAction } from "@/lib/actions/net-neighbors";
+import {
+  submitNetNeighborAction,
+  type ActionResult,
+} from "@/lib/actions/net-neighbors";
 import styles from "./net-neighbors.module.css";
 
 interface NetNeighborSubmitFormProps {
@@ -16,14 +19,24 @@ interface NetNeighborSubmitFormProps {
   lockedMessage?: string;
 }
 
+function SubmitSignalButton() {
+  const { pending } = useFormStatus();
+  return (
+    <CommandButton type="submit" disabled={pending}>
+      {pending ? "Submitting…" : "Submit Signal"}
+    </CommandButton>
+  );
+}
+
 export function NetNeighborSubmitForm({
   canSubmit,
   lockedMessage,
 }: NetNeighborSubmitFormProps) {
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [state, formAction] = useActionState<ActionResult | null, FormData>(
+    submitNetNeighborAction,
+    null,
+  );
   const [useBuilder, setUseBuilder] = useState(false);
-  const submittingRef = useRef(false);
 
   if (!canSubmit) {
     return (
@@ -43,31 +56,7 @@ export function NetNeighborSubmitForm({
     );
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (submittingRef.current || isPending) return;
-
-    setError(null);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    submittingRef.current = true;
-
-    startTransition(async () => {
-      try {
-        const result = await submitNetNeighborAction(formData);
-        if (result && !result.success) {
-          setError(result.error);
-        }
-      } catch (err) {
-        if (isRedirectError(err)) {
-          throw err;
-        }
-        setError("Submission failed. Please try again.");
-      } finally {
-        submittingRef.current = false;
-      }
-    });
-  }
+  const error = state && !state.success ? state.error : null;
 
   return (
     <div className={`${styles.hudFrame} p-6`}>
@@ -79,12 +68,12 @@ export function NetNeighborSubmitForm({
         new tab and leave Hades Watch.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      <form action={formAction} className="mt-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="nn-title" className="font-mono text-xs uppercase">
             Site Title
           </Label>
-          <Input id="nn-title" name="title" required maxLength={80} disabled={isPending} />
+          <Input id="nn-title" name="title" required maxLength={80} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="nn-url" className="font-mono text-xs uppercase">
@@ -96,31 +85,25 @@ export function NetNeighborSubmitForm({
             type="url"
             required
             placeholder="https://"
-            disabled={isPending}
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor="nn-desc" className="font-mono text-xs uppercase">
             Short Description
           </Label>
-          <Input id="nn-desc" name="description" maxLength={500} disabled={isPending} />
+          <Input id="nn-desc" name="description" maxLength={500} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="nn-tags" className="font-mono text-xs uppercase">
             Tags (comma-separated)
           </Label>
-          <Input
-            id="nn-tags"
-            name="tags"
-            placeholder="webcomic, tools, art"
-            disabled={isPending}
-          />
+          <Input id="nn-tags" name="tags" placeholder="webcomic, tools, art" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="nn-note" className="font-mono text-xs uppercase">
             Why this belongs here
           </Label>
-          <Input id="nn-note" name="submitterNote" maxLength={500} disabled={isPending} />
+          <Input id="nn-note" name="submitterNote" maxLength={500} />
         </div>
 
         <NetNeighborBannerBuilder enabled={useBuilder} onEnabledChange={setUseBuilder} />
@@ -135,15 +118,12 @@ export function NetNeighborSubmitForm({
               name="banner"
               type="file"
               accept="image/gif,image/png,image/jpeg,image/webp"
-              disabled={isPending}
             />
           </div>
         )}
 
         {error && <SystemAlert title="Submit Failed" message={error} variant="error" />}
-        <CommandButton type="submit" disabled={isPending}>
-          {isPending ? "Submitting…" : "Submit Signal"}
-        </CommandButton>
+        <SubmitSignalButton />
       </form>
     </div>
   );

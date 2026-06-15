@@ -23,7 +23,10 @@ export default function NetNeighborsThankYouPage() {
             </p>
           </div>
 
-          <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-6 text-sm leading-relaxed text-foreground/90">
+            Signal received.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Your Net Neighbor submission is pending Underwatch review.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

@@ -24,7 +24,10 @@ export type ActionResult =
   | { success: true }
   | { success: false; error: string };
 
-export async function submitNetNeighborAction(formData: FormData): Promise<ActionResult> {
+export async function submitNetNeighborAction(
+  _prevState: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const auth = await getApprovedUserForAction();
   if ("error" in auth) {
     return { success: false, error: auth.error };
@@ -75,23 +78,27 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
   const baseSlug = slugify(title) || "neighbor";
   const slug = `${baseSlug}-${Date.now().toString(36)}`;
 
-  await prisma.netNeighbor.create({
-    data: {
-      title,
-      slug,
-      url: urlResult.url,
-      description: description || null,
-      bannerPath,
-      bannerText: bannerStyle?.text ?? null,
-      bannerStyle: bannerStyle
-        ? (bannerStyle as unknown as Prisma.InputJsonValue)
-        : undefined,
-      tags: parseTagsInput(tagsRaw),
-      submitterNote: submitterNote || null,
-      status: "PENDING",
-      submittedById: user.id,
-    },
-  });
+  try {
+    await prisma.netNeighbor.create({
+      data: {
+        title,
+        slug,
+        url: urlResult.url,
+        description: description || null,
+        bannerPath,
+        bannerText: bannerStyle?.text ?? null,
+        bannerStyle: bannerStyle
+          ? (bannerStyle as unknown as Prisma.InputJsonValue)
+          : undefined,
+        tags: parseTagsInput(tagsRaw),
+        submitterNote: submitterNote || null,
+        status: "PENDING",
+        submittedById: user.id,
+      },
+    });
+  } catch {
+    return { success: false, error: "Database error — submission not saved. Try again." };
+  }
 
   await writeAuditLog({
     action: "net_neighbor.submit",
