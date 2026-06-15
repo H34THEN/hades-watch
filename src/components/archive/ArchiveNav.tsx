@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ARCHIVE_CATEGORIES } from "@/lib/archive/categories";
+import { ARCHIVE_SIGNAL_SECTIONS } from "@/lib/archive/signal-sections";
 
 interface ArchiveNavProps {
   active?: string;
@@ -16,6 +17,19 @@ export function ArchiveNav({ active }: ArchiveNavProps) {
       >
         Archive Hub
       </Link>
+      {ARCHIVE_SIGNAL_SECTIONS.map((section) => (
+        <Link
+          key={section.slug}
+          href={`/archive/${section.slug}`}
+          className={`rounded px-2 py-1 font-mono text-[10px] tracking-wider uppercase ${
+            active === section.slug
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:text-primary"
+          }`}
+        >
+          {section.title}
+        </Link>
+      ))}
       {ARCHIVE_CATEGORIES.map((category) => (
         <Link
           key={category.slug}

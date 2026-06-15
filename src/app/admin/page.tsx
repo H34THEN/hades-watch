@@ -87,6 +87,9 @@ export default async function AdminPage() {
         <AdminCard title="Lore" description="Archive entries" status="online">
           <Link href="/admin/lore"><CommandButton size="sm">Manage</CommandButton></Link>
         </AdminCard>
+        <AdminCard title="Archive Signals" description="Articles & repos" status="online">
+          <Link href="/admin/archive"><CommandButton size="sm">Moderate</CommandButton></Link>
+        </AdminCard>
         <AdminCard title="Faction Command" description="Chthonic Overlord console" status="online">
           <Link href="/admin/factions/command"><CommandButton size="sm">Chthonic Command</CommandButton></Link>
         </AdminCard>

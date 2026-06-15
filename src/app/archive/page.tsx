@@ -5,6 +5,10 @@ import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { ARCHIVE_CATEGORIES } from "@/lib/archive/categories";
 import { ARCHIVE_LEADER_INDEX } from "@/lib/archive/character-lore-slugs";
+import {
+  GHOST_IN_TECH_SECTION,
+  STATE_OF_AFFAIRS_SECTION,
+} from "@/lib/archive/signal-sections";
 import { getLoreForUser } from "@/lib/actions/lore";
 import { requireAuth } from "@/lib/auth/session";
 
@@ -23,10 +27,11 @@ export default async function ArchivePage() {
       <ArchiveNav active="hub" />
       <TerminalPanel title="archive.status" className="mb-8">
         <p className="font-mono text-sm text-muted-foreground">
-          {unlocked} of {entries.length} recovered files accessible across all sections
+          {unlocked} of {entries.length} recovered lore files accessible across classified sections
         </p>
         <p className="mt-2 font-mono text-xs text-muted-foreground/80">
-          What the surface buries, the underworld remembers.
+          The Archive is the underworld index for signals, tools, lore, and records the Surface Order
+          would rather bury.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/archive/characters">
@@ -34,12 +39,35 @@ export default async function ArchivePage() {
           </Link>
           <Link href="/archive/lore">
             <CommandButton size="sm" variant="outline">
-              Full Index
+              Full Lore Index
             </CommandButton>
           </Link>
         </div>
       </TerminalPanel>
 
+      <h2 className="mb-3 font-mono text-sm tracking-widest text-primary uppercase">Signal Feeds</h2>
+      <div className="mb-8 grid gap-4 sm:grid-cols-2">
+        <DashboardCard
+          title={STATE_OF_AFFAIRS_SECTION.title}
+          description={STATE_OF_AFFAIRS_SECTION.description}
+          icon={<span>◎</span>}
+        >
+          <Link href={`/archive/${STATE_OF_AFFAIRS_SECTION.slug}`}>
+            <CommandButton size="sm">Surface Signals</CommandButton>
+          </Link>
+        </DashboardCard>
+        <DashboardCard
+          title={GHOST_IN_TECH_SECTION.title}
+          description={GHOST_IN_TECH_SECTION.description}
+          icon={<span>⌁</span>}
+        >
+          <Link href={`/archive/${GHOST_IN_TECH_SECTION.slug}`}>
+            <CommandButton size="sm">Repo Reliquary</CommandButton>
+          </Link>
+        </DashboardCard>
+      </div>
+
+      <h2 className="mb-3 font-mono text-sm tracking-widest text-primary uppercase">Classified Lore</h2>
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         {ARCHIVE_CATEGORIES.map((category) => (
           <DashboardCard

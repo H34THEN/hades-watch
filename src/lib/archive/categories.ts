@@ -42,14 +42,6 @@ export const ARCHIVE_CATEGORIES: ArchiveCategory[] = [
       "Principles, oaths, symbolism, philosophy — memory as resistance, care as infrastructure, sabotage as self-defense, grief as fuel, sunlight as a future worth building.",
     terminalLabel: "archive.mythos_ethos",
   },
-  {
-    slug: "state-of-affairs",
-    loreCategory: "CURRENT_NEWS_AND_STATE_OF_AFFAIRS",
-    title: "Current News and State of Affairs",
-    description:
-      "Underwatch bulletins and live-state lore — surface alerts, civic threat reports, propaganda analysis, faction updates, and in-world dispatches.",
-    terminalLabel: "archive.state_of_affairs",
-  },
 ];
 
 const BY_ROUTE_SLUG = new Map(ARCHIVE_CATEGORIES.map((c) => [c.slug, c]));

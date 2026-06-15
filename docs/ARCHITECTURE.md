@@ -92,10 +92,11 @@ src/
 
 ### Lore Archive
 
-- Models: `LoreEntry` (`category`, `deadIndexId`, `loreMetadata`), `UserLoreUnlock`
-- Routes: `/archive`, `/archive/lore`, `/archive/[category]`, `/archive/[category]/[slug]`
-- Categories: Character, World, Faction, Mythos and Ethos, Current News — see [ARCHIVE_LORE_TAXONOMY.md](ARCHIVE_LORE_TAXONOMY.md)
-- Seed: `db:seed:lore` (production-safe, idempotent)
+- Models: `LoreEntry` (`category`, `deadIndexId`, `loreMetadata`), `UserLoreUnlock`, `ArchiveItem`, `ArchiveComment`
+- Routes: `/archive`, lore categories, `/archive/state-of-affairs`, `/archive/ghost-in-tech`
+- Signal feeds: articles + repo library with comments — see [ARCHIVE.md](ARCHIVE.md)
+- Categories: Character, World, Faction, Mythos and Ethos — see [ARCHIVE_LORE_TAXONOMY.md](ARCHIVE_LORE_TAXONOMY.md)
+- Seed: `db:seed:lore`, `db:seed:archive` (production-safe, idempotent)
 - Locked entries show locked cards; accessible entries require unlock action (auto-unlock for origin + leaders)
 - Admin: `/admin/lore`
 

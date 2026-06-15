@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import type { RoleName } from "@/generated/prisma/client";
+import type { RoleName, UserAccountStatus } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { isAdmin, isModerator } from "@/lib/auth/roles";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +12,7 @@ export interface SessionUser {
   themeId: string | null;
   disabled: boolean;
   banned: boolean;
+  accountStatus: UserAccountStatus;
   emailVerified: Date | null;
   createdAt: Date;
 }
@@ -38,6 +39,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     themeId: user.themePreference?.themeId ?? null,
     disabled: user.disabled,
     banned: user.banned,
+    accountStatus: user.accountStatus,
     emailVerified: user.emailVerified,
     createdAt: user.createdAt,
   };
@@ -46,6 +48,16 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 export async function requireAuth(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) redirect("/login?error=auth_required");
+  return user;
+}
+
+export function isApprovedUser(user: SessionUser): boolean {
+  return user.accountStatus === "Approved" && !user.disabled && !user.banned;
+}
+
+export async function requireApprovedAuth(): Promise<SessionUser> {
+  const user = await requireAuth();
+  if (!isApprovedUser(user)) redirect("/pending-approval");
   return user;
 }
 

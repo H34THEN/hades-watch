@@ -77,6 +77,25 @@ enum LoreCategory {
   CURRENT_NEWS_AND_STATE_OF_AFFAIRS
 }
 
+enum ArchiveItemType {
+  ARTICLE
+  CODE_REPO
+}
+
+enum ArchiveItemStatus {
+  DRAFT
+  PUBLISHED
+  PENDING_REVIEW
+  HIDDEN
+  REMOVED
+}
+
+enum CodeForge {
+  GITHUB
+  CODEBERG
+  OTHER
+}
+
 enum DeadDropStatus {
   Draft
   Active
@@ -164,6 +183,8 @@ model User {
   factionMemberships  FactionMembership[]
   loreUnlocks         UserLoreUnlock[]
   createdLore         LoreEntry[]           @relation("LoreAuthor")
+  submittedArchiveItems ArchiveItem[]       @relation("ArchiveItemSubmitter")
+  archiveComments     ArchiveComment[]      @relation("ArchiveCommentAuthor")
   createdDeadDrops    DeadDrop[]            @relation("DeadDropAuthor")
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
@@ -608,6 +629,53 @@ model UserLoreUnlock {
   loreEntry LoreEntry @relation(fields: [loreEntryId], references: [id], onDelete: Cascade)
 
   @@unique([userId, loreEntryId])
+}
+
+model ArchiveItem {
+  id            String            @id @default(cuid())
+  slug          String            @unique
+  type          ArchiveItemType
+  status        ArchiveItemStatus @default(PUBLISHED)
+  title         String
+  sourceName    String?
+  sourceUrl     String
+  domain        String?
+  summary       String?           @db.Text
+  tags          Json?
+  forge         CodeForge?
+  repoOwner     String?
+  repoName      String?
+  submittedById String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  submittedBy User?             @relation("ArchiveItemSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
+  comments    ArchiveComment[]
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@index([slug])
+}
+
+model ArchiveComment {
+  id            String   @id @default(cuid())
+  archiveItemId String
+  authorId      String
+  body          String   @db.Text
+  parentId      String?
+  isHidden      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  archiveItem ArchiveItem      @relation(fields: [archiveItemId], references: [id], onDelete: Cascade)
+  author      User             @relation("ArchiveCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  parent      ArchiveComment?  @relation("ArchiveCommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     ArchiveComment[] @relation("ArchiveCommentReplies")
+
+  @@index([archiveItemId])
+  @@index([authorId])
+  @@index([parentId])
 }
 
 model DeadDrop {

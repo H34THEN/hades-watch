@@ -112,7 +112,8 @@
 - **Origin dossier added:** `docs/lore/CHTHONIC_UPRISING_ORIGIN.md`
 - **Archive lore:** `the-chthonic-uprising` (Dead Index testimony from Heathen)
 - **Character lore:** six Chthonic leader dossiers — see `docs/ARCHIVE_LORE_TAXONOMY.md`
-- **Archive taxonomy:** five sections (`/archive/characters`, `/archive/world`, etc.)
+- **Archive taxonomy:** lore sections + State of Affairs + Ghost in Tech — see `docs/ARCHIVE.md`
+- **State of Affairs:** EFF starter links seeded via `db:seed:archive`
 - **Alliance page:** `/mmo/factions/chthonic-uprising` surfaces origin excerpts
 
 ## Future Lore

@@ -1,6 +1,7 @@
-import { ArchiveLoreDetail } from "@/components/archive/ArchiveLoreDetail";
+import { ArchiveSignalItemDetail } from "@/components/archive/ArchiveSignalItemDetail";
+import { STATE_OF_AFFAIRS_SECTION } from "@/lib/archive/signal-sections";
 
-export const metadata = { title: "State of Affairs Entry" };
+export const metadata = { title: "Signal Thread" };
 
 export default async function StateOfAffairsDetailPage({
   params,
@@ -8,5 +9,5 @@ export default async function StateOfAffairsDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <ArchiveLoreDetail categorySlug="state-of-affairs" slug={slug} />;
+  return <ArchiveSignalItemDetail section={STATE_OF_AFFAIRS_SECTION} slug={slug} />;
 }
