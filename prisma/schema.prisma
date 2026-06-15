@@ -176,6 +176,13 @@ enum UserAccountStatus {
   Rejected
 }
 
+enum NetNeighborStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  HIDDEN
+}
+
 enum InviteVerificationMethod {
   SIGNAL_SAFETY_NUMBER
   SIMPLEX_CONTACT
@@ -246,6 +253,11 @@ model User {
   activeTitle             String?
   mediaAlbumsCreated      MediaAlbum[]  @relation("MediaAlbumCreator")
   mediaTracksUploaded     MediaTrack[]  @relation("MediaTrackUploader")
+  chatMessages            ChatMessage[] @relation("ChatMessageAuthor")
+  chatMessagesDeleted     ChatMessage[] @relation("ChatMessageDeletedBy")
+  netNeighborsSubmitted   NetNeighbor[] @relation("NetNeighborSubmittedBy")
+  netNeighborsReviewed    NetNeighbor[] @relation("NetNeighborReviewedBy")
+  profileCustomization    UserProfileCustomization?
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -914,4 +926,73 @@ model MediaTrack {
 
   @@index([visibility])
   @@index([albumId])
+}
+
+model ChatRoom {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  description String?
+  isActive    Boolean       @default(true)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  messages    ChatMessage[]
+}
+
+model ChatMessage {
+  id          String    @id @default(cuid())
+  roomId      String
+  userId      String
+  alias       String
+  body        String    @db.Text
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  deletedAt   DateTime?
+  deletedById String?
+
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User     @relation("ChatMessageAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  deletedBy User?    @relation("ChatMessageDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+
+  @@index([roomId, createdAt])
+  @@index([expiresAt])
+}
+
+model NetNeighbor {
+  id            String            @id @default(cuid())
+  title         String
+  slug          String            @unique
+  url           String
+  description   String?           @db.Text
+  bannerPath    String?
+  bannerUrl     String?
+  tags          String[]
+  submitterNote String?           @db.Text
+  status        NetNeighborStatus @default(PENDING)
+  submittedById String?
+  reviewedById  String?
+  reviewedAt    DateTime?
+  reviewNote    String?           @db.Text
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  submittedBy User? @relation("NetNeighborSubmittedBy", fields: [submittedById], references: [id], onDelete: SetNull)
+  reviewedBy  User? @relation("NetNeighborReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+}
+
+model UserProfileCustomization {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  html          String?  @db.Text
+  css           String?  @db.Text
+  sanitizedHtml String?  @db.Text
+  rssFeeds      Json?
+  isEnabled     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

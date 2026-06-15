@@ -1,7 +1,7 @@
 import type { RoleName, UserAccountStatus } from "@/generated/prisma/client";
 import { isAdmin, isModerator } from "@/lib/auth/roles";
 
-export type NavSectionId = "command" | "mmo" | "archive" | "account" | "public";
+export type NavSectionId = "command" | "mmo" | "archive" | "social" | "account" | "public";
 
 export type NavLinkAccess =
   | "public"
@@ -52,6 +52,16 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { href: "/mmo/character", label: "Character", access: "approved" },
       { href: "/ciphers", label: "Ciphers", access: "approved" },
       { href: "/dead-drops", label: "Dead Drops", access: "approved" },
+    ],
+  },
+  {
+    id: "social",
+    label: "Social",
+    terminalLabel: "SOCIAL",
+    links: [
+      { href: "/chat", label: "Chat Rooms", access: "approved", description: "HTTPS-protected temporary chat" },
+      { href: "/net-neighbors", label: "Net Neighbors", access: "approved", description: "Old-web banner wall" },
+      { href: "/profile", label: "Profile Relic Zone", access: "approved", description: "Sandboxed profile customization" },
     ],
   },
   {
@@ -154,6 +164,12 @@ export function getActiveNavSection(pathname: string): NavSectionId | null {
     pathname.startsWith("/dead-drops")
   ) {
     return "mmo";
+  }
+  if (
+    pathname.startsWith("/chat") ||
+    pathname.startsWith("/net-neighbors")
+  ) {
+    return "social";
   }
   if (pathname.startsWith("/archive")) {
     return "archive";

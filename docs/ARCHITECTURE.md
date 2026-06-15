@@ -26,6 +26,8 @@ src/
     archive/                   # Lore archive
     dead-drops/                # Fictional dead drops (roleplay)
     ciphers/                   # Cipher puzzles (roleplay)
+    chat/                      # AIM-style temporary chat (approved users)
+    net-neighbors/             # Old-web banner wall
     moderation/                # Moderation console
     admin/                     # Admin console + subpages
     profile/                   # Operative dossier (signed-in user)
@@ -68,10 +70,18 @@ src/
 - `src/lib/navigation/config.ts` — grouped nav sections with permission gates
 - `src/components/navigation/SiteHeader.tsx` — compact header, mobile drawer, desktop dropdowns
 - Mobile: upper-right menu trigger; logout in drawer account section
-- Desktop: COMMAND / MMO / ARCHIVE dropdowns; optional sidebar toggle
+- Desktop: COMMAND / MMO / ARCHIVE / SOCIAL dropdowns; optional sidebar toggle
 - Admin links visible only to Owner/Admin; moderation to Moderator+
 - Pending users: Account group only (profile, pending approval)
+- Social group: Chat, Net Neighbors, Profile Relic Zone (approved only)
 - No email verification gate on navigation
+
+## Social Features (Phase 11)
+
+- Chat: `ChatRoom`, `ChatMessage` — HTTPS temporary chat, 24h retention, not E2EE
+- Net Neighbors: `NetNeighbor` — moderated banner submissions, `storage/uploads/net-neighbors/`
+- Profile: `UserProfileCustomization` — sandboxed iframe HTML/CSS/RSS on `/profile`
+- See [SOCIAL_FEATURES.md](SOCIAL_FEATURES.md)
 
 ## Chthonic Uprising Factions (Phase 9)
 

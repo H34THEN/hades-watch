@@ -90,11 +90,20 @@
 
 ## Phase 10 — Navigation Refactor
 
-- Grouped header navigation: Command, MMO, Archive, Account
+- Grouped header navigation: Command, MMO, Archive, Social, Account
 - Mobile slide-out drawer (`Open Underwatch Menu`) — logout moved into account section
 - Desktop compact dropdown groups + optional collapsible sidebar (localStorage preference)
 - Permission-aware links (admin/moderator/approved/pending)
 - See `src/lib/navigation/config.ts`
+
+## Phase 11 — Old-Web Social Features
+
+- **Chat Rooms** (`/chat`) — HTTPS-protected temporary chat, 5 AIM-style rooms, 24h retention, alias support
+- **Net Neighbors** (`/net-neighbors`) — 88×31 banner wall, moderated submissions, disk storage
+- **Profile Relic Zone** (`/profile`) — sandboxed MySpace-style HTML/CSS/RSS in iframe (no user JS)
+- Admin review: `/admin/social`
+- Seed: `db:seed:chat`; cleanup: `db:cleanup:chat`
+- See `docs/SOCIAL_FEATURES.md`
 
 ## Phase 10 — First Descent Mission Pack
 

@@ -84,6 +84,13 @@ export type AuditAction =
   | "media.track.upload"
   | "media.track.update"
   | "media.track.delete"
+  | "chat.message.post"
+  | "chat.message.delete"
+  | "chat.room.clear"
+  | "net_neighbor.submit"
+  | "net_neighbor.review"
+  | "profile.customization.update"
+  | "profile.customization.disable"
   | "alliance.membership.assign"
   | "alliance.membership.remove";
 

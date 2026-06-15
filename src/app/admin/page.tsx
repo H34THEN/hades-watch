@@ -105,6 +105,9 @@ export default async function AdminPage() {
         <AdminCard title="Dead Drops" description="Roleplay messages" status="online">
           <Link href="/admin/dead-drops"><CommandButton size="sm">Manage</CommandButton></Link>
         </AdminCard>
+        <AdminCard title="Social" description="Net Neighbors & relic zones" status="online">
+          <Link href="/admin/social"><CommandButton size="sm">Review</CommandButton></Link>
+        </AdminCard>
         <AdminCard title="Mod Queue" description={`${modStats.open} open reports`} status={modStats.open > 0 ? "degraded" : "online"}>
           <Link href="/moderation"><CommandButton size="sm">Moderation</CommandButton></Link>
         </AdminCard>
