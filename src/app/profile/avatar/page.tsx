@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AvatarBuilderClient } from "@/components/avatar/AvatarBuilderClient";
 import { AccessDenied } from "@/components/layout/AccessDenied";
 import { CommandButton } from "@/components/terminal/CommandButton";
-import { getDefaultAvatarSelection } from "@/lib/avatar/avatar-assets";
+import { getDefaultAvatarSelection, parseSelectedItems } from "@/lib/avatar/avatar-assets";
 import { getSessionUser, isApprovedUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 
@@ -36,7 +36,7 @@ export default async function ProfileAvatarPage() {
       select: { id: true, category: true, label: true, visibility: true },
     }),
     prisma.avatarUserPart.findMany({
-      where: { visibility: "SHARED", userId: { not: user.id } },
+      where: { visibility: "SHARED_APPROVED", userId: { not: user.id } },
       orderBy: { createdAt: "desc" },
       take: 50,
       select: { id: true, category: true, label: true, visibility: true },
@@ -53,8 +53,10 @@ export default async function ProfileAvatarPage() {
     motto: avatar?.motto ?? "",
     favoriteSignal: avatar?.favoriteSignal ?? "",
     speciesSlug: avatar?.speciesSlug ?? defaults.speciesSlug,
+    genderPresentation: avatar?.genderPresentation ?? defaults.genderPresentation ?? "custom",
     bodySlug: avatar?.bodySlug ?? defaults.bodySlug,
     poseSlug: avatar?.poseSlug ?? defaults.poseSlug ?? "pose-neutral",
+    emotionSlug: avatar?.emotionSlug ?? defaults.emotionSlug ?? "emotion-neutral",
     skinColor: avatar?.skinColor ?? defaults.skinColor ?? "",
     eyeSlug: avatar?.eyeSlug ?? defaults.eyeSlug ?? "",
     eyeColor: avatar?.eyeColor ?? defaults.eyeColor ?? "",
@@ -67,29 +69,23 @@ export default async function ProfileAvatarPage() {
     backgroundSlug: avatar?.backgroundSlug ?? defaults.backgroundSlug ?? "",
     customBackgroundAssetId: avatar?.customBackgroundAssetId ?? "",
     customPartIds: parseCustomPartIds(avatar?.customPartIds),
+    selectedItems: parseSelectedItems(avatar?.selectedItems),
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8">
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-8">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-mono text-3xl tracking-widest uppercase">Avatar Builder</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Layered identity for the Underwatch mirror chamber · HUD preview · custom parts · poses.
+            Gaia-style layered identity for the Underwatch mirror chamber.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/profile/avatar/bases">
-            <CommandButton size="sm" variant="outline">
-              Base Downloads
-            </CommandButton>
-          </Link>
-          <Link href="/profile">
-            <CommandButton size="sm" variant="outline">
-              ← Profile World
-            </CommandButton>
-          </Link>
-        </div>
+        <Link href="/profile">
+          <CommandButton size="sm" variant="outline">
+            ← Profile World
+          </CommandButton>
+        </Link>
       </div>
       <AvatarBuilderClient initial={initial} userParts={userParts} sharedParts={sharedParts} />
     </div>

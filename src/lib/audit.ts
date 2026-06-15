@@ -93,6 +93,7 @@ export type AuditAction =
   | "profile.customization.disable"
   | "profile.world.update"
   | "profile.asset.upload"
+  | "profile.callsign.update"
   | "avatar.save"
   | "avatar.part.upload"
   | "alliance.membership.assign"

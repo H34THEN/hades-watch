@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SystemAlert } from "@/components/terminal/SystemAlert";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
+import { updateProfileCallsignAction } from "@/lib/actions/profile-callsign";
 import { updateProfileWorldAction, uploadProfileAssetAction } from "@/lib/actions/profile-world";
 import {
   buildProfileIframeDocument,
@@ -19,6 +20,8 @@ import {
 import type { SessionUser } from "@/lib/auth/session";
 
 export interface ProfileEditInitial {
+  callsign: string;
+  isPublic: boolean;
   html: string;
   css: string;
   rssFeeds: RssFeedInput[];
@@ -41,6 +44,9 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
   const [html, setHtml] = useState(initial.html);
   const [css, setCss] = useState(initial.css);
   const [tagline, setTagline] = useState(initial.tagline);
+  const [callsign, setCallsign] = useState(initial.callsign);
+  const [isPublic, setIsPublic] = useState(initial.isPublic);
+  const [callsignError, setCallsignError] = useState<string | null>(null);
   const [motto, setMotto] = useState(initial.motto);
   const [favoriteSignal, setFavoriteSignal] = useState(initial.favoriteSignal);
   const [backgroundColor, setBackgroundColor] = useState(initial.backgroundColor);
@@ -64,6 +70,23 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
       }),
     [html, css],
   );
+
+  function saveCallsign(e: React.FormEvent) {
+    e.preventDefault();
+    setCallsignError(null);
+    const formData = new FormData();
+    formData.set("callsign", callsign);
+    formData.set("isPublic", String(isPublic));
+    startTransition(async () => {
+      const result = await updateProfileCallsignAction(formData);
+      if (!result.success) {
+        setCallsignError(result.error);
+        return;
+      }
+      setSuccess("Callsign and visibility saved.");
+      router.refresh();
+    });
+  }
 
   function saveWorld(e: React.FormEvent) {
     e.preventDefault();
@@ -119,6 +142,39 @@ export function ProfileEditClient({ user, initial }: ProfileEditClientProps) {
           passwords, private keys, recovery codes, addresses, medical records, or private data.
         </p>
       </div>
+
+      <TerminalPanel title="operative.callsign">
+        <form onSubmit={saveCallsign} className="space-y-4">
+          <p className="font-mono text-[10px] text-muted-foreground">
+            Your public profile URL: /profile/<span className="text-primary">{callsign || "your-callsign"}</span>
+          </p>
+          <div>
+            <Label htmlFor="callsign" className="text-xs uppercase">
+              Callsign / Profile Slug
+            </Label>
+            <Input
+              id="callsign"
+              value={callsign}
+              onChange={(e) => setCallsign(e.target.value)}
+              placeholder="slewfoot"
+              maxLength={32}
+              className="mt-1 font-mono"
+            />
+          </div>
+          <label className="flex items-center gap-2 font-mono text-xs">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+            />
+            Public profile world (approved operatives can view)
+          </label>
+          {callsignError && <SystemAlert title="Callsign Error" message={callsignError} variant="error" />}
+          <CommandButton type="submit" size="sm" disabled={isPending}>
+            Save Callsign
+          </CommandButton>
+        </form>
+      </TerminalPanel>
 
       <TerminalPanel title="operative.settings">
         <ProfileSettingsForm user={user} />

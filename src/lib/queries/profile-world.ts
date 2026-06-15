@@ -5,6 +5,7 @@ import {
   parseProfileLinksInput,
   parseRssFeedsInput,
 } from "@/lib/profile-customization/sanitize";
+import { parseSelectedItems } from "@/lib/avatar/avatar-registry";
 import { buildRssEmbedHtml } from "@/lib/profile-customization/rss";
 import { buildProfileIframeDocument } from "@/lib/profile-customization/sanitize";
 import {
@@ -105,8 +106,10 @@ async function avatarFromRecord(
     motto: string | null;
     favoriteSignal: string | null;
     speciesSlug: string;
+    genderPresentation?: string | null;
     bodySlug: string;
     poseSlug?: string | null;
+    emotionSlug?: string | null;
     skinColor: string | null;
     eyeSlug: string | null;
     eyeColor: string | null;
@@ -117,6 +120,7 @@ async function avatarFromRecord(
     backgroundSlug: string | null;
     customBackgroundAssetId: string | null;
     customPartIds?: unknown;
+    selectedItems?: unknown;
     userId?: string;
   } | null,
 ): Promise<ProfileWorldData["avatar"]> {
@@ -126,8 +130,10 @@ async function avatarFromRecord(
     : {};
   const selection: AvatarSelection = {
     speciesSlug: record.speciesSlug,
+    genderPresentation: record.genderPresentation ?? "custom",
     bodySlug: record.bodySlug,
     poseSlug: record.poseSlug ?? "pose-neutral",
+    emotionSlug: record.emotionSlug ?? "emotion-neutral",
     skinColor: record.skinColor,
     eyeSlug: record.eyeSlug,
     eyeColor: record.eyeColor,
@@ -140,6 +146,7 @@ async function avatarFromRecord(
     backgroundSlug: record.backgroundSlug,
     customBackgroundUrl: assetUrl(record.customBackgroundAssetId),
     customPartUrls,
+    selectedItems: parseSelectedItems(record.selectedItems),
   };
   const species = AVATAR_SPECIES.find((s) => s.slug === record.speciesSlug);
   return {

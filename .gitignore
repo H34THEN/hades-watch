@@ -46,6 +46,8 @@ next-env.d.ts
 storage/uploads/audio/
 storage/uploads/net-neighbors/
 storage/uploads/profiles/
+storage/uploads/avatar-parts/
+storage/uploads/avatar-backgrounds/
 public/uploads/audio/
 /*.mp3
 /*.m4a

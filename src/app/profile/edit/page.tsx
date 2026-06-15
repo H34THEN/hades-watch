@@ -19,20 +19,29 @@ export default async function ProfileEditPage() {
     );
   }
 
-  const customization = await prisma.userProfileCustomization.findUnique({
-    where: { userId: user.id },
-  });
+  const [customization, character] = await Promise.all([
+    prisma.userProfileCustomization.findUnique({ where: { userId: user.id } }),
+    prisma.character.findUnique({
+      where: { userId: user.id },
+      select: { callsign: true, isPublic: true },
+    }),
+  ]);
 
   return (
     <>
-      <div className="mx-auto flex w-full max-w-6xl justify-end px-4 pt-6 md:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap justify-end gap-2 px-4 pt-6 md:px-8">
         <Link href="/profile">
           <CommandButton size="sm" variant="outline">← Profile World</CommandButton>
+        </Link>
+        <Link href="/profile/avatar">
+          <CommandButton size="sm" variant="outline">Avatar Builder</CommandButton>
         </Link>
       </div>
       <ProfileEditClient
         user={user}
         initial={{
+          callsign: character?.callsign ?? "",
+          isPublic: character?.isPublic ?? true,
           html: customization?.html ?? "",
           css: customization?.css ?? "",
           rssFeeds: parseRssFeedsInput(customization?.rssFeeds),

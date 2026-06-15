@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { writeAuditLog } from "@/lib/audit";
 import { requireApprovedAuth } from "@/lib/auth/session";
 import { getDefaultAvatarSelection } from "@/lib/avatar/avatar-assets";
+import { parseSelectedItems } from "@/lib/avatar/avatar-registry";
 import { prisma } from "@/lib/prisma";
 
 export type ActionResult =
@@ -37,6 +38,18 @@ function parseCustomPartIds(raw: FormDataEntryValue | null): Record<string, stri
   }
 }
 
+function parseSelectedItemsJson(raw: FormDataEntryValue | null) {
+  const value = String(raw ?? "").trim();
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(value);
+    const items = parseSelectedItems(parsed);
+    return items.length > 0 ? items : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function saveAvatarAction(formData: FormData): Promise<ActionResult> {
   const user = await requireApprovedAuth();
 
@@ -48,6 +61,7 @@ export async function saveAvatarAction(formData: FormData): Promise<ActionResult
     motto: String(formData.get("motto") ?? "").trim().slice(0, 200) || null,
     favoriteSignal: String(formData.get("favoriteSignal") ?? "").trim().slice(0, 120) || null,
     speciesSlug: String(formData.get("speciesSlug") ?? "tiefling").trim(),
+    genderPresentation: String(formData.get("genderPresentation") ?? "custom").trim(),
     bodySlug: String(formData.get("bodySlug") ?? "body-base-a").trim(),
     skinColor: String(formData.get("skinColor") ?? "").trim() || null,
     eyeSlug: String(formData.get("eyeSlug") ?? "").trim() || null,
@@ -58,9 +72,11 @@ export async function saveAvatarAction(formData: FormData): Promise<ActionResult
     accessorySlugs: parseAccessorySlugs(formData.get("accessorySlugs")),
     backgroundSlug: String(formData.get("backgroundSlug") ?? "bg-underwatch-default").trim(),
     poseSlug: String(formData.get("poseSlug") ?? "pose-neutral").trim(),
+    emotionSlug: String(formData.get("emotionSlug") ?? "emotion-neutral").trim(),
     customBackgroundAssetId:
       String(formData.get("customBackgroundAssetId") ?? "").trim() || null,
     customPartIds: parseCustomPartIds(formData.get("customPartIds")),
+    selectedItems: parseSelectedItemsJson(formData.get("selectedItems")),
   };
 
   await prisma.userAvatar.upsert({
@@ -69,11 +85,13 @@ export async function saveAvatarAction(formData: FormData): Promise<ActionResult
       userId: user.id,
       ...data,
       customPartIds: data.customPartIds as Prisma.InputJsonValue,
+      selectedItems: data.selectedItems as unknown as Prisma.InputJsonValue,
       accessorySlugs: data.accessorySlugs,
     },
     update: {
       ...data,
       customPartIds: data.customPartIds as Prisma.InputJsonValue,
+      selectedItems: data.selectedItems as unknown as Prisma.InputJsonValue,
       accessorySlugs: data.accessorySlugs,
     },
   });
@@ -91,13 +109,33 @@ export async function resetAvatarAction(): Promise<ActionResult> {
     where: { userId: user.id },
     create: {
       userId: user.id,
-      ...selection,
+      speciesSlug: selection.speciesSlug,
+      genderPresentation: selection.genderPresentation ?? "custom",
+      bodySlug: selection.bodySlug,
       poseSlug: selection.poseSlug ?? "pose-neutral",
+      emotionSlug: selection.emotionSlug ?? "emotion-neutral",
+      skinColor: selection.skinColor ?? null,
+      eyeSlug: selection.eyeSlug ?? null,
+      eyeColor: selection.eyeColor ?? null,
+      hairSlug: selection.hairSlug ?? null,
+      hairColor: selection.hairColor ?? null,
+      outfitSlug: selection.outfitSlug ?? null,
+      backgroundSlug: selection.backgroundSlug ?? null,
       accessorySlugs: [],
     },
     update: {
-      ...selection,
+      speciesSlug: selection.speciesSlug,
+      genderPresentation: "custom",
+      bodySlug: selection.bodySlug,
       poseSlug: selection.poseSlug ?? "pose-neutral",
+      emotionSlug: "emotion-neutral",
+      skinColor: selection.skinColor ?? null,
+      eyeSlug: selection.eyeSlug ?? null,
+      eyeColor: selection.eyeColor ?? null,
+      hairSlug: selection.hairSlug ?? null,
+      hairColor: selection.hairColor ?? null,
+      outfitSlug: selection.outfitSlug ?? null,
+      backgroundSlug: selection.backgroundSlug ?? null,
       accessorySlugs: [],
       displayName: null,
       tagline: null,
@@ -107,6 +145,7 @@ export async function resetAvatarAction(): Promise<ActionResult> {
       favoriteSignal: null,
       customBackgroundAssetId: null,
       customPartIds: Prisma.JsonNull,
+      selectedItems: Prisma.JsonNull,
     },
   });
   revalidatePath("/profile");

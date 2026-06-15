@@ -16,6 +16,8 @@ See also: [PROFILE_WORLDS.md](./PROFILE_WORLDS.md) for relic zone, uploads, and 
 
 Public URLs use the character **callsign** (case-insensitive), not the literal placeholder `your-callsign`.
 
+Set callsign on `/profile/edit` or via MMO character creation (`/mmo/character`). Must be unique.
+
 ## Layout (v2)
 
 - **Full width** up to `1600px`

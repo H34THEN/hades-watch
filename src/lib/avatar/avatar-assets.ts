@@ -1,5 +1,33 @@
 export const AVATAR_CANVAS_SIZE = 1024;
 
+import {
+  getRegistryItem,
+  type AvatarTransform,
+  type SelectedAvatarItem,
+} from "@/lib/avatar/avatar-registry";
+
+export type { AvatarTransform, SelectedAvatarItem };
+export {
+  AVATAR_CATEGORIES,
+  AVATAR_GENDER_PRESENTATIONS,
+  AVATAR_EMOTIONS,
+  AVATAR_REGISTRY_ITEMS,
+  getItemsForCategory,
+  getDownloadableBases,
+  getRegistryItem,
+  parseSelectedItems,
+  isMovableCategory,
+  DEFAULT_AVATAR_TRANSFORM,
+} from "@/lib/avatar/avatar-registry";
+
+export interface AvatarLayer {
+  key: string;
+  src: string;
+  zIndex: number;
+  transform?: AvatarTransform;
+}
+
+
 export interface AvatarAssetOption {
   slug: string;
   label: string;
@@ -221,8 +249,10 @@ export const AVATAR_OFFICIAL_DOWNLOADS: AvatarAssetOption[] = [
 
 export interface AvatarSelection {
   speciesSlug: string;
+  genderPresentation?: string | null;
   bodySlug: string;
   poseSlug?: string | null;
+  emotionSlug?: string | null;
   skinColor?: string | null;
   eyeSlug?: string | null;
   eyeColor?: string | null;
@@ -233,13 +263,16 @@ export interface AvatarSelection {
   backgroundSlug?: string | null;
   customBackgroundUrl?: string | null;
   customPartUrls?: Partial<Record<string, string>>;
+  selectedItems?: SelectedAvatarItem[];
 }
 
 export function getDefaultAvatarSelection(): AvatarSelection {
   return {
     speciesSlug: "tiefling",
+    genderPresentation: "custom",
     bodySlug: "body-base-a",
     poseSlug: "pose-neutral",
+    emotionSlug: "emotion-neutral",
     skinColor: "obsidian",
     eyeSlug: "eyes-cyan",
     eyeColor: "cyan",
@@ -251,47 +284,85 @@ export function getDefaultAvatarSelection(): AvatarSelection {
   };
 }
 
-export function resolveAvatarLayers(selection: AvatarSelection): { key: string; src: string; zIndex: number }[] {
-  const layers: { key: string; src: string; zIndex: number }[] = [];
+export function resolveAvatarLayers(selection: AvatarSelection): AvatarLayer[] {
+  const layers: AvatarLayer[] = [];
   let z = 0;
+
+  const push = (key: string, src: string, transform?: AvatarTransform, layerOrder?: number) => {
+    layers.push({ key, src, zIndex: layerOrder ?? z++, transform });
+  };
 
   const bg = AVATAR_BACKGROUNDS.find((b) => b.slug === selection.backgroundSlug);
   if (selection.customBackgroundUrl) {
-    layers.push({ key: "background-custom", src: selection.customBackgroundUrl, zIndex: z++ });
+    push("background-custom", selection.customBackgroundUrl, undefined, 10);
   } else if (bg) {
-    layers.push({ key: "background", src: bg.imagePath, zIndex: z++ });
+    push("background", bg.imagePath, undefined, 10);
   }
 
-  const body = AVATAR_BODIES.find((b) => b.slug === selection.bodySlug);
-  if (body) layers.push({ key: "body", src: body.imagePath, zIndex: z++ });
+  const body = AVATAR_BODIES.find((b) => b.slug === selection.bodySlug) ?? getRegistryItem(selection.bodySlug);
+  if (body) {
+    const path = "imagePath" in body ? body.imagePath : (body as AvatarAssetOption).imagePath;
+    push("body", path, undefined, 100);
+  }
 
   const species = AVATAR_SPECIES.find((s) => s.slug === selection.speciesSlug);
   if (species) {
     const feature = AVATAR_SPECIES_FEATURES[species.featureLayerSlug];
-    if (feature) layers.push({ key: "species", src: feature.imagePath, zIndex: z++ });
+    if (feature) push("species", feature.imagePath, undefined, 350);
   }
 
   const eyes = AVATAR_EYES.find((e) => e.slug === selection.eyeSlug);
-  if (eyes) layers.push({ key: "eyes", src: eyes.imagePath, zIndex: z++ });
+  if (eyes) push("eyes", eyes.imagePath, undefined, 300);
 
   const hair = AVATAR_HAIR.find((h) => h.slug === selection.hairSlug);
-  if (hair) layers.push({ key: "hair", src: hair.imagePath, zIndex: z++ });
+  if (hair) push("hair", hair.imagePath, undefined, 400);
 
   const outfit = AVATAR_OUTFITS.find((o) => o.slug === selection.outfitSlug);
-  if (outfit) layers.push({ key: "outfit", src: outfit.imagePath, zIndex: z++ });
+  if (outfit) push("outfit", outfit.imagePath, undefined, 500);
+
+  if (selection.emotionSlug) {
+    const emotion = getRegistryItem(selection.emotionSlug);
+    if (emotion) push("emotion", emotion.imagePath, emotion.defaultTransform, emotion.layerOrder);
+  }
 
   for (const slug of selection.accessorySlugs ?? []) {
     const acc = AVATAR_ACCESSORIES.find((a) => a.slug === slug);
-    if (acc) layers.push({ key: `accessory-${slug}`, src: acc.imagePath, zIndex: z++ });
+    if (acc) push(`accessory-${slug}`, acc.imagePath, undefined, 600);
   }
 
-  const customOrder = ["OVERLAY", "ACCESSORY", "OUTFIT", "HAIR", "SPECIES_FEATURE", "EYES", "BODY", "BACKGROUND"];
+  for (const selected of selection.selectedItems ?? []) {
+    const official = getRegistryItem(selected.itemSlug);
+    const src =
+      selected.imagePath ??
+      (selected.partId ? `/api/avatar-parts/${selected.partId}` : official?.imagePath);
+    if (!src) continue;
+    const transform = selected.transform ?? official?.defaultTransform;
+    push(
+      `selected-${selected.category}-${selected.itemSlug}`,
+      src,
+      transform,
+      official?.layerOrder ?? 500,
+    );
+  }
+
+  const customOrder = [
+    "effects",
+    "tech-gear",
+    "fictional-props",
+    "faction-flair",
+    "back-items",
+    "accessories",
+    "outerwear",
+    "OVERLAY",
+    "ACCESSORY",
+    "OUTFIT",
+  ];
   for (const cat of customOrder) {
-    const url = selection.customPartUrls?.[cat];
-    if (url) layers.push({ key: `custom-${cat}`, src: url, zIndex: z++ });
+    const url = selection.customPartUrls?.[cat] ?? selection.customPartUrls?.[cat.toUpperCase()];
+    if (url) push(`custom-${cat}`, url, undefined, 550);
   }
 
-  return layers;
+  return layers.sort((a, b) => a.zIndex - b.zIndex).map((layer, i) => ({ ...layer, zIndex: i }));
 }
 
 export function findAssetBySlug(

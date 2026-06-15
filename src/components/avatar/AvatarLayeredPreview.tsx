@@ -1,13 +1,39 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import type { AvatarTransform } from "@/lib/avatar/avatar-registry";
+import { DEFAULT_AVATAR_TRANSFORM } from "@/lib/avatar/avatar-registry";
+
+export interface AvatarPreviewLayer {
+  key: string;
+  src: string;
+  zIndex: number;
+  transform?: AvatarTransform;
+}
 
 interface AvatarLayeredPreviewProps {
-  layers: { key: string; src: string; zIndex: number }[];
+  layers: AvatarPreviewLayer[];
   skinColor?: string | null;
   hairColor?: string | null;
   poseTransform?: string;
   className?: string;
+}
+
+function layerStyle(transform?: AvatarTransform): React.CSSProperties {
+  const t = transform ?? DEFAULT_AVATAR_TRANSFORM;
+  const isDefault =
+    t.x === 0.5 && t.y === 0.5 && t.scale === 1 && t.rotation === 0;
+  if (isDefault) {
+    return { zIndex: 1 };
+  }
+  return {
+    left: `${t.x * 100}%`,
+    top: `${t.y * 100}%`,
+    width: `${t.scale * 100}%`,
+    height: `${t.scale * 100}%`,
+    transform: `translate(-50%, -50%) rotate(${t.rotation}deg)`,
+    zIndex: 1,
+  };
 }
 
 export function AvatarLayeredPreview({
@@ -29,19 +55,28 @@ export function AvatarLayeredPreview({
         className="relative h-full w-full transition-transform duration-500"
         style={{ transform: poseTransform ?? "none" }}
       >
-        {layers.map((layer) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={layer.key}
-            src={layer.src}
-            alt=""
-            className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-            style={{ zIndex: layer.zIndex }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/avatar-assets/placeholders/missing-layer.svg";
-            }}
-          />
-        ))}
+        {layers.map((layer) => {
+          const t = layer.transform;
+          const isDefault =
+            !t || (t.x === 0.5 && t.y === 0.5 && t.scale === 1 && t.rotation === 0);
+          return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={layer.key}
+              src={layer.src}
+              alt=""
+              className={
+                isDefault
+                  ? "pointer-events-none absolute inset-0 h-full w-full object-contain"
+                  : "pointer-events-none absolute object-contain"
+              }
+              style={{ ...layerStyle(layer.transform), zIndex: layer.zIndex }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/avatar-assets/placeholders/missing-layer.svg";
+              }}
+            />
+          );
+        })}
       </div>
       {hairColor && (
         <div

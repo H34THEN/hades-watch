@@ -36,7 +36,7 @@ async function canViewPart(
   if (!viewer || !isApprovedUser(viewer)) return false;
   if (part.userId === viewer.id) return true;
   if (isModerator(viewer.roles)) return true;
-  if (part.visibility !== "SHARED") return false;
+  if (part.visibility !== "SHARED_APPROVED") return false;
   const owner = await prisma.user.findUnique({
     where: { id: part.userId },
     select: { accountStatus: true, disabled: true, banned: true },
@@ -72,7 +72,7 @@ export async function GET(
     headers: {
       "Content-Type": mimeFromPath(absolutePath, part.mimeType),
       "Content-Length": String(fileStat.size),
-      "Cache-Control": part.visibility === "SHARED" ? "public, max-age=3600" : "private, max-age=3600",
+      "Cache-Control": part.visibility === "SHARED_APPROVED" ? "public, max-age=3600" : "private, max-age=3600",
     },
   });
 }

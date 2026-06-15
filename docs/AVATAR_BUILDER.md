@@ -11,6 +11,26 @@ Gaia Online–style layered character identity for Hades Watch operatives.
 
 Approved users only.
 
+**Layout:** The builder page structure is preserved — left mirror HUD preview (`lg:grid-cols-[320px_1fr]`), scrollable tabs on the right. New categories are added as tabs/sections, not a page redesign.
+
+## Callsign / Public Profile
+
+Public URLs use `Character.callsign` (unique, lowercase):
+
+```txt
+/profile/slewfoot
+```
+
+Edit callsign and public visibility on `/profile/edit`. Reserved slugs are blocked.
+
+## Gender / Presentation
+
+Avatar presentation only — does not need to match real-world identity:
+
+`female` · `male` · `nonbinary` · `androgynous` · `custom`
+
+Stored on `UserAvatar.genderPresentation`.
+
 ## Species (MVP)
 
 | Slug | Name |
@@ -49,6 +69,28 @@ Pose slugs on `UserAvatar.poseSlug`. MVP uses CSS transforms until per-pose art 
 
 Add pose layer art later under `public/avatar-assets/poses/` and extend `AVATAR_POSES` in `avatar-assets.ts`.
 
+## Emotions
+
+Separate from pose. Stored on `UserAvatar.emotionSlug`. Placeholders in `public/avatar-assets/emotions/`.
+
+## Registry
+
+Central registry: `src/lib/avatar/avatar-registry.ts` (categories, items, transforms, compatibility).
+
+Legacy re-exports: `src/lib/avatar/avatar-assets.ts`.
+
+### Categories
+
+Body, Gender, Species, Skin Color, Face, Eyes, Ears, Hair, Emotion, Pose, Hands, Horns, Wings, Tails, Markings, Accessories, Tops, Pants, Skirts, Shoes, Socks, Outerwear, Back Items, Backgrounds, Fictional Props & Tech Gear, Tech Gear, Faction Flair, Effects, Uploads, Base Library.
+
+### Layer transforms
+
+Movable items store normalized transforms in `UserAvatar.selectedItems`:
+
+```json
+{ "x": 0.5, "y": 0.5, "scale": 1, "rotation": 0 }
+```
+
 ## Official Base Downloads
 
 Users download creator-provided bases from `/profile/avatar/bases` or per-part links in the builder.
@@ -77,10 +119,12 @@ Model: `AvatarUserPart` — category, label, path, visibility (`PRIVATE` | `SHAR
 Storage:
 
 ```txt
-storage/uploads/avatar-parts/{userId}/
+storage/uploads/avatar-parts/private/{userId}/
+storage/uploads/avatar-parts/shared/{userId}/
+storage/uploads/avatar-backgrounds/
 ```
 
-Served via `/api/avatar-parts/[partId]`. Private parts: owner + moderators. Shared parts: approved users.
+Visibility: `PRIVATE`, `SHARED_PENDING` (awaiting review), `SHARED_APPROVED` (community usable).
 
 Equipped parts stored on `UserAvatar.customPartIds` as JSON `{ "OUTFIT": "partId", ... }`.
 
@@ -152,6 +196,15 @@ Referenced via `UserAvatar.customBackgroundAssetId`.
 - Favorite signal
 
 No real-world identity required.
+
+## How Heathen Adds New Official Avatar Art
+
+1. Create a transparent PNG at **1024×1024** (or SVG placeholder via `scripts/generate-avatar-placeholders.ts`).
+2. Save into the correct `public/avatar-assets/<category>/` folder.
+3. Add an entry to `src/lib/avatar/avatar-registry.ts` (`AVATAR_REGISTRY_ITEMS`).
+4. Set `layerOrder` and `defaultTransform`.
+5. Set `downloadableBase: true` if users may download it.
+6. Rebuild and deploy.
 
 ## Model
 
