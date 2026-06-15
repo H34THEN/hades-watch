@@ -5,6 +5,7 @@ export type NavSectionId = "command" | "mmo" | "archive" | "social" | "account" 
 
 export type NavLinkAccess =
   | "public"
+  | "open"
   | "authenticated"
   | "approved"
   | "admin"
@@ -39,6 +40,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
       { href: "/admin/media", label: "Signal Deck", access: "admin" },
       { href: "/admin/archive", label: "Archive Admin", access: "admin" },
       { href: "/moderation", label: "Moderation", access: "moderator" },
+      { href: "/admin/net-neighbors", label: "Net Neighbors", access: "moderator" },
     ],
   },
   {
@@ -60,7 +62,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     terminalLabel: "SOCIAL",
     links: [
       { href: "/chat", label: "Chat Rooms", access: "approved", description: "HTTPS-protected temporary chat" },
-      { href: "/net-neighbors", label: "Net Neighbors", access: "approved", description: "Old-web banner wall" },
+      { href: "/net-neighbors", label: "Net Neighbors", access: "open", description: "Old-web banner wall" },
       { href: "/profile", label: "Profile Worlds", access: "approved", description: "Full-page operative shrines" },
     ],
   },
@@ -114,6 +116,8 @@ export function canAccessNavLink(link: NavLinkItem, ctx: NavContext): boolean {
   switch (link.access) {
     case "public":
       return !isAuthenticated;
+    case "open":
+      return true;
     case "authenticated":
       return isAuthenticated;
     case "approved":
@@ -141,11 +145,11 @@ export function filterNavGroup(group: NavGroupConfig, ctx: NavContext): NavLinkI
 
 export function getVisibleNavGroups(ctx: NavContext): NavGroupConfig[] {
   if (!ctx.isAuthenticated) {
-    return NAV_GROUPS.filter((g) => g.id === "public");
+    return NAV_GROUPS.filter((g) => g.id === "public" || g.id === "social");
   }
 
   if (ctx.accountStatus === "Pending") {
-    return NAV_GROUPS.filter((g) => g.id === "account");
+    return NAV_GROUPS.filter((g) => g.id === "account" || g.id === "social");
   }
 
   return NAV_GROUPS.filter((g) => g.id !== "public");

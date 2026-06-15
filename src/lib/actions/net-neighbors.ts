@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { writeAuditLog } from "@/lib/audit";
-import { requireApprovedAuth } from "@/lib/auth/session";
-import { isModerator } from "@/lib/auth/roles";
+import { getApprovedUserForAction, getModeratorUserForAction } from "@/lib/auth/session";
+import { parseBannerStyleForm } from "@/lib/net-neighbors/banner-builder";
 import {
   saveBannerUpload,
   validateBannerUpload,
@@ -11,18 +11,24 @@ import {
 import { parseTagsInput, stripUserText, validateOutboundUrl } from "@/lib/net-neighbors/validation";
 import {
   getNetNeighborById,
+  updateNetNeighborOrder,
   updateNetNeighborStatus,
 } from "@/lib/queries/net-neighbors";
 import { slugify } from "@/lib/slug";
 import { prisma } from "@/lib/prisma";
 import type { NetNeighborStatus } from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 
 export type ActionResult =
   | { success: true }
   | { success: false; error: string };
 
 export async function submitNetNeighborAction(formData: FormData): Promise<ActionResult> {
-  const user = await requireApprovedAuth();
+  const auth = await getApprovedUserForAction();
+  if ("error" in auth) {
+    return { success: false, error: auth.error };
+  }
+  const user = auth;
 
   const title = stripUserText(String(formData.get("title") ?? ""), 80);
   const urlRaw = String(formData.get("url") ?? "");
@@ -30,6 +36,7 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
   const tagsRaw = String(formData.get("tags") ?? "");
   const submitterNote = stripUserText(String(formData.get("submitterNote") ?? ""), 500);
   const bannerFile = formData.get("banner");
+  const bannerStyle = parseBannerStyleForm(formData);
 
   if (!title || title.length < 2) {
     return { success: false, error: "Site title is required." };
@@ -43,8 +50,13 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
     const validation = validateBannerUpload(bannerFile);
     if (!validation.ok) return { success: false, error: validation.error };
     bannerPath = await saveBannerUpload(bannerFile);
-  } else {
-    return { success: false, error: "Banner image upload is required for MVP submissions." };
+  }
+
+  if (!bannerPath && !bannerStyle) {
+    return {
+      success: false,
+      error: "Upload a banner image or forge one with the signal button builder.",
+    };
   }
 
   const baseSlug = slugify(title) || "neighbor";
@@ -57,6 +69,10 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
       url: urlResult.url,
       description: description || null,
       bannerPath,
+      bannerText: bannerStyle?.text ?? null,
+      bannerStyle: bannerStyle
+        ? (bannerStyle as unknown as Prisma.InputJsonValue)
+        : undefined,
       tags: parseTagsInput(tagsRaw),
       submitterNote: submitterNote || null,
       status: "PENDING",
@@ -71,6 +87,8 @@ export async function submitNetNeighborAction(formData: FormData): Promise<Actio
   });
 
   revalidatePath("/net-neighbors");
+  revalidatePath("/net-neighbors/submit");
+  revalidatePath("/admin/net-neighbors");
   revalidatePath("/admin/social");
   return { success: true };
 }
@@ -80,10 +98,11 @@ export async function reviewNetNeighborAction(
   status: NetNeighborStatus,
   reviewNote?: string,
 ): Promise<ActionResult> {
-  const user = await requireApprovedAuth();
-  if (!isModerator(user.roles)) {
-    return { success: false, error: "Moderator clearance required." };
+  const auth = await getModeratorUserForAction();
+  if ("error" in auth) {
+    return { success: false, error: auth.error };
   }
+  const user = auth;
 
   const neighbor = await getNetNeighborById(id);
   if (!neighbor) return { success: false, error: "Submission not found." };
@@ -97,6 +116,41 @@ export async function reviewNetNeighborAction(
   });
 
   revalidatePath("/net-neighbors");
+  revalidatePath("/admin/net-neighbors");
   revalidatePath("/admin/social");
+  return { success: true };
+}
+
+export async function updateNetNeighborOrderAction(
+  items: { id: string; sortOrder: number }[],
+): Promise<ActionResult> {
+  const auth = await getModeratorUserForAction();
+  if ("error" in auth) {
+    return { success: false, error: auth.error };
+  }
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return { success: false, error: "No items to reorder." };
+  }
+
+  const ids = items.map((i) => i.id);
+  const rows = await prisma.netNeighbor.findMany({
+    where: { id: { in: ids }, status: "APPROVED" },
+    select: { id: true },
+  });
+
+  if (rows.length !== ids.length) {
+    return { success: false, error: "Invalid banner selection for reorder." };
+  }
+
+  await updateNetNeighborOrder(
+    items.map((item, index) => ({
+      id: item.id,
+      sortOrder: index,
+    })),
+  );
+
+  revalidatePath("/net-neighbors");
+  revalidatePath("/admin/net-neighbors");
   return { success: true };
 }

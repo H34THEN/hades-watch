@@ -26,6 +26,7 @@ const CANONICAL_SEEDS: { name: string; script: string; optional?: boolean }[] = 
   { name: "archive", script: "prisma/scripts/seed-archive.ts" },
   { name: "missions:first-descent", script: "prisma/scripts/seed-missions-first-descent.ts" },
   { name: "chat", script: "prisma/scripts/seed-chat-rooms.ts" },
+  { name: "net-neighbors", script: "prisma/scripts/seed-net-neighbors.ts" },
 ];
 
 async function seedRoles() {

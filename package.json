@@ -33,6 +33,7 @@
     "db:verify:world-lore": "prisma generate && tsx prisma/scripts/verify-world-lore.ts",
     "db:seed:missions:first-descent": "prisma generate && tsx prisma/scripts/seed-missions-first-descent.ts",
     "db:seed:chat": "prisma generate && tsx prisma/scripts/seed-chat-rooms.ts",
+    "db:seed:net-neighbors": "tsx prisma/scripts/seed-net-neighbors.ts",
     "db:cleanup:chat": "tsx prisma/scripts/cleanup-chat-messages.ts",
     "deploy:verify": "bash scripts/verify-production-deploy.sh"
   },

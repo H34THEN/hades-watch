@@ -29,22 +29,27 @@ function mimeFromPath(path: string): string {
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const user = await getSessionUser();
-  if (!user || !isApprovedUser(user)) {
-    return NextResponse.json({ error: "Restricted" }, { status: 403 });
-  }
 
   const neighbor = await getNetNeighborById(id);
   if (!neighbor || !neighbor.bannerPath) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const canModerate = isModerator(user.roles);
-  if (neighbor.status !== "APPROVED" && !canModerate) {
+  const user = await getSessionUser();
+  const canModerate = !!user && isModerator(user.roles);
+  const isOwnerPending =
+    neighbor.status === "PENDING" &&
+    !!user &&
+    isApprovedUser(user) &&
+    neighbor.submittedById === user.id;
+
+  if (neighbor.status === "APPROVED") {
+    // Public approved banners — no auth required
+  } else if (!canModerate && !isOwnerPending) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -62,7 +67,8 @@ export async function GET(
     headers: {
       "Content-Type": mimeFromPath(absolutePath),
       "Content-Length": String(fileStat.size),
-      "Cache-Control": "private, max-age=3600",
+      "Cache-Control":
+        neighbor.status === "APPROVED" ? "public, max-age=3600" : "private, max-age=300",
     },
   });
 }

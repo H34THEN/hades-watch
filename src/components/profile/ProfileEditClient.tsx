@@ -160,8 +160,12 @@ export function ProfileEditClient({ user, initial: rawInitial }: ProfileEditClie
       <div>
         <h1 className="font-mono text-3xl tracking-widest uppercase">Edit Profile World</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Custom profile code is sandboxed. Scripts are not allowed. Do not paste secrets, tokens,
-          passwords, private keys, recovery codes, addresses, medical records, or private data.
+          Profile relic customization affects only your sandboxed relic zone. The larger dossier
+          frame, navigation, badges, missions, and site layout remain controlled by Hades Watch.
+        </p>
+        <p className="mt-2 font-mono text-[10px] text-muted-foreground">
+          Relic HTML/CSS is isolated inside a sandboxed iframe for safety. Scripts and full-page
+          layout overrides are not allowed.
         </p>
       </div>
 

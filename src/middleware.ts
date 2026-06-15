@@ -18,6 +18,7 @@ export const config = {
     "/dead-drops/:path*",
     "/ciphers/:path*",
     "/chat/:path*",
-    "/net-neighbors",
+    "/net-neighbors/submit",
+    "/net-neighbors/submit/:path*",
   ],
 };

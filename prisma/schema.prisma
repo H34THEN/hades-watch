@@ -986,9 +986,12 @@ model NetNeighbor {
   description   String?           @db.Text
   bannerPath    String?
   bannerUrl     String?
+  bannerText    String?
+  bannerStyle   Json?
   tags          String[]
   submitterNote String?           @db.Text
   status        NetNeighborStatus @default(PENDING)
+  sortOrder     Int               @default(0)
   submittedById String?
   reviewedById  String?
   reviewedAt    DateTime?
@@ -1000,6 +1003,8 @@ model NetNeighbor {
   reviewedBy  User? @relation("NetNeighborReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
 
   @@index([status])
+  @@index([sortOrder])
+  @@index([submittedById])
 }
 
 model UserProfileCustomization {

@@ -8,7 +8,7 @@ export const NET_NEIGHBOR_BANNERS_DIR = join(
   "storage/uploads/net-neighbors/banners",
 );
 
-export const MAX_BANNER_BYTES = 512 * 1024;
+export const MAX_BANNER_BYTES = 2 * 1024 * 1024;
 export const ALLOWED_BANNER_EXTENSIONS = new Set([".gif", ".png", ".jpg", ".jpeg", ".webp"]);
 export const ALLOWED_BANNER_MIMES = new Set([
   "image/gif",
@@ -35,7 +35,7 @@ export function validateBannerUpload(
     return { ok: false, error: "Banner image is required." };
   }
   if (file.size > MAX_BANNER_BYTES) {
-    return { ok: false, error: "Banner exceeds 512 KB limit." };
+    return { ok: false, error: "Banner exceeds 2 MB limit." };
   }
   const ext = extname(file.name).toLowerCase();
   if (!ALLOWED_BANNER_EXTENSIONS.has(ext)) {

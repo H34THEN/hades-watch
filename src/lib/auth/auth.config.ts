@@ -69,7 +69,7 @@ export const authConfig: NextAuthConfig = {
         "/dead-drops",
         "/ciphers",
         "/chat",
-        "/net-neighbors",
+        "/net-neighbors/submit",
       ];
 
       if (protectedRoutes.some((r) => path.startsWith(r))) {

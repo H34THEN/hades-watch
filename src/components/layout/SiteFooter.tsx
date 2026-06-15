@@ -23,6 +23,9 @@ export function SiteFooter({ className }: { className?: string }) {
           <Link href="/invite" className="hover:text-primary">
             Invite
           </Link>
+          <Link href="/support" className="hover:text-primary">
+            Support the Underwatch
+          </Link>
         </div>
       </div>
     </footer>

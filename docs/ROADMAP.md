@@ -111,7 +111,8 @@
 ## Phase 11 — Old-Web Social Features
 
 - **Chat Rooms** (`/chat`) — HTTPS-protected temporary chat, 5 AIM-style rooms, 24h retention, alias support
-- **Net Neighbors** (`/net-neighbors`) — 88×31 banner wall, moderated submissions, disk storage
+- **Net Neighbors** (`/net-neighbors`) — full HUD banner wall, signal button builder, admin drag-reorder — [NET_NEIGHBORS.md](NET_NEIGHBORS.md)
+- **Support placeholder** — footer → `/support`
 - **Profile Relic Zone** (`/profile`) — sandboxed MySpace-style HTML/CSS/RSS in iframe (no user JS)
 - Admin review: `/admin/social`
 - Seed: `db:seed:chat`; cleanup: `db:cleanup:chat`

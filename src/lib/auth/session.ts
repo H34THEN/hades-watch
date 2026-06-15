@@ -72,3 +72,37 @@ export async function requireModerator(): Promise<SessionUser> {
   if (!isModerator(user.roles)) redirect("/dashboard?error=access_denied");
   return user;
 }
+
+/** Server actions must return errors — never redirect. */
+export type ActionAuthError = { error: string };
+
+export async function getApprovedUserForAction(): Promise<
+  SessionUser | ActionAuthError
+> {
+  const user = await getSessionUser();
+  if (!user) {
+    return { error: "Sign in to continue." };
+  }
+  if (!isApprovedUser(user)) {
+    return {
+      error: "Net Neighbor submissions open after operative approval.",
+    };
+  }
+  return user;
+}
+
+export async function getModeratorUserForAction(): Promise<
+  SessionUser | ActionAuthError
+> {
+  const user = await getSessionUser();
+  if (!user) {
+    return { error: "Sign in to continue." };
+  }
+  if (!isApprovedUser(user)) {
+    return { error: "Moderator clearance required." };
+  }
+  if (!isModerator(user.roles)) {
+    return { error: "Moderator clearance required." };
+  }
+  return user;
+}

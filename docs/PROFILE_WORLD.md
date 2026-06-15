@@ -9,7 +9,17 @@ See also: [PROFILE_WORLDS.md](./PROFILE_WORLDS.md) for relic zone, uploads, and 
 | Route | Purpose |
 |-------|---------|
 | `/profile` | Your profile world |
-| `/profile/edit` | Edit dossier, relic, uploads |
+| `/profile/edit` | Callsign, controlled fields, **sandboxed relic iframe only** |
+
+## Customization Scope
+
+Profile relic customization affects **only** the sandboxed iframe relic zone. The dossier frame, navigation, badges, missions, and site layout remain controlled by Hades Watch.
+
+- Allowed: callsign, display name, avatar, tagline, relic HTML/CSS inside sandboxed iframe, RSS feeds rendered by the app
+- Not allowed: full-page HTML/CSS, scripts, parent DOM changes, global layout overrides
+
+Relic iframe sandbox: `allow-popups allow-popups-to-escape-sandbox` — no `allow-scripts` or `allow-same-origin` (MVP).
+
 | `/profile/avatar` | Avatar builder with HUD preview |
 | `/profile/avatar/bases` | Download official base parts |
 | `/profile/[callsign]` | Public world by `Character.callsign` (when `isPublic` or owner) |

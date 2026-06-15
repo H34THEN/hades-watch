@@ -106,7 +106,10 @@ export default async function AdminPage() {
           <Link href="/admin/dead-drops"><CommandButton size="sm">Manage</CommandButton></Link>
         </AdminCard>
         <AdminCard title="Social" description="Net Neighbors & relic zones" status="online">
-          <Link href="/admin/social"><CommandButton size="sm">Review</CommandButton></Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin/net-neighbors"><CommandButton size="sm">Net Neighbors</CommandButton></Link>
+            <Link href="/admin/social"><CommandButton size="sm" variant="outline">Social Review</CommandButton></Link>
+          </div>
         </AdminCard>
         <AdminCard title="Mod Queue" description={`${modStats.open} open reports`} status={modStats.open > 0 ? "degraded" : "online"}>
           <Link href="/moderation"><CommandButton size="sm">Moderation</CommandButton></Link>
