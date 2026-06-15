@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { RoleName } from "@/generated/prisma/client";
+import { isAutoUnlockLoreSlug } from "@/lib/lore/auto-unlock";
 import { writeAuditLog } from "@/lib/audit";
 import { matchesClearance } from "@/lib/clearance";
 import { requireAdminUser } from "@/lib/auth/guards";
@@ -36,7 +37,7 @@ export async function getLoreForUser(userId: string, roles: RoleName[]) {
     const factionOk =
       !entry.requiredFactionId ||
       entry.requiredFactionId === character?.factionId;
-    const unlocked = unlockedIds.has(entry.id);
+    const unlocked = unlockedIds.has(entry.id) || isAutoUnlockLoreSlug(entry.slug);
     const accessible = roleOk && factionOk;
     return { ...entry, accessible, unlocked, canRead: accessible && unlocked };
   });
@@ -63,11 +64,13 @@ export async function getLoreBySlug(slug: string, userId: string, roles: RoleNam
     where: { userId_loreEntryId: { userId, loreEntryId: entry.id } },
   });
 
+  const unlocked = !!unlock || isAutoUnlockLoreSlug(slug);
+
   return {
     entry,
     accessible: roleOk && factionOk,
-    unlocked: !!unlock,
-    canRead: roleOk && factionOk && !!unlock,
+    unlocked,
+    canRead: roleOk && factionOk && unlocked,
   };
 }
 
@@ -100,6 +103,7 @@ export async function unlockLoreAction(loreEntryId: string): Promise<ActionResul
   });
 
   revalidatePath("/archive/lore");
+  revalidatePath(`/archive/lore/${entry.slug}`);
   return { success: true };
 }
 

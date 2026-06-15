@@ -17,6 +17,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:factions": "tsx prisma/scripts/seed-factions.ts",
+    "db:seed:lore": "tsx prisma/scripts/seed-lore.ts",
     "db:seed:test-users": "tsx prisma/scripts/seed-test-users.ts",
     "db:cleanup-test-users": "tsx prisma/scripts/cleanup-test-users.ts",
     "db:bootstrap": "tsx prisma/scripts/bootstrap-owner-invite.ts",

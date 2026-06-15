@@ -78,6 +78,9 @@ npm run db:seed
 # Chthonic Uprising alliance + five cells + badges
 npm run db:seed:factions
 
+# Canonical lore (including origin dossier) — safe for production
+npm run db:seed:lore
+
 # Dev/test accounts only — run explicitly
 npm run db:seed:test-users
 

@@ -1,11 +1,14 @@
 import "dotenv/config";
-import { readFileSync } from "fs";
-import { join } from "path";
 import { createHash } from "crypto";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, RoleName } from "../src/generated/prisma/client";
 import { buildJitsiUrl, generateJitsiRoomName } from "../src/lib/jitsi";
 import { isDevInviteSeedingAllowed } from "../src/lib/env";
+import {
+  CANONICAL_LORE_ENTRIES,
+  DEV_LORE_ENTRIES,
+  seedLoreEntries,
+} from "../src/lib/lore/canonical-lore-seed";
 
 function hashCipherAnswer(answer: string): string {
   return createHash("sha256").update(answer.trim().toLowerCase()).digest("hex");
@@ -193,71 +196,8 @@ async function seedPhase4Content() {
 
   console.log("  ✓ Missions");
 
-  const loreEntries = [
-    {
-      slug: "the-chthonic-uprising",
-      title: "The Chthonic Uprising",
-      excerpt:
-        "A recovered Dead Index testimony from Heathen on how the underworld resistance formed after the Ledger Purges, All-Seeing Census, Burning of the Civic Tablets, and Thunder Casket Crisis.",
-      body: null as string | null,
-      bodyFromFile: "docs/lore/CHTHONIC_UPRISING_ORIGIN.md",
-      requiredRole: null as RoleName | null,
-    },
-    {
-      slug: "the-first-watch",
-      title: "The First Watch",
-      excerpt: "Before the network had a name, someone stayed awake on purpose.",
-      body: "The First Watch was not a ceremony. It was a refusal — a decision to keep the line open when everyone else logged off.\n\nOperatives who inherit that watch inherit its cost: you see the signal before it becomes news, and you answer before anyone asks.",
-      requiredRole: null as RoleName | null,
-    },
-    {
-      slug: "terminal-hymns",
-      title: "Terminal Hymns",
-      excerpt: "Null Choir doctrine encoded in maintenance logs.",
-      body: "They sang in comment blocks and checksum failures. Each hymn was a test pattern for the faithful and a trap for the careless.\n\nIf you hear rhythm in static, you are already in their liturgy.",
-      requiredRole: "Member" as RoleName | null,
-    },
-    {
-      slug: "the-archive-watches-back",
-      title: "The Archive Watches Back",
-      excerpt: "Every index has an observer.",
-      body: "Archive Wraiths insist the stacks are alive. Not sentient — attentive. Delete a file and something remembers the shape of the absence.\n\nRead carefully. The archive logs readers as faithfully as it logs writers.",
-      requiredRole: "Gamer" as RoleName | null,
-      factionSlug: "oracular-circuit",
-    },
-  ];
-
-  for (const l of loreEntries) {
-    const body =
-      l.body ??
-      (l.bodyFromFile
-        ? readFileSync(join(process.cwd(), l.bodyFromFile), "utf8")
-        : "");
-
-    await prisma.loreEntry.upsert({
-      where: { slug: l.slug },
-      update: {
-        title: l.title,
-        excerpt: l.excerpt,
-        body,
-        status: "Published",
-        publishedAt: new Date(),
-        requiredRole: l.requiredRole,
-        requiredFactionId: l.factionSlug ? factionRecords[l.factionSlug] : null,
-      },
-      create: {
-        slug: l.slug,
-        title: l.title,
-        excerpt: l.excerpt,
-        body,
-        status: "Published",
-        publishedAt: new Date(),
-        requiredRole: l.requiredRole,
-        requiredFactionId: l.factionSlug ? factionRecords[l.factionSlug] : null,
-      },
-    });
-  }
-
+  await seedLoreEntries(prisma, CANONICAL_LORE_ENTRIES, factionRecords);
+  await seedLoreEntries(prisma, DEV_LORE_ENTRIES, factionRecords);
   console.log("  ✓ Lore entries");
 
   const deadDrops = [
