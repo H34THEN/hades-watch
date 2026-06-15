@@ -27,7 +27,7 @@
     "db:studio": "prisma studio",
     "media:import-track": "tsx prisma/scripts/import-media-track.ts",
     "db:verify:world-lore": "prisma generate && tsx prisma/scripts/verify-world-lore.ts",
-    "db:diagnose:world-lore": "prisma generate && tsx prisma/scripts/diagnose-world-lore-access.ts",
+    "db:seed:missions:first-descent": "prisma generate && tsx prisma/scripts/seed-missions-first-descent.ts",
     "deploy:verify": "bash scripts/verify-production-deploy.sh"
   },
   "dependencies": {

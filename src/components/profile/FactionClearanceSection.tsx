@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMissionBadgeGrid } from "@/components/profile/ProfileMissionBadgeGrid";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getHighestRole } from "@/lib/dossier";
 import { POSITION_LABELS } from "@/lib/factions/chthonic-data";
@@ -117,6 +118,9 @@ export function FactionClearanceSection({ dossier }: FactionClearanceSectionProp
           <p className="border-t border-border/40 pt-3 text-xs text-amber-400/90">
             Pending request: {dossier.pendingFactionRequest.name}
           </p>
+        )}
+        {dossier.missionBadges.length > 0 && (
+          <ProfileMissionBadgeGrid badges={dossier.missionBadges} />
         )}
         {dossier.dbBadges.length > 0 && (
           <div className="border-t border-border/40 pt-3">

@@ -69,6 +69,18 @@ export interface DossierData {
     reputation: number;
   } | null;
   dbBadges: { name: string; slug: string; color: string | null }[];
+  missionBadges: {
+    slug: string;
+    name: string;
+    color: string | null;
+    placeholderText: string | null;
+    placeholderColor: string | null;
+    missionSlug: string | null;
+    isMissionCompletionBadge: boolean;
+    verificationStatus: "Pending" | "Verified" | "Rejected";
+    factionName: string | null;
+    awardedAt: Date;
+  }[];
   accountStatus: string;
   pendingFactionRequest: { name: string; slug: string } | null;
   spotify: {
@@ -128,7 +140,9 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
       },
       loreUnlocks: true,
       userBadges: {
-        include: { badge: true },
+        include: {
+          badge: { include: { faction: { select: { name: true, slug: true } } } },
+        },
         orderBy: { awardedAt: "desc" },
       },
     },
@@ -196,6 +210,7 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
   });
 
   for (const ub of user.userBadges) {
+    if (ub.badge.missionSlug) continue;
     badges.push({
       id: `db-${ub.badge.slug}`,
       label: ub.badge.name,
@@ -274,11 +289,27 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
           reputation: approvedAllianceMembership.reputation,
         }
       : null,
-    dbBadges: user.userBadges.map((ub) => ({
-      name: ub.badge.name,
-      slug: ub.badge.slug,
-      color: ub.badge.color,
-    })),
+    dbBadges: user.userBadges
+      .filter((ub) => !ub.badge.missionSlug)
+      .map((ub) => ({
+        name: ub.badge.name,
+        slug: ub.badge.slug,
+        color: ub.badge.color,
+      })),
+    missionBadges: user.userBadges
+      .filter((ub) => ub.badge.missionSlug)
+      .map((ub) => ({
+        slug: ub.badge.slug,
+        name: ub.badge.name,
+        color: ub.badge.color,
+        placeholderText: ub.badge.placeholderText,
+        placeholderColor: ub.badge.placeholderColor,
+        missionSlug: ub.badge.missionSlug,
+        isMissionCompletionBadge: ub.badge.isMissionCompletionBadge,
+        verificationStatus: ub.verificationStatus,
+        factionName: ub.badge.faction?.name ?? null,
+        awardedAt: ub.awardedAt,
+      })),
     pendingFactionRequest: pendingMembership
       ? { name: pendingMembership.faction.name, slug: pendingMembership.faction.slug }
       : null,

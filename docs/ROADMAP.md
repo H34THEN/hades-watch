@@ -88,6 +88,18 @@
 - Operational history: missions, ciphers, lore unlocks
 - See `docs/PROFILE_DOSSIER.md`
 
+## Phase 10 — First Descent Mission Pack
+
+- **Mission Pack I: First Descent Protocols** — five nonviolent real-world readiness support missions
+- Cross-faction completion: any approved operative may complete any mission to support a faction
+- Faction support reputation on verified mission completion (no primary-faction requirement)
+- Component badges + mission completion badges on operative dossier (square placeholders, verification status)
+- Private proof packets — reviewer-only; never on public profile
+- Routes: `/mmo/missions`, `/mmo/missions/[slug]`
+- Admin/moderator review: `/admin/missions`
+- Seed: `db:seed:missions:first-descent` (production-safe, idempotent)
+- Canonical lore: `docs/missions/FIRST_DESCENT_PROTOCOLS.md`
+
 ## Phase 8 — Out-of-Band Beta Verification
 
 - No-email beta access model (`docs/BETA_ACCESS_MODEL.md`)

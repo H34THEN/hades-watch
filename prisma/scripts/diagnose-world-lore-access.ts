@@ -28,7 +28,7 @@ async function main() {
   const meta = getCategoryByRouteSlug("world");
   console.log("Route meta:", meta ? { slug: meta.slug, loreCategory: meta.loreCategory } : "MISSING");
 
-  let user = email
+  const user = email
     ? await prisma.user.findUnique({
         where: { email },
         include: { userRoles: { include: { role: true } } },

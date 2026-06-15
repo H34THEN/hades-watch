@@ -117,6 +117,43 @@ enum MissionParticipationStatus {
   Dropped
 }
 
+enum MissionDifficulty {
+  INITIATE
+  FIELD
+}
+
+enum MissionPackMissionType {
+  REAL_WORLD_READINESS
+  PRIVACY_LITERACY
+  PREPAREDNESS
+  REPAIR_AND_OPEN_SOURCE
+  CREATIVE_MORALE
+}
+
+enum MissionSubmissionType {
+  CERTIFICATION_PROOF
+  CHECKLIST_AND_REFLECTION
+  LINK_AND_CHECKLIST
+  TEXT_LINK_OR_UPLOAD
+}
+
+enum MissionReviewMode {
+  MANUAL
+  MANUAL_OR_AUTOMATED
+}
+
+enum MissionSubmissionStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum BadgeVerificationStatus {
+  Pending
+  Verified
+  Rejected
+}
+
 enum FactionPosition {
   INITIATE
   MEMBER
@@ -196,6 +233,9 @@ model User {
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
   missionParticipations   MissionParticipation[]
+  missionSubmissions      MissionSubmission[]      @relation("MissionSubmitter")
+  reviewedMissionSubmissions MissionSubmission[]   @relation("MissionReviewer")
+  reviewedUserBadges      UserBadge[]              @relation("BadgeReviewer")
   cipherSolves            CipherSolve[]
   inviteRedemption        InviteRedemption?
   verificationClaim       UserVerificationClaim?
@@ -541,47 +581,81 @@ model FactionMembership {
 }
 
 model Badge {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  name        String
-  description String?
-  factionId   String?
-  color       String?
-  createdAt   DateTime @default(now())
+  id                       String   @id @default(cuid())
+  slug                     String   @unique
+  name                     String
+  description              String?
+  factionId                String?
+  color                    String?
+  requirement              String?  @db.Text
+  proofType                String?
+  missionSlug              String?
+  requiredForMissionCompletion Boolean @default(false)
+  isMissionCompletionBadge Boolean  @default(false)
+  placeholderText          String?
+  placeholderColor         String?
+  profileDisplayCategory   String?
+  createdAt                DateTime @default(now())
 
-  faction   Faction?    @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  faction    Faction?    @relation(fields: [factionId], references: [id], onDelete: SetNull)
   userBadges UserBadge[]
 }
 
 model UserBadge {
-  id          String   @id @default(cuid())
-  userId      String
-  badgeId     String
-  awardedAt   DateTime @default(now())
-  awardedById String?
+  id                 String                  @id @default(cuid())
+  userId             String
+  badgeId            String
+  awardedAt          DateTime                @default(now())
+  awardedById        String?
+  verificationStatus BadgeVerificationStatus @default(Verified)
+  missionQuestId     String?
+  reviewedAt         DateTime?
+  reviewedById       String?
+  reviewNote         String?
 
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge    Badge  @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  reviewer User?  @relation("BadgeReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
 
   @@unique([userId, badgeId])
   @@index([userId])
+  @@index([verificationStatus])
 }
 
 model Quest {
-  id          String      @id @default(cuid())
-  slug        String      @unique
-  title       String
-  description String      @db.Text
-  status      QuestStatus @default(Draft)
-  factionId   String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                        String                  @id @default(cuid())
+  slug                      String                  @unique
+  title                     String
+  description               String                  @db.Text
+  status                    QuestStatus             @default(Draft)
+  factionId                 String?
+  difficulty                MissionDifficulty?
+  missionType               MissionPackMissionType?
+  estimatedTime             String?
+  visibility                String?                 @default("approved")
+  repeatable                Boolean                 @default(false)
+  openToAllFactions         Boolean                 @default(true)
+  reputationReward          Int?
+  completionBadgeSlug       String?
+  requiredBadgeSlugs        Json?
+  submissionType            MissionSubmissionType?
+  reviewMode                MissionReviewMode?
+  nonviolenceClassification String?
+  safetyNotes               String?                 @db.Text
+  proofPrivacyNotes         String?                 @db.Text
+  loreUnlockSlug            String?
+  missionPack               String?
+  missionMetadata           Json?
+  createdAt                 DateTime                @default(now())
+  updatedAt                 DateTime                @updatedAt
 
-  faction Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  faction        Faction?               @relation(fields: [factionId], references: [id], onDelete: SetNull)
   participations MissionParticipation[]
+  submissions    MissionSubmission[]
 
   @@index([status])
   @@index([factionId])
+  @@index([missionPack])
 }
 
 model MissionParticipation {
@@ -600,6 +674,28 @@ model MissionParticipation {
   @@unique([userId, questId])
   @@index([status])
   @@index([questId])
+}
+
+model MissionSubmission {
+  id                String                  @id @default(cuid())
+  userId            String
+  questId           String
+  status            MissionSubmissionStatus @default(Pending)
+  proofPacket       Json?
+  safetyAffirmation Boolean                 @default(false)
+  submittedAt       DateTime                @default(now())
+  reviewedAt        DateTime?
+  reviewedById      String?
+  reviewNote        String?                 @db.Text
+  updatedAt         DateTime                @updatedAt
+
+  user     User  @relation("MissionSubmitter", fields: [userId], references: [id], onDelete: Cascade)
+  quest    Quest @relation(fields: [questId], references: [id], onDelete: Cascade)
+  reviewer User? @relation("MissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([questId])
+  @@index([userId])
 }
 
 model LoreEntry {

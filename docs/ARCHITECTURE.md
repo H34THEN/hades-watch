@@ -85,10 +85,12 @@ src/
 
 ### Text MMO (Lightweight)
 
-- Models: `Character` (one per user), `Faction`, `FactionMembership`, `Quest`
-- Routes: `/mmo`, `/mmo/character`, `/mmo/factions`, `/mmo/missions`
+- Models: `Character` (one per user), `Faction`, `FactionMembership`, `Quest`, `MissionSubmission`, `Badge`, `UserBadge`
+- Routes: `/mmo`, `/mmo/character`, `/mmo/factions`, `/mmo/missions`, `/mmo/missions/[slug]`
 - Membership requests scaffolded (Pending/Approved/Rejected/Left)
-- Mission participation — complete (Phase 5)
+- Mission participation — join/leave/complete (Phase 5)
+- **First Descent Protocols** (Phase 10): real-world readiness support missions, cross-faction completion, private proof packets, moderator review — see [missions/FIRST_DESCENT_PROTOCOLS.md](missions/FIRST_DESCENT_PROTOCOLS.md)
+- Seed: `db:seed:missions:first-descent`
 
 ### Lore Archive
 
