@@ -1,13 +1,20 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
+  email: z
+    .string()
+    .min(2, "Enter your email or operative codename")
+    .max(256),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export const registerSchema = z
   .object({
-    email: z.string().email("Enter a valid email address"),
+    email: z
+      .string()
+      .email("Enter a valid email address")
+      .optional()
+      .or(z.literal("")),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -18,7 +25,11 @@ export const registerSchema = z
       .string()
       .min(8, "Invite code is required")
       .max(64, "Invite code is too long"),
-    name: z.string().min(2).max(64).optional(),
+    name: z
+      .string()
+      .min(2, "Operative codename is required")
+      .max(64, "Codename is too long"),
+    verificationValue: z.string().max(4096).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

@@ -205,8 +205,31 @@ export async function getAdminUsers() {
       createdAt: true,
       disabled: true,
       banned: true,
+      accountStatus: true,
+      approvedAt: true,
+      approvalSource: true,
       character: { select: { callsign: true, faction: { select: { name: true } } } },
       userRoles: { include: { role: true } },
+      verificationClaim: {
+        select: {
+          status: true,
+          method: true,
+          submittedPreview: true,
+          createdAt: true,
+        },
+      },
+      inviteRedemption: {
+        select: {
+          invite: {
+            select: {
+              code: true,
+              verificationRequirement: {
+                select: { method: true, expectedPreview: true },
+              },
+            },
+          },
+        },
+      },
       _count: { select: { notesAbout: true } },
     },
   });

@@ -68,6 +68,7 @@ async function main() {
       roleGranted: "Owner",
       maxUses: 1,
       isDevCode: false,
+      autoApproveOnRegister: true,
     },
   });
 

@@ -31,6 +31,7 @@ Requirements:
 - `ALLOW_PROD_ADMIN_BOOTSTRAP=true` must be set
 - Refuses if active dev invites exist
 - Creates single-use `OWNER-BOOTSTRAP-XXXXXXXX` invite with Owner role
+- Sets `autoApproveOnRegister=true` so Owner registers without manual approval
 - Prints code **once** to stdout
 
 ### Register

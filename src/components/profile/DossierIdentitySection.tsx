@@ -13,6 +13,10 @@ export function DossierIdentitySection({ dossier }: DossierIdentitySectionProps)
     <TerminalPanel title="dossier.identity" className="mb-8">
       <div className="space-y-4 font-mono text-sm">
         <div className="flex flex-col gap-1 border-b border-border/40 pb-3 sm:flex-row sm:justify-between">
+          <span className="text-muted-foreground">ENTRY VERIFICATION</span>
+          <span>{dossier.entryVerification}</span>
+        </div>
+        <div className="flex flex-col gap-1 border-b border-border/40 pb-3 sm:flex-row sm:justify-between">
           <span className="text-muted-foreground">CODENAME</span>
           <span className="text-primary">{dossier.codename}</span>
         </div>

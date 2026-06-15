@@ -88,6 +88,15 @@
 - Operational history: missions, ciphers, lore unlocks
 - See `docs/PROFILE_DOSSIER.md`
 
+## Phase 8 — Out-of-Band Beta Verification
+
+- No-email beta access model (`docs/BETA_ACCESS_MODEL.md`)
+- User account status: Pending / Approved / Rejected
+- Optional invite-bound safety number / fingerprint verification
+- Auto-approve on verification match
+- Admin approval queue at `/admin/users`
+- `/pending-approval` for queued operatives
+
 ## Future
 
 - Wire SMTP transport (nodemailer or provider SDK)

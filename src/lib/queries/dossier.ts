@@ -10,6 +10,7 @@ import {
   resolveActiveTitle,
 } from "@/lib/dossier";
 import { getThemeById } from "@/lib/themes/registry";
+import { getEntryVerificationDisplay } from "@/lib/verification";
 import { isAdmin } from "@/lib/auth/roles";
 
 export interface DossierMissionEntry {
@@ -61,6 +62,7 @@ export interface DossierData {
     embedUrl: string;
     canonicalUrl: string;
   } | null;
+  entryVerification: string;
   lineage: {
     hasData: boolean;
     entryCode: string | null;
@@ -91,6 +93,9 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
       factionMemberships: {
         include: { faction: true },
         orderBy: { updatedAt: "desc" },
+      },
+      verificationClaim: {
+        select: { status: true },
       },
       inviteRedemption: {
         include: {
@@ -207,6 +212,9 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
     earnedTitles,
     badges,
     clearance,
+    entryVerification: getEntryVerificationDisplay(
+      user.verificationClaim?.status ?? "NOT_REQUIRED",
+    ),
     faction: faction
       ? {
           name: faction.name,

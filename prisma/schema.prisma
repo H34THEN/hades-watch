@@ -88,6 +88,30 @@ enum MissionParticipationStatus {
   Dropped
 }
 
+enum UserAccountStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum InviteVerificationMethod {
+  SIGNAL_SAFETY_NUMBER
+  SIMPLEX_CONTACT
+  MATRIX_DEVICE
+  SESSION_ID
+  PGP_FINGERPRINT
+  SSH_FINGERPRINT
+  OTHER
+}
+
+enum InviteVerificationStatus {
+  NOT_REQUIRED
+  MATCHED
+  MISMATCHED
+  MISSING
+  MANUAL_REVIEW
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -97,6 +121,9 @@ model User {
   passwordHash  String?
   disabled      Boolean   @default(false)
   banned        Boolean   @default(false)
+  accountStatus UserAccountStatus @default(Pending)
+  approvedAt    DateTime?
+  approvalSource String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -123,12 +150,13 @@ model User {
   missionParticipations   MissionParticipation[]
   cipherSolves            CipherSolve[]
   inviteRedemption        InviteRedemption?
+  verificationClaim       UserVerificationClaim?
   spotifyPlaylistId       String?
   spotifyPlaylistUrl      String?
   spotifyEmbedUrl         String?
   activeTitle             String?
-
   @@index([createdAt])
+  @@index([accountStatus])
 }
 
 model Account {
@@ -208,9 +236,11 @@ model InviteCode {
   updatedAt       DateTime  @updatedAt
   revoked         Boolean   @default(false)
   isDevCode       Boolean   @default(false)
+  autoApproveOnRegister Boolean @default(false)
 
   createdBy User? @relation("InviteCreator", fields: [createdById], references: [id], onDelete: SetNull)
   redemptions InviteRedemption[]
+  verificationRequirement InviteVerificationRequirement?
 
   @@index([revoked])
   @@index([expiresAt])
@@ -226,6 +256,38 @@ model InviteRedemption {
   invite InviteCode @relation(fields: [inviteCodeId], references: [id], onDelete: Cascade)
   user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([inviteCodeId])
+}
+
+model InviteVerificationRequirement {
+  id                 String                   @id @default(cuid())
+  inviteCodeId       String                   @unique
+  method             InviteVerificationMethod
+  label              String?
+  expectedHash       String
+  expectedPreview    String?
+  autoApproveOnMatch Boolean                  @default(true)
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+
+  invite InviteCode @relation(fields: [inviteCodeId], references: [id], onDelete: Cascade)
+}
+
+model UserVerificationClaim {
+  id               String                    @id @default(cuid())
+  userId           String                    @unique
+  inviteCodeId     String?
+  method           InviteVerificationMethod?
+  submittedHash    String?
+  submittedPreview String?
+  status           InviteVerificationStatus  @default(NOT_REQUIRED)
+  reviewedAt       DateTime?
+  reviewedById     String?
+  createdAt        DateTime                  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
   @@index([inviteCodeId])
 }
 

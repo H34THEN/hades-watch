@@ -1,5 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-import type { RoleName } from "@/generated/prisma/client";
+import type { RoleName, UserAccountStatus } from "@/generated/prisma/client";
 
 /**
  * Edge-compatible auth config (middleware).
@@ -22,6 +22,7 @@ export const authConfig: NextAuthConfig = {
         token.id = user.id!;
         token.roles = (user.roles as RoleName[]) ?? ["Member"];
         token.themeId = user.themeId ?? null;
+        token.accountStatus = (user.accountStatus as UserAccountStatus) ?? "Approved";
       }
 
       if (trigger === "update" && session?.themeId !== undefined) {
@@ -39,12 +40,23 @@ export const authConfig: NextAuthConfig = {
         session.user.id = token.id as string;
         session.user.roles = (token.roles as RoleName[]) ?? ["Member"];
         session.user.themeId = (token.themeId as string | null) ?? null;
+        session.user.accountStatus =
+          (token.accountStatus as UserAccountStatus) ?? "Approved";
       }
       return session;
     },
     authorized({ auth, request }) {
       const path = request.nextUrl.pathname;
       const isLoggedIn = !!auth?.user;
+      const accountStatus =
+        (auth?.user as { accountStatus?: UserAccountStatus })?.accountStatus ?? "Approved";
+
+      if (isLoggedIn && accountStatus === "Pending") {
+        const allowedWhilePending = ["/pending-approval", "/profile", "/login", "/logout"];
+        if (!allowedWhilePending.some((r) => path === r || path.startsWith(`${r}/`))) {
+          return Response.redirect(new URL("/pending-approval", request.nextUrl));
+        }
+      }
 
       const protectedRoutes = [
         "/dashboard",

@@ -54,15 +54,14 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email" className="font-mono text-xs tracking-wider uppercase">
-          Email
+          Email or Codename
         </Label>
         <Input
           id="email"
-          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="operative@void.net"
-          autoComplete="email"
+          placeholder="Email or operative codename"
+          autoComplete="username"
           disabled={loading}
         />
       </div>

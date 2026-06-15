@@ -1,5 +1,6 @@
 import type { RoleName } from "@/generated/prisma/client";
 import type { DefaultSession } from "next-auth";
+import type { UserAccountStatus } from "@/generated/prisma/client";
 
 declare module "next-auth" {
   interface Session {
@@ -7,6 +8,7 @@ declare module "next-auth" {
       id: string;
       roles: RoleName[];
       themeId?: string | null;
+      accountStatus: UserAccountStatus;
     } & DefaultSession["user"];
   }
 
@@ -14,6 +16,7 @@ declare module "next-auth" {
     id: string;
     roles?: RoleName[];
     themeId?: string | null;
+    accountStatus?: UserAccountStatus;
   }
 }
 
@@ -22,5 +25,6 @@ declare module "next-auth/jwt" {
     id: string;
     roles: RoleName[];
     themeId?: string | null;
+    accountStatus?: UserAccountStatus;
   }
 }

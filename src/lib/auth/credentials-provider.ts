@@ -41,8 +41,13 @@ export const credentialsProvider = Credentials({
       }
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: email.toLowerCase() },
+          { name: { equals: email, mode: "insensitive" } },
+        ],
+      },
       include: { themePreference: true },
     });
 
@@ -59,6 +64,15 @@ export const credentialsProvider = Credentials({
         action: "auth.login.failed",
         actorId: user.id,
         metadata: { reason: "account_disabled" },
+      });
+      return null;
+    }
+
+    if (user.accountStatus === "Rejected") {
+      await writeAuditLog({
+        action: "auth.login.failed",
+        actorId: user.id,
+        metadata: { reason: "account_rejected" },
       });
       return null;
     }
@@ -86,6 +100,7 @@ export const credentialsProvider = Credentials({
       name: user.name,
       roles,
       themeId: user.themePreference?.themeId ?? null,
+      accountStatus: user.accountStatus,
     };
   },
 });

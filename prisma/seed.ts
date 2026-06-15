@@ -403,12 +403,14 @@ async function main() {
         maxUses: invite.maxUses,
         revoked: false,
         isDevCode: true,
+        autoApproveOnRegister: true,
       },
       create: {
         code: invite.code,
         roleGranted: invite.roleGranted,
         maxUses: invite.maxUses,
         isDevCode: true,
+        autoApproveOnRegister: true,
       },
     });
     console.log(`  ✓ ${invite.code} → ${invite.roleGranted}`);

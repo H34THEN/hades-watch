@@ -55,6 +55,14 @@ src/
 - Models: `User` Spotify fields, `InviteRedemption`
 - See [PROFILE_DOSSIER.md](PROFILE_DOSSIER.md)
 
+## Beta Access & Out-of-Band Verification (Phase 8)
+
+- No email required for beta registration (codename + optional email)
+- `User.accountStatus`: Pending → Approved via admin or verification match
+- `InviteVerificationRequirement` — hashed expected fingerprint on invite
+- `UserVerificationClaim` — registration verification result (preview only)
+- See [BETA_ACCESS_MODEL.md](BETA_ACCESS_MODEL.md)
+
 ## Phase 4 Systems
 
 ### Moderation Workflow
