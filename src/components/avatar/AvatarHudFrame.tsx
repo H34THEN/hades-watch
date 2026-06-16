@@ -55,29 +55,30 @@ export function AvatarHudFrame({
               NO AVATAR BODY HAS BEEN ASSEMBLED IN THE MIRROR CHAMBER.
             </p>
           ) : (
-            <AvatarLayeredPreview
-              layers={layers}
-              skinColor={skinColor}
-              hairColor={hairColor}
-              poseTransform={pose?.cssTransform}
-              className="h-full w-full max-h-full"
-            />
+            <div className={styles.hudLayerStack}>
+              <AvatarLayeredPreview
+                layers={layers}
+                skinColor={skinColor}
+                hairColor={hairColor}
+                poseTransform={pose?.cssTransform}
+                fillContainer
+                className="h-full w-full"
+              />
+            </div>
           )}
         </div>
+      </div>
 
-        <div className={styles.hudBottomStrip}>
-          <span className={styles.hudChip}>Avatar Load: {loadLabel}</span>
-          <span className={styles.hudChip}>Pose: {pose?.label ?? "Neutral"}</span>
-          {status.speciesName && (
-            <span className={`${styles.hudChip} ${styles.hudChipAccent}`}>
-              Species: {status.speciesName}
-            </span>
-          )}
-          {status.factionName && <span className={styles.hudChip}>Cell: {status.factionName}</span>}
-          <span className={styles.hudChip}>
-            Bg: {status.hasBackground ? "User Signal" : "Default"}
+      <div className={styles.hudStatusBar}>
+        <span className={styles.hudChip}>Avatar Load: {loadLabel}</span>
+        <span className={styles.hudChip}>Pose: {pose?.label ?? "Neutral"}</span>
+        {status.speciesName && (
+          <span className={`${styles.hudChip} ${styles.hudChipAccent}`}>
+            Species: {status.speciesName}
           </span>
-        </div>
+        )}
+        {status.factionName && <span className={styles.hudChip}>Cell: {status.factionName}</span>}
+        <span className={styles.hudChip}>Bg: {status.hasBackground ? "User Signal" : "Default"}</span>
       </div>
     </div>
   );

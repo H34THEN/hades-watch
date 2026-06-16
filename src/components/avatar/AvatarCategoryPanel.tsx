@@ -31,7 +31,7 @@ export function AvatarCategoryPanel({
   return (
     <div className="space-y-2">
       <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{title}</p>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
         {items.map((item) => (
           <div key={item.slug} className="space-y-1">
             <button

@@ -73,21 +73,27 @@ export default async function ProfileAvatarPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-8">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-mono text-3xl tracking-widest uppercase">Avatar Builder</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Gaia-style layered identity for the Underwatch mirror chamber.
-          </p>
-        </div>
-        <Link href="/profile">
-          <CommandButton size="sm" variant="outline">
-            ← Profile World
-          </CommandButton>
-        </Link>
-      </div>
-      <AvatarBuilderClient initial={initial} userParts={userParts} sharedParts={sharedParts} />
+    <div className="w-full max-w-none">
+      <AvatarBuilderClient
+        initial={initial}
+        userParts={userParts}
+        sharedParts={sharedParts}
+        header={
+          <>
+            <div>
+              <h1 className="font-mono text-3xl tracking-widest uppercase">Avatar Builder</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Gaia-style layered identity for the Underwatch mirror chamber.
+              </p>
+            </div>
+            <Link href="/profile">
+              <CommandButton size="sm" variant="outline">
+                ← Profile World
+              </CommandButton>
+            </Link>
+          </>
+        }
+      />
     </div>
   );
 }

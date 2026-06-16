@@ -4,6 +4,7 @@ interface TerminalPanelProps {
   children: React.ReactNode;
   title?: string;
   className?: string;
+  contentClassName?: string;
   style?: React.CSSProperties;
   status?: "online" | "offline" | "warning";
 }
@@ -18,6 +19,7 @@ export function TerminalPanel({
   children,
   title,
   className,
+  contentClassName,
   style,
   status = "online",
 }: TerminalPanelProps) {
@@ -37,7 +39,7 @@ export function TerminalPanel({
           <span>{title}</span>
         </div>
       )}
-      <div className="p-4">{children}</div>
+      <div className={cn("p-4", contentClassName)}>{children}</div>
     </div>
   );
 }

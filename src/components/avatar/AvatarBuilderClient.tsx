@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import builderStyles from "@/components/avatar/avatar-builder.module.css";
 import { AvatarHudFrame } from "@/components/avatar/AvatarHudFrame";
 import { AvatarAssetDownloadCard } from "@/components/avatar/AvatarAssetDownloadCard";
 import { AvatarPartUploader } from "@/components/avatar/AvatarPartUploader";
@@ -72,6 +74,7 @@ interface AvatarBuilderClientProps {
   initial: AvatarBuilderInitial;
   userParts: AvatarUserPartRef[];
   sharedParts: AvatarUserPartRef[];
+  header?: ReactNode;
 }
 
 type TabId =
@@ -113,7 +116,12 @@ function partUrl(id: string) {
   return `/api/avatar-parts/${id}`;
 }
 
-export function AvatarBuilderClient({ initial, userParts, sharedParts }: AvatarBuilderClientProps) {
+export function AvatarBuilderClient({
+  initial,
+  userParts,
+  sharedParts,
+  header,
+}: AvatarBuilderClientProps) {
   const router = useRouter();
   const [tab, setTab] = useState<TabId>("body");
   const [state, setState] = useState(initial);
@@ -275,60 +283,67 @@ export function AvatarBuilderClient({ initial, userParts, sharedParts }: AvatarB
   const downloadableBases = getDownloadableBases();
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-      <div className="space-y-4 lg:sticky lg:top-8 lg:self-start">
-        <TerminalPanel title="mirror.preview">
-          <AvatarHudFrame
-            layers={layers}
-            skinColor={skinHex}
-            hairColor={hairHex}
-            poseSlug={state.poseSlug}
-            status={{
-              speciesName,
-              poseSlug: state.poseSlug,
-              hasBackground: !!state.customBackgroundAssetId,
-              loadStatus: layers.length > 0 ? "stable" : "empty",
-            }}
-          />
-          <p className="mt-3 font-mono text-[10px] text-muted-foreground">
-            Layer-stacked preview · replace art in public/avatar-assets/
-          </p>
-        </TerminalPanel>
-        {activeItem && isMovableCategory(activeItem.category) && (
-          <AvatarLayerTransformControls
-            label={`Position · ${activeItem.category}`}
-            transform={activeItem.transform}
-            onChange={(transform) => updateSelectedTransform(activeItem.category, transform)}
-            onRemove={() => removeSelectedCategory(activeItem.category)}
-          />
-        )}
-        <div className="flex flex-wrap gap-2">
-          <CommandButton onClick={save} disabled={isPending}>
-            {isPending ? "Saving…" : "Save Avatar"}
-          </CommandButton>
-          <CommandButton variant="outline" onClick={reset} disabled={isPending}>
-            Reset Default
-          </CommandButton>
-        </div>
-        {error && <SystemAlert title="Error" message={error} variant="error" />}
-        {success && <SystemAlert title="Saved" message={success} variant="success" />}
-      </div>
+    <div className={builderStyles.avatarBuilderShell}>
+      {header && <div className={builderStyles.avatarBuilderHeader}>{header}</div>}
 
-      <div className="space-y-4">
-        <div className="flex gap-1 overflow-x-auto border-b border-border/40 pb-2">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className={`shrink-0 px-3 py-1 font-mono text-[10px] uppercase tracking-wider ${
-                tab === t.id ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+      <div className={builderStyles.avatarBuilderWorkspace}>
+        <div className={builderStyles.avatarPreviewRail}>
+          <TerminalPanel
+            title="mirror.preview"
+            className={builderStyles.avatarPreviewPanel}
+            contentClassName={builderStyles.avatarPreviewPanelInner}
+          >
+            <AvatarHudFrame
+                layers={layers}
+                skinColor={skinHex}
+                hairColor={hairHex}
+                poseSlug={state.poseSlug}
+                status={{
+                  speciesName,
+                  poseSlug: state.poseSlug,
+                  hasBackground: !!state.customBackgroundAssetId,
+                  loadStatus: layers.length > 0 ? "stable" : "empty",
+              }}
+            />
+            <p className={builderStyles.avatarPreviewNote}>
+              Layer-stacked preview · replace art in public/avatar-assets/
+            </p>
+          </TerminalPanel>
+          {activeItem && isMovableCategory(activeItem.category) && (
+            <AvatarLayerTransformControls
+              label={`Position · ${activeItem.category}`}
+              transform={activeItem.transform}
+              onChange={(transform) => updateSelectedTransform(activeItem.category, transform)}
+              onRemove={() => removeSelectedCategory(activeItem.category)}
+            />
+          )}
+          <div className={builderStyles.avatarPreviewActions}>
+            <CommandButton onClick={save} disabled={isPending}>
+              {isPending ? "Saving…" : "Save Avatar"}
+            </CommandButton>
+            <CommandButton variant="outline" onClick={reset} disabled={isPending}>
+              Reset Default
+            </CommandButton>
+          </div>
+          {error && <SystemAlert title="Error" message={error} variant="error" />}
+          {success && <SystemAlert title="Saved" message={success} variant="success" />}
         </div>
+
+        <div className={builderStyles.avatarEditorWorkspace}>
+          <div className={builderStyles.avatarTabRow}>
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTab(t.id)}
+                className={`shrink-0 px-3 py-1 font-mono text-[10px] uppercase tracking-wider ${
+                  tab === t.id ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
 
         {tab === "body" && (
           <div className="space-y-4">
@@ -459,7 +474,7 @@ export function AvatarBuilderClient({ initial, userParts, sharedParts }: AvatarB
         )}
 
         {tab === "pose" && (
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
             {AVATAR_POSES.map((pose) => (
               <button
                 key={pose.slug}
@@ -667,7 +682,7 @@ export function AvatarBuilderClient({ initial, userParts, sharedParts }: AvatarB
               Download official base parts to draw compatible avatar layers. Keep the canvas size and
               transparent background so your part lines up in the builder.
             </p>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
               {downloadableBases.map((asset) => (
                 <AvatarAssetDownloadCard
                   key={asset.slug}
@@ -729,6 +744,7 @@ export function AvatarBuilderClient({ initial, userParts, sharedParts }: AvatarB
             />
           </div>
         )}
+        </div>
       </div>
     </div>
   );

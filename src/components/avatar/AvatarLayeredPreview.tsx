@@ -17,6 +17,8 @@ interface AvatarLayeredPreviewProps {
   hairColor?: string | null;
   poseTransform?: string;
   className?: string;
+  /** Fill the parent preview frame instead of capping at card width. */
+  fillContainer?: boolean;
 }
 
 function layerStyle(transform?: AvatarTransform): React.CSSProperties {
@@ -42,9 +44,16 @@ export function AvatarLayeredPreview({
   hairColor,
   poseTransform,
   className,
+  fillContainer = false,
 }: AvatarLayeredPreviewProps) {
   return (
-    <div className={cn("relative aspect-[3/4] w-full max-w-md", className)}>
+    <div
+      className={cn(
+        "relative w-full",
+        fillContainer ? "h-full min-h-0" : "aspect-[3/4] max-w-md",
+        className,
+      )}
+    >
       {skinColor && (
         <div
           className="pointer-events-none absolute inset-0 z-[5] mix-blend-multiply opacity-35"
