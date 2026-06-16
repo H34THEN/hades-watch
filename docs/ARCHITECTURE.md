@@ -145,7 +145,9 @@ src/
 - Routes: `/dead-drops`, `/dead-drops/[slug]`, `/ciphers`, `/ciphers/[slug]`
 - **First Cipher Set (C1PH3R CR4K3R):** five seeded puzzle missions, hashed answers, automatic badge awards — see [ciphers/FIRST_CIPHER_SET.md](ciphers/FIRST_CIPHER_SET.md), [CIPHERS.md](CIPHERS.md)
 - Seed: `db:seed:ciphers:first-set`
-- Static assets: `public/avatar-assets/`, `public/badge-assets/` (`npm run assets:migrate`)
+- Static assets: `public/avatar-assets/`, `public/badge-assets/` (`npm run assets:migrate`, `npm run assets:registry`)
+- Avatar prompts: `docs/avatarPrompts/`, `docs/AVATAR_PROMPT_REFERENCE.md`, `docs/AVATAR_ASSET_DIRECTORY.md`
+- Avatar Forge GPT access: `/profile/avatar/forge`, `/admin/avatar-forge-access` — URL in `AVATAR_FORGE_GPT_URL` env only — see [AVATAR_FORGE_GPT_ACCESS.md](AVATAR_FORGE_GPT_ACCESS.md)
 - **Not secure messaging** — in-world flavor only
 - Admin: `/admin/dead-drops`
 

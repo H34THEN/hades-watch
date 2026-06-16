@@ -696,9 +696,14 @@ export function AvatarBuilderClient({
                 />
               ))}
             </div>
-            <Link href="/profile/avatar/bases" className="font-mono text-xs text-primary hover:underline">
-              Open full base library page →
-            </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/profile/avatar/bases" className="font-mono text-xs text-primary hover:underline">
+            Open full base library page →
+          </Link>
+          <Link href="/profile/avatar/forge" className="font-mono text-xs text-primary hover:underline">
+            Avatar Forge GPT Access →
+          </Link>
+        </div>
           </div>
         )}
 

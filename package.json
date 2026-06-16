@@ -35,6 +35,7 @@
     "db:seed:missions:underwatch-civic-action": "prisma generate && tsx prisma/scripts/seed-missions-underwatch-civic-action.ts",
     "db:seed:ciphers:first-set": "prisma generate && tsx prisma/scripts/seed-ciphers-first-set.ts",
     "assets:migrate": "tsx scripts/migrate-static-assets.ts",
+    "assets:registry": "tsx scripts/generate-avatar-imported-registry.ts",
     "db:seed:chat": "prisma generate && tsx prisma/scripts/seed-chat-rooms.ts",
     "db:seed:net-neighbors": "tsx prisma/scripts/seed-net-neighbors.ts",
     "db:cleanup:chat": "tsx prisma/scripts/cleanup-chat-messages.ts",

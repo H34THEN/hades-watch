@@ -102,6 +102,9 @@
 - **Edit** — `/profile/edit` for HTML/CSS, RSS, uploads, world metadata
 - **Avatar Builder** — `/profile/avatar` with poses, custom part uploads, HUD preview
 - **Base downloads** — `/profile/avatar/bases` for official creator parts
+- **Avatar Forge GPT** — `/profile/avatar/forge` request + unlock-code gate; Owner review at `/admin/avatar-forge-access`
+- **Prompt reference** — `docs/AVATAR_PROMPT_REFERENCE.md`, `docs/avatarPrompts/`
+- **Asset registry** — `npm run assets:migrate` + `npm run assets:registry` → `src/lib/avatar/avatar-imported-registry.ts`
 - **Public profiles** — `/profile/[callsign]` by `Character.callsign`; auto-provisioned from codename
 - **Callsign backfill** — `npm run db:backfill:profile-slugs`
 - **Canonical seed** — `npm run db:seed` / `db:release` via `prisma/scripts/seed-all.ts`

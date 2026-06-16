@@ -126,6 +126,9 @@ export default async function AdminPage() {
         <AdminCard title="Faction Requests" description="Pending memberships" status="online">
           <Link href="/admin/faction-requests"><CommandButton size="sm">Review</CommandButton></Link>
         </AdminCard>
+        <AdminCard title="Avatar Forge" description="GPT relay access requests" status="online">
+          <Link href="/admin/avatar-forge-access"><CommandButton size="sm">Review</CommandButton></Link>
+        </AdminCard>
         <AdminCard title="Deployment" description="docs/DEPLOYMENT.md" status="locked">
           <p className="font-mono text-[10px] text-muted-foreground">Do not deploy until checklist passes.</p>
         </AdminCard>

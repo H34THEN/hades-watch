@@ -2,14 +2,27 @@
 /**
  * Migrates avatar and badge PNG assets from component folders into public/.
  * Idempotent: skips existing destination files (no overwrite).
+ * Writes docs/AVATAR_ASSET_MIGRATION_REPORT.md on each run.
  */
-import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from "fs";
-import { basename, extname, join } from "path";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "fs";
+import { basename, extname, join, relative } from "path";
 
 const ROOT = process.cwd();
 const AVATAR_SRC = join(ROOT, "src/components/avatar/avatar assets");
 const BADGE_SRC = join(ROOT, "src/components/assets/badges");
 const PUBLIC = join(ROOT, "public");
+const REPORT_PATH = join(ROOT, "docs/AVATAR_ASSET_MIGRATION_REPORT.md");
+
+interface MigrationRow {
+  original: string;
+  destination: string;
+  category: string;
+  slug: string;
+  notes: string;
+  action: "copied" | "skipped";
+}
+
+const avatarRows: MigrationRow[] = [];
 
 function toKebab(name: string): string {
   return name
@@ -32,20 +45,63 @@ function uniqueDest(dir: string, filename: string): string {
   return join(dir, candidate);
 }
 
-function classifyAvatar(relativePath: string, fileName: string): string {
+function classifyAvatar(relativePath: string, fileName: string): { category: string; notes?: string } {
   const p = relativePath.toLowerCase();
   const f = fileName.toLowerCase();
-  if (p.includes("bodybases") || p.includes("/base/") || f.includes("_base")) {
-    return "bodies";
+
+  if (p.includes("bodybases") || p.includes("/base/") || f.includes("_base") || f.includes("-base")) {
+    if (f.startsWith("archivist") && !f.includes("archivist-")) {
+      return { category: "bodies", notes: "archivist variant body" };
+    }
+    return { category: "bodies" };
   }
-  if (p.includes("accessories") || f.startsWith("acc_")) return "accessories";
-  if (p.includes("clothing") || f.startsWith("coat_")) return "outerwear";
-  if (f.includes("horn")) return "horns";
-  if (f.includes("tail")) return "tails";
-  if (f.includes("wing")) return "wings";
-  if (f.includes("hair")) return "hair";
-  if (f.includes("eye")) return "eyes";
-  if (f.includes("background") || f.includes("bg_")) return "backgrounds";
+  if (f.includes("pants") || f.includes("trousers") || f.includes("leggings")) return { category: "pants" };
+  if (f.includes("skirt")) return { category: "skirts" };
+  if (
+    f.startsWith("coat_") ||
+    f.includes("jacket") ||
+    f.includes("cloak") ||
+    f.includes("robe") ||
+    f.includes("mantle") ||
+    f.includes(" coat") ||
+    f.endsWith("-coat.png")
+  ) {
+    return { category: "outerwear" };
+  }
+  if (
+    f.includes("shirt") ||
+    f.includes(" top") ||
+    f.startsWith("top") ||
+    f.includes("_top") ||
+    (f.includes("top") && !f.includes("desktop"))
+  ) {
+    return { category: "tops" };
+  }
+  if (f.includes("boot") || f.includes("shoe") || f.includes("sandal") || f.includes("sneaker")) {
+    return { category: "shoes" };
+  }
+  if (f.includes("sock") || f.includes("stocking") || f.includes("tight")) return { category: "socks" };
+  if (f.includes("glove") || f.includes("gauntlet") || f.includes("cipher-gloves")) return { category: "gloves" };
+  if (f.includes("scarf") || f.includes("headwrap") || f.includes(" soft cap")) return { category: "accessories" };
+  if (f.includes("horn") || f.includes("antler")) return { category: "horns" };
+  if (f.includes("tail")) return { category: "tails" };
+  if (f.includes("wing")) return { category: "wings" };
+  if (f.includes("hair") || f.includes("braid") || f.includes("mohawk")) return { category: "hair" };
+  if (f.includes("eye")) return { category: "eyes" };
+  if (f.includes("background") || f.startsWith("bg_")) return { category: "backgrounds" };
+  if (f.includes("satchel") || f.includes("backpack") || f.includes("pack") && f.includes("ghost")) {
+    return { category: "back-items" };
+  }
+  if (p.includes("accessories") || f.startsWith("acc_")) {
+    if (f.includes("boot") || f.includes("shoe")) return { category: "shoes" };
+    if (f.includes("glove")) return { category: "gloves" };
+    return { category: "accessories" };
+  }
+  if (p.includes("clothing")) {
+    if (f.includes("pants")) return { category: "pants" };
+    if (f.includes("jacket")) return { category: "outerwear" };
+    return { category: "tops" };
+  }
   if (
     f.includes("tiefling") ||
     f.includes("nymph") ||
@@ -53,19 +109,23 @@ function classifyAvatar(relativePath: string, fileName: string): string {
     f.includes("automaton") ||
     f.includes("wraith")
   ) {
-    return "bodies";
+    return { category: "bodies" };
   }
-  if (f.includes("archivist") || f.includes("dead index") || f.includes("underwatch")) {
-    return "accessories";
+  if (f.includes("archivist") && (f.includes("earpiece") || f.includes("cuff"))) {
+    return { category: "accessories" };
   }
-  return "placeholders";
+  if (f.includes("relic") || f.includes("terminal") || f.includes("tablet") || f.includes("drone")) {
+    return { category: "fictional-props" };
+  }
+  if (f.includes("asclepian") || f.includes("oracular") || f.includes("chthonic") || f.includes("daedalus")) {
+    return { category: "faction-flair", notes: "review for clothing vs flair" };
+  }
+  return { category: "placeholders", notes: "uncertain classification" };
 }
 
 function classifyBadge(fileName: string): string {
   const f = fileName.toLowerCase();
-  if (f.includes("cipher") || f.includes("c1ph3r") || f.includes("cr4k3r")) {
-    return "ciphers";
-  }
+  if (f.includes("cipher") || f.includes("c1ph3r") || f.includes("cr4k3r")) return "ciphers";
   if (
     f.includes("veil") ||
     f.includes("oracle") ||
@@ -108,16 +168,26 @@ function migrateAvatarAssets() {
   let copied = 0;
   for (const file of walk(AVATAR_SRC)) {
     const rel = file.slice(AVATAR_SRC.length + 1);
-    const category = classifyAvatar(rel, basename(file));
+    const { category, notes } = classifyAvatar(rel, basename(file));
     const destDir = join(PUBLIC, "avatar-assets", category);
     mkdirSync(destDir, { recursive: true });
     const destName = `${toKebab(basename(file))}${extname(file).toLowerCase()}`;
     const dest = uniqueDest(destDir, destName);
-    if (!existsSync(dest)) {
+    const slug = toKebab(basename(dest));
+    const action = existsSync(dest) ? "skipped" : "copied";
+    if (action === "copied") {
       copyFileSync(file, dest);
       copied += 1;
       console.log(`  avatar → ${dest.replace(PUBLIC, "public")}`);
     }
+    avatarRows.push({
+      original: relative(AVATAR_SRC, file),
+      destination: dest.replace(PUBLIC + "/", "public/"),
+      category,
+      slug,
+      notes: notes ?? (action === "skipped" ? "destination already exists" : ""),
+      action,
+    });
   }
   console.log(`Avatar assets copied: ${copied}`);
 }
@@ -143,8 +213,52 @@ function migrateBadgeAssets() {
   console.log(`Badge assets copied: ${copied}`);
 }
 
+function writeReport() {
+  const copied = avatarRows.filter((r) => r.action === "copied");
+  const skipped = avatarRows.filter((r) => r.action === "skipped");
+  const uncertain = avatarRows.filter((r) => r.category === "placeholders");
+
+  const lines = [
+    "# Avatar Asset Migration Report",
+    "",
+    `Generated: ${new Date().toISOString()}`,
+    "",
+    "## Summary",
+    "",
+    `- Source reviewed: \`src/components/avatar/avatar assets/\``,
+    `- Files processed: ${avatarRows.length}`,
+    `- New copies this run: ${copied.length}`,
+    `- Skipped (already present): ${skipped.length}`,
+    `- Uncertain classifications: ${uncertain.length}`,
+    "",
+    "Source files are **not deleted** after copy. Remove duplicates only after verifying public paths and registry entries.",
+    "",
+    "## Migration Table",
+    "",
+    "| Original File | New File | Category | Registry Slug | Notes |",
+    "|---|---|---|---|---|",
+    ...avatarRows.map(
+      (r) =>
+        `| \`${r.original}\` | \`${r.destination}\` | ${r.category} | \`${r.slug}\` | ${r.notes || r.action} |`,
+    ),
+    "",
+    "## Where Future Assets Go",
+    "",
+    "See [AVATAR_ASSET_DIRECTORY.md](./AVATAR_ASSET_DIRECTORY.md).",
+    "",
+    "## Avatar Forge GPT Access",
+    "",
+    "Implemented at `/profile/avatar/forge` with Owner review at `/admin/avatar-forge-access`.",
+    "GPT URL is server-side only (`AVATAR_FORGE_GPT_URL` env var).",
+    "",
+  ];
+  writeFileSync(REPORT_PATH, lines.join("\n"));
+  console.log(`\nReport written: ${REPORT_PATH}`);
+}
+
 console.log("Migrating static avatar and badge assets...\n");
 migrateAvatarAssets();
 console.log("");
 migrateBadgeAssets();
+writeReport();
 console.log("\nDone.");

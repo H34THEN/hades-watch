@@ -96,6 +96,14 @@ export type AuditAction =
   | "profile.callsign.update"
   | "avatar.save"
   | "avatar.part.upload"
+  | "avatar.forge.request"
+  | "avatar.forge.approve"
+  | "avatar.forge.reject"
+  | "avatar.forge.revoke"
+  | "avatar.forge.code.generated"
+  | "avatar.forge.unlock.success"
+  | "avatar.forge.unlock.failed"
+  | "avatar.forge.link.revealed"
   | "alliance.membership.assign"
   | "alliance.membership.remove";
 

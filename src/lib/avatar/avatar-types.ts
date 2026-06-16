@@ -16,6 +16,7 @@ export interface AvatarRegistryItem {
   defaultTransform: AvatarTransform;
   allowedSpecies?: string[];
   allowedGenderPresentations?: string[];
+  allowedFactions?: string[];
   allowedPoses?: string[];
   downloadableBase?: boolean;
   placeholder?: boolean;

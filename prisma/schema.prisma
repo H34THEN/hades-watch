@@ -295,6 +295,8 @@ model User {
   userAvatar              UserAvatar?
   profileAssets           UserProfileAsset[]
   avatarUserParts         AvatarUserPart[]
+  avatarForgeAccessRequest AvatarForgeAccessRequest? @relation("AvatarForgeAccessUser")
+  avatarForgeReviews      AvatarForgeAccessRequest[] @relation("AvatarForgeAccessReviewer")
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -1140,4 +1142,32 @@ model AvatarUserPart {
   @@unique([userId, slug])
   @@index([userId, category])
   @@index([visibility, category])
+}
+
+enum AvatarForgeAccessStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+model AvatarForgeAccessRequest {
+  id             String                  @id @default(cuid())
+  userId         String                  @unique
+  status         AvatarForgeAccessStatus @default(PENDING)
+  requestedAt    DateTime                @default(now())
+  reviewedAt     DateTime?
+  reviewedById   String?
+  reviewNote     String?                 @db.Text
+  unlockCodeHash String?
+  codeExpiresAt  DateTime?
+  unlockedAt     DateTime?
+  lastRevealedAt DateTime?
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  user       User  @relation("AvatarForgeAccessUser", fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("AvatarForgeAccessReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
 }

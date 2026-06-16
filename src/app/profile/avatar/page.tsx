@@ -86,11 +86,18 @@ export default async function ProfileAvatarPage() {
                 Gaia-style layered identity for the Underwatch mirror chamber.
               </p>
             </div>
-            <Link href="/profile">
-              <CommandButton size="sm" variant="outline">
-                ← Profile World
-              </CommandButton>
-            </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/profile">
+            <CommandButton size="sm" variant="outline">
+              ← Profile World
+            </CommandButton>
+          </Link>
+          <Link href="/profile/avatar/forge">
+            <CommandButton size="sm" variant="outline">
+              Avatar Forge Access
+            </CommandButton>
+          </Link>
+        </div>
           </>
         }
       />
