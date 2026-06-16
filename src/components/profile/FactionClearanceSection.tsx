@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProfileMissionBadgeGrid } from "@/components/profile/ProfileMissionBadgeGrid";
+import { ProfileCipherBadgeGrid } from "@/components/profile/ProfileCipherBadgeGrid";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getHighestRole } from "@/lib/dossier";
 import { POSITION_LABELS } from "@/lib/factions/chthonic-data";
@@ -121,6 +122,9 @@ export function FactionClearanceSection({ dossier }: FactionClearanceSectionProp
         )}
         {dossier.missionBadges.length > 0 && (
           <ProfileMissionBadgeGrid badges={dossier.missionBadges} />
+        )}
+        {dossier.cipherBadges.length > 0 && (
+          <ProfileCipherBadgeGrid badges={dossier.cipherBadges} />
         )}
         {dossier.dbBadges.length > 0 && (
           <div className="border-t border-border/40 pt-3">

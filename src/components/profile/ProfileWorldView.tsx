@@ -4,6 +4,7 @@ import type { ProfileWorldData } from "@/lib/queries/profile-world";
 import { SandboxedProfileFrame } from "@/components/profile/SandboxedProfileFrame";
 import { DossierBadgeList } from "@/components/profile/DossierBadgeList";
 import { ProfileMissionBadgeGrid } from "@/components/profile/ProfileMissionBadgeGrid";
+import { ProfileCipherBadgeGrid } from "@/components/profile/ProfileCipherBadgeGrid";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import Link from "next/link";
 import { CommandButton } from "@/components/terminal/CommandButton";
@@ -186,6 +187,11 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
               {dossier.missionBadges.length > 0 && (
                 <TerminalPanel title="mission.records">
                   <ProfileMissionBadgeGrid badges={dossier.missionBadges} />
+                </TerminalPanel>
+              )}
+              {dossier.cipherBadges.length > 0 && (
+                <TerminalPanel title="cipher.standing">
+                  <ProfileCipherBadgeGrid badges={dossier.cipherBadges} />
                 </TerminalPanel>
               )}
 

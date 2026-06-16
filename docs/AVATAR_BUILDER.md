@@ -112,6 +112,16 @@ public/avatar-assets/hud/             # optional HUD image overlays
 public/avatar-assets/placeholders/
 ```
 
+PNG assets from `src/components/avatar/avatar assets/` can be migrated into these folders with:
+
+```bash
+npm run assets:migrate
+```
+
+Imported PNG registry entries live in `src/lib/avatar/avatar-imported-registry.ts` and merge into `AVATAR_REGISTRY_ITEMS` in `avatar-registry.ts`.
+
+Mission and cipher badge PNGs belong under `public/badge-assets/missions/` and `public/badge-assets/ciphers/`.
+
 ## User Custom Parts
 
 Model: `AvatarUserPart` — category, label, path, visibility (`PRIVATE` | `SHARED`).

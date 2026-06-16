@@ -1,11 +1,13 @@
 export const AVATAR_CANVAS_SIZE = 1024;
 
-export interface AvatarTransform {
-  x: number;
-  y: number;
-  scale: number;
-  rotation: number;
-}
+import { AVATAR_IMPORTED_REGISTRY_ITEMS } from "@/lib/avatar/avatar-imported-registry";
+import type {
+  AvatarRegistryItem,
+  AvatarTransform,
+  SelectedAvatarItem,
+} from "@/lib/avatar/avatar-types";
+
+export type { AvatarRegistryItem, AvatarTransform, SelectedAvatarItem };
 
 export const DEFAULT_AVATAR_TRANSFORM: AvatarTransform = {
   x: 0.5,
@@ -72,20 +74,6 @@ export const AVATAR_EMOTIONS = [
   { slug: "emotion-glitch", label: "Glitch", imagePath: "/avatar-assets/emotions/emotion-glitch.svg" },
 ];
 
-export interface AvatarRegistryItem {
-  slug: string;
-  name: string;
-  category: string;
-  imagePath: string;
-  layerOrder: number;
-  defaultTransform: AvatarTransform;
-  allowedSpecies?: string[];
-  allowedGenderPresentations?: string[];
-  allowedPoses?: string[];
-  downloadableBase?: boolean;
-  placeholder?: boolean;
-}
-
 function item(
   partial: Omit<AvatarRegistryItem, "defaultTransform" | "layerOrder"> & {
     layerOrder?: number;
@@ -102,6 +90,7 @@ function item(
 }
 
 export const AVATAR_REGISTRY_ITEMS: AvatarRegistryItem[] = [
+  ...AVATAR_IMPORTED_REGISTRY_ITEMS,
   item({ slug: "body-base-a", name: "Body A", category: "body", imagePath: "/avatar-assets/bodies/body-base-a.svg", layerOrder: 100 }),
   item({ slug: "body-base-b", name: "Body B", category: "body", imagePath: "/avatar-assets/bodies/body-base-b.svg", layerOrder: 100 }),
   item({ slug: "body-female-a", name: "Female Base A", category: "body", imagePath: "/avatar-assets/bodies/body-female-a.svg", layerOrder: 100, allowedGenderPresentations: ["female"] }),
@@ -137,15 +126,6 @@ export const AVATAR_REGISTRY_ITEMS: AvatarRegistryItem[] = [
     item({ slug: e.slug, name: e.label, category: "emotion", imagePath: e.imagePath, layerOrder: 320 }),
   ),
 ];
-
-export interface SelectedAvatarItem {
-  itemSlug: string;
-  category: string;
-  source: "official" | "private" | "shared";
-  partId?: string;
-  imagePath?: string;
-  transform: AvatarTransform;
-}
 
 export function getRegistryItem(slug: string): AvatarRegistryItem | undefined {
   return AVATAR_REGISTRY_ITEMS.find((i) => i.slug === slug);

@@ -639,6 +639,9 @@ model Badge {
   requirement              String?  @db.Text
   proofType                String?
   missionSlug              String?
+  cipherSlug               String?
+  tier                     String?
+  assetPath                String?
   requiredForMissionCompletion Boolean @default(false)
   isMissionCompletionBadge Boolean  @default(false)
   placeholderText          String?
@@ -869,20 +872,42 @@ model SecretTransmission {
 }
 
 model CipherPuzzle {
-  id           String       @id @default(cuid())
-  slug         String       @unique
-  title        String
-  prompt       String       @db.Text
-  hint         String?
-  difficulty   String       @default("medium")
-  solutionHash String?
-  status       CipherStatus @default(Active)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id                   String       @id @default(cuid())
+  slug                 String       @unique
+  title                String
+  prompt               String       @db.Text
+  playerBrief          String?      @db.Text
+  puzzleText           String?      @db.Text
+  submissionPrompt     String?
+  hint                 String?
+  hint2                String?
+  finalHint            String?
+  difficulty           String       @default("medium")
+  cipherType           String?
+  estimatedTime        String?
+  factionSlug          String?
+  secondaryFactionSlug String?
+  solutionHash         String?
+  acceptedAnswerHashes Json?
+  answerNormalization  String?      @default("default")
+  explanation          String?      @db.Text
+  successMessage       String?
+  failureMessage       String?
+  rewardBadgeSlug      String?
+  loreUnlockSlug       String?
+  loreUnlockText       String?      @db.Text
+  sortOrder            Int          @default(0)
+  cipherPack           String?
+  repeatable           Boolean      @default(false)
+  status               CipherStatus @default(Active)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
 
   solves CipherSolve[]
 
   @@index([status])
+  @@index([cipherPack])
+  @@index([sortOrder])
 }
 
 model CipherSolve {

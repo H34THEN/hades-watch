@@ -142,6 +142,15 @@
 - Seed: `db:seed:missions:underwatch-civic-action` (production-safe, idempotent)
 - Canonical design: `docs/missions/UNDERWATCH_CIVIC_ACTION_PROTOCOLS.md`
 
+## Phase 12 — First Cipher Set (C1PH3R CR4K3R)
+
+- Five playable cipher missions at `/ciphers` and `/ciphers/[slug]`
+- C1PH3R CR4K3R badge chain on profile dossier (category: Ciphers)
+- Server-side hashed answer verification and lore unlock text after solve
+- Avatar and mission badge assets migrated to `public/avatar-assets/` and `public/badge-assets/`
+- Seed: `db:seed:ciphers:first-set`
+- Canonical source: `docs/ciphers/FIRST_CIPHER_SET.md`
+
 ## Phase 8 — Out-of-Band Beta Verification
 
 - No-email beta access model (`docs/BETA_ACCESS_MODEL.md`)

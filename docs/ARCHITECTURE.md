@@ -141,8 +141,11 @@ src/
 
 ### Dead Drops / Ciphers (Roleplay Only)
 
-- Models: `DeadDrop`, `SecretTransmission`, `CipherPuzzle`
-- Routes: `/dead-drops`, `/dead-drops/[slug]`, `/ciphers`
+- Models: `DeadDrop`, `SecretTransmission`, `CipherPuzzle`, `CipherSolve`, `Badge`, `UserBadge`
+- Routes: `/dead-drops`, `/dead-drops/[slug]`, `/ciphers`, `/ciphers/[slug]`
+- **First Cipher Set (C1PH3R CR4K3R):** five seeded puzzle missions, hashed answers, automatic badge awards — see [ciphers/FIRST_CIPHER_SET.md](ciphers/FIRST_CIPHER_SET.md), [CIPHERS.md](CIPHERS.md)
+- Seed: `db:seed:ciphers:first-set`
+- Static assets: `public/avatar-assets/`, `public/badge-assets/` (`npm run assets:migrate`)
 - **Not secure messaging** — in-world flavor only
 - Admin: `/admin/dead-drops`
 

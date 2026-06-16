@@ -82,6 +82,19 @@ export interface DossierData {
     factionSlug: string | null;
     awardedAt: Date;
   }[];
+  cipherBadges: {
+    slug: string;
+    name: string;
+    tier: string | null;
+    color: string | null;
+    assetPath: string | null;
+    placeholderText: string | null;
+    placeholderColor: string | null;
+    cipherSlug: string | null;
+    verificationStatus: "Pending" | "Verified" | "Rejected";
+    factionName: string | null;
+    awardedAt: Date;
+  }[];
   accountStatus: string;
   pendingFactionRequest: { name: string; slug: string } | null;
   spotify: {
@@ -310,6 +323,21 @@ export async function getDossierForUser(userId: string): Promise<DossierData | n
         verificationStatus: ub.verificationStatus,
         factionName: ub.badge.faction?.name ?? null,
         factionSlug: ub.badge.faction?.slug ?? null,
+        awardedAt: ub.awardedAt,
+      })),
+    cipherBadges: user.userBadges
+      .filter((ub) => ub.badge.profileDisplayCategory === "Ciphers")
+      .map((ub) => ({
+        slug: ub.badge.slug,
+        name: ub.badge.name,
+        tier: ub.badge.tier ?? null,
+        color: ub.badge.color,
+        assetPath: ub.badge.assetPath ?? null,
+        placeholderText: ub.badge.placeholderText,
+        placeholderColor: ub.badge.placeholderColor,
+        cipherSlug: ub.badge.cipherSlug ?? null,
+        verificationStatus: ub.verificationStatus,
+        factionName: ub.badge.faction?.name ?? null,
         awardedAt: ub.awardedAt,
       })),
     pendingFactionRequest: pendingMembership

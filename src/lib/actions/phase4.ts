@@ -98,53 +98,9 @@ export async function getUserCipherSolve(userId: string, cipherPuzzleId: string)
 export async function submitCipherAnswerAction(
   slug: string,
   answer: string,
-): Promise<ActionResult & { solved?: boolean }> {
-  const user = await requireAuth();
-
-  const { rateLimitOrThrow } = await import("@/lib/rate-limit");
-  const { hashCipherAnswer } = await import("@/lib/tokens");
-
-  try {
-    await rateLimitOrThrow({
-      key: `cipher:${user.id}:${slug}`,
-      limit: 10,
-      windowSec: 600,
-    }, "Too many attempts. Wait before trying again.");
-  } catch (e) {
-    return { success: false, error: e instanceof Error ? e.message : "Rate limited" };
-  }
-
-  const cipher = await prisma.cipherPuzzle.findUnique({ where: { slug } });
-  if (!cipher || cipher.status !== "Active" || !cipher.solutionHash) {
-    return { success: false, error: "Cipher not available." };
-  }
-
-  const existing = await prisma.cipherSolve.findUnique({
-    where: { userId_cipherPuzzleId: { userId: user.id, cipherPuzzleId: cipher.id } },
-  });
-  if (existing) {
-    return { success: true, solved: true };
-  }
-
-  const answerHash = hashCipherAnswer(answer);
-  const solved = answerHash === cipher.solutionHash;
-
-  if (solved) {
-    await prisma.cipherSolve.create({
-      data: { userId: user.id, cipherPuzzleId: cipher.id, attemptCount: 1 },
-    });
-    await writeAuditLog({
-      action: "cipher.solved",
-      actorId: user.id,
-      targetType: "cipher",
-      targetId: cipher.id,
-    });
-    revalidatePath("/ciphers");
-    revalidatePath(`/ciphers/${slug}`);
-    return { success: true, solved: true };
-  }
-
-  return { success: false, error: "Incorrect answer. Try again." };
+): Promise<ActionResult & { solved?: boolean; alreadySolved?: boolean }> {
+  const { submitCipherAnswerAction: submit } = await import("@/lib/actions/ciphers");
+  return submit(slug, answer);
 }
 
 export async function getAllDeadDropsAdmin() {
