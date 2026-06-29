@@ -6,6 +6,7 @@ const links = [
   { href: "/mmo/character", label: "Character" },
   { href: "/mmo/factions", label: "Factions" },
   { href: "/mmo/missions", label: "Missions" },
+  { href: "/ciphers", label: "Ciphers" },
 ];
 
 export function MmoNav({ active }: { active?: string }) {

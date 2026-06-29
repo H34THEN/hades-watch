@@ -1,67 +1,103 @@
 import Link from "next/link";
-import { DashboardCard } from "@/components/cards/DashboardCard";
+import { MmoHubHeader } from "@/components/mmo/MmoHubHeader";
+import { MmoHubOperativePanel } from "@/components/mmo/MmoHubOperativePanel";
+import {
+  MmoHubSafetyNotice,
+  MmoHubSupportFooter,
+} from "@/components/mmo/MmoHubSafetyNotice";
+import { MmoHubSection } from "@/components/mmo/MmoHubSection";
+import { MmoHubShell } from "@/components/mmo/MmoHubShell";
+import { MmoHubStatusStrip } from "@/components/mmo/MmoHubStatusStrip";
 import { MmoNav } from "@/components/mmo/MmoNav";
-import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
-import { getAvailableQuests, getFactions, getUserActiveMissions, getUserCharacter } from "@/lib/actions/mmo";
+import { CommandButton } from "@/components/terminal/CommandButton";
+import { resolveHubModules } from "@/lib/mmo/hub-access";
+import { getHubModulesForSection, HUB_SECTIONS } from "@/lib/mmo/hub-modules";
+import { getMmoHubContext } from "@/lib/mmo/hub-queries";
+import { getUserActiveMissions } from "@/lib/actions/mmo";
 import { requireAuth } from "@/lib/auth/session";
 
-export const metadata = { title: "MMO Hub" };
+export const metadata = {
+  title: "Field Ops // Underwatch Command Hub",
+  description:
+    "Your operative identity, faction work, community signals, and archive traces converge here.",
+};
 
 export default async function MmoPage() {
   const user = await requireAuth();
-  const [character, factions, missions, activeMissions] = await Promise.all([
-    getUserCharacter(user.id),
-    getFactions(),
-    getAvailableQuests(),
+  const [context, activeMissions] = await Promise.all([
+    getMmoHubContext(user),
     getUserActiveMissions(user.id),
   ]);
 
-  return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
-      <h1 className="mb-4 font-mono text-3xl tracking-widest uppercase">Field Ops</h1>
-      <MmoNav active="/mmo" />
+  const sectionModules = HUB_SECTIONS.map((section) => ({
+    ...section,
+    modules: resolveHubModules(getHubModulesForSection(section.id), user),
+  }));
 
-      <TerminalPanel title="operative.character" className="mb-8">
-        {character ? (
-          <div className="font-mono text-sm">
-            <p className="text-lg text-primary">{character.callsign}</p>
-            <p className="text-muted-foreground">{character.archetype ?? "Unclassified"} · {character.faction?.name ?? "Unaffiliated"}</p>
-            <Link href="/mmo/character" className="mt-4 inline-block">
-              <CommandButton size="sm">Edit Character</CommandButton>
-            </Link>
-          </div>
-        ) : (
-          <div>
-            <p className="text-muted-foreground">No operative record initialized.</p>
-            <Link href="/mmo/character" className="mt-4 inline-block">
-              <CommandButton size="sm">Create Character</CommandButton>
-            </Link>
-          </div>
-        )}
-      </TerminalPanel>
+  const forgeSection = sectionModules.find((s) => s.id === "forge");
+  if (forgeSection) {
+    forgeSection.modules = forgeSection.modules.filter(
+      (m) => m.slug !== "avatar-builder",
+    );
+  }
+
+  return (
+    <MmoHubShell>
+      <MmoNav active="/mmo" />
+      <MmoHubHeader />
+      <MmoHubStatusStrip context={context} />
+      <MmoHubOperativePanel context={context} />
 
       {activeMissions.length > 0 && (
         <TerminalPanel title="mission.active" className="mb-8">
+          <p className="mb-3 font-mono text-xs text-muted-foreground">
+            Open field orders in your operative log.
+          </p>
           {activeMissions.map((p) => (
-            <Link key={p.id} href={`/mmo/missions/${p.quest.slug}`} className="block py-2 font-mono text-sm text-primary hover:underline">
+            <Link
+              key={p.id}
+              href={`/mmo/missions/${p.quest.slug}`}
+              className="block border-b border-border/30 py-2 font-mono text-sm text-primary last:border-0 hover:underline"
+            >
               {p.quest.title} · {p.status}
             </Link>
           ))}
+          <Link href="/mmo/missions" className="mt-4 inline-block">
+            <CommandButton size="sm" variant="outline">
+              Mission Board
+            </CommandButton>
+          </Link>
         </TerminalPanel>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <DashboardCard title="Faction Dossiers" description={`${factions.length} Chthonic cells`} icon={<span>◈</span>}>
-          <Link href="/mmo/factions"><CommandButton size="sm">View Dossiers</CommandButton></Link>
-        </DashboardCard>
-        <DashboardCard title="Missions" description={`${missions.length} available`} icon={<span>⚔</span>}>
-          <Link href="/mmo/missions"><CommandButton size="sm">View Missions</CommandButton></Link>
-        </DashboardCard>
-        <DashboardCard title="Archive" description="Lore and unlocks" icon={<span>◫</span>}>
-          <Link href="/archive"><CommandButton size="sm">Enter Archive</CommandButton></Link>
-        </DashboardCard>
-      </div>
-    </div>
+      {!context.isApproved && (
+        <TerminalPanel title="clearance.pending" className="mb-8" status="warning">
+          <p className="font-mono text-sm text-muted-foreground">
+            This relay opens after operative approval. Some modules remain locked until
+            Archivist review clears your signal.
+          </p>
+          <Link href="/pending-approval" className="mt-4 inline-block">
+            <CommandButton size="sm" variant="outline">
+              Check Clearance Status
+            </CommandButton>
+          </Link>
+        </TerminalPanel>
+      )}
+
+      {sectionModules.map((section) => (
+        <MmoHubSection
+          key={section.id}
+          title={section.title}
+          subtitle={section.subtitle}
+          modules={section.modules}
+          context={context}
+          wide
+        />
+      ))}
+
+      <MmoHubSafetyNotice />
+      <MmoHubSupportFooter />
+    </MmoHubShell>
   );
 }
