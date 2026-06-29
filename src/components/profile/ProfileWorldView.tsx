@@ -24,6 +24,12 @@ function isHidden(hidden: Set<string> | undefined, key: string) {
   return hidden?.has(key) ?? false;
 }
 
+function showCharacterHeader(hiddenModules: Set<string> | undefined) {
+  return (
+    !isHidden(hiddenModules, "character_card") || !isHidden(hiddenModules, "bio")
+  );
+}
+
 export function ProfileWorldView({
   world,
   showEditLinks = false,
@@ -48,8 +54,13 @@ export function ProfileWorldView({
   const publicHandlePath = world.handle ? `/profile/world/${world.handle}` : null;
 
   return (
-    <div className={`min-h-screen w-full ${compact ? "min-h-0" : ""}`} style={{ ...bgStyle, ...accentStyle }}>
-      <div className="min-h-screen w-full bg-gradient-to-b from-black/60 via-black/85 to-black/95">
+    <div
+      className={`w-full ${compact ? "min-h-[420px]" : "min-h-screen"}`}
+      style={{ ...bgStyle, ...accentStyle }}
+    >
+      <div
+        className={`w-full bg-gradient-to-b from-black/60 via-black/85 to-black/95 ${compact ? "min-h-[420px]" : "min-h-screen"}`}
+      >
         {world.bannerUrl && (
           <div
             className="h-32 w-full border-b border-primary/20 bg-cover bg-center md:h-44 lg:h-52"
@@ -96,7 +107,7 @@ export function ProfileWorldView({
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,46%)] lg:items-start xl:grid-cols-[minmax(0,1fr)_minmax(420px,44%)]">
             <div className="order-2 space-y-6 lg:order-1">
-              {!isHidden(hiddenModules, "character_card") && !isHidden(hiddenModules, "bio") ? (
+              {showCharacterHeader(hiddenModules) ? (
               <header className="space-y-3 border-b border-primary/20 pb-6">
                 <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase">
                   Profile World · {moduleTitles?.character_card ?? "Public Relic"}
@@ -300,7 +311,11 @@ export function ProfileWorldView({
               )}
             </div>
 
-            <aside className={`order-1 lg:sticky lg:top-6 lg:order-2 lg:self-start ${isHidden(hiddenModules, "character_card") ? "hidden" : ""}`}>
+            <aside
+              className={`order-1 lg:sticky lg:top-6 lg:order-2 lg:self-start ${
+                isHidden(hiddenModules, "character_card") ? "hidden lg:hidden" : ""
+              }`}
+            >
               {world.avatar ? (
                 <AvatarHudFrame
                   layers={world.avatar.layers}

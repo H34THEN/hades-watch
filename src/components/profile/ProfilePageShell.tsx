@@ -7,11 +7,19 @@ interface ProfilePageShellProps {
   subtitle: string;
   children: ReactNode;
   actions?: ReactNode;
+  /** When false, shell does not force full viewport height (keeps preview in view). */
+  fillViewport?: boolean;
 }
 
-export function ProfilePageShell({ title, subtitle, children, actions }: ProfilePageShellProps) {
+export function ProfilePageShell({
+  title,
+  subtitle,
+  children,
+  actions,
+  fillViewport = true,
+}: ProfilePageShellProps) {
   return (
-    <div className={styles.shell}>
+    <div className={`${styles.shell} ${fillViewport ? "" : styles.shellCompact}`}>
       <div className={styles.inner}>
         <header className={styles.header}>
           <p className={styles.eyebrow}>Underwatch · Operative Systems</p>

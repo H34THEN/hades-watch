@@ -9,6 +9,7 @@ import {
   ProfileWorldSafetyControls,
   useProfileWorldSafetyClasses,
 } from "@/components/profile/ProfileWorldSafetyControls";
+import styles from "@/components/profile/profile-pages.module.css";
 
 interface ProfileWorldRendererProps {
   world: ProfileWorldData;
@@ -16,6 +17,8 @@ interface ProfileWorldRendererProps {
   showEditLinks?: boolean;
   isPreview?: boolean;
   isPublicView?: boolean;
+  /** Embedded in owner preview frame — avoid full viewport height. */
+  embedded?: boolean;
 }
 
 export function ProfileWorldRenderer({
@@ -24,6 +27,7 @@ export function ProfileWorldRenderer({
   showEditLinks = false,
   isPreview = false,
   isPublicView = false,
+  embedded = false,
 }: ProfileWorldRendererProps) {
   const [readable, setReadable] = useState(false);
   const [noEffects, setNoEffects] = useState(false);
@@ -34,7 +38,12 @@ export function ProfileWorldRenderer({
     [config],
   );
 
-  const shellClass = useProfileWorldSafetyClasses(readable, noEffects);
+  const shellClass = [
+    useProfileWorldSafetyClasses(readable, noEffects),
+    embedded ? styles.profileWorldEmbedded : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const layoutClass = config ? `layout-${config.layout}` : "layout-standard_dossier";
 
   const hiddenModules = useMemo(() => {
@@ -73,7 +82,7 @@ export function ProfileWorldRenderer({
             : undefined
         }
         relicAccent={config?.theme.accent}
-        compact={isPreview}
+        compact={isPreview || embedded}
       />
     </div>
   );
