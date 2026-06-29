@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { CommunityNav } from "@/components/community/CommunityNav";
 import { CommunityShell } from "@/components/community/CommunityShell";
 import { ForumThreadView } from "@/components/community/ForumThreadView";
+import { ForumThreadSidebar } from "@/components/forums/ForumThreadSidebar";
 import { formatCommunityBody } from "@/lib/community/sanitize";
 import { getSessionUser, isApprovedUser } from "@/lib/auth/session";
 import { getForumComments, getForumThreadBySlug } from "@/lib/queries/community";
@@ -44,14 +45,19 @@ export default async function ForumThreadPage({
   return (
     <CommunityShell title={thread.title}>
       <CommunityNav active="/community/forums" />
-      <ForumThreadView
-        thread={thread}
-        bodyHtml={bodyHtml}
-        comments={comments}
-        currentUserId={user?.id}
-        canReply={approved && thread.status === "ACTIVE"}
-        hideSignatures={prefs?.hideSignatures ?? false}
-      />
+      <div className="hw-split-layout">
+        <div className="min-w-0">
+          <ForumThreadView
+            thread={thread}
+            bodyHtml={bodyHtml}
+            comments={comments}
+            currentUserId={user?.id}
+            canReply={approved && thread.status === "ACTIVE"}
+            hideSignatures={prefs?.hideSignatures ?? false}
+          />
+        </div>
+        <ForumThreadSidebar thread={thread} replyCount={comments.length} />
+      </div>
     </CommunityShell>
   );
 }

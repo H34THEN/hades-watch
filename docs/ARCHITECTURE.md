@@ -28,6 +28,7 @@ src/
     ciphers/                   # Cipher puzzles (roleplay)
     chat/                      # AIM-style temporary chat (approved users)
     community/                 # Forums, builder, volunteer, guilds, lore, recognition
+    layout/                    # PageShell, AdminShell, AppShell — responsive width system
     net-neighbors/             # Old-web banner wall
     moderation/                # Moderation console
     admin/                     # Admin console + subpages

@@ -27,8 +27,10 @@
 .inner {
   position: relative;
   z-index: 1;
-  max-width: 88rem;
+  width: 100%;
+  max-width: var(--hw-width-dashboard);
   margin: 0 auto;
+  min-width: 0;
 }
 
 .header {

@@ -1,11 +1,12 @@
 import { InviteCodeForm } from "@/components/forms/InviteCodeForm";
+import { PageShell } from "@/components/layout/PageShell";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 
 export const metadata = { title: "Invite" };
 
 export default function InvitePage() {
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
+    <PageShell variant="narrow" scanlines>
       <h1 className="mb-2 font-mono text-3xl tracking-widest uppercase">
         Invite Access
       </h1>
@@ -16,6 +17,6 @@ export default function InvitePage() {
       <TerminalPanel title="invite.validate">
         <InviteCodeForm />
       </TerminalPanel>
-    </div>
+    </PageShell>
   );
 }

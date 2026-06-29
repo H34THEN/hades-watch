@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageShell } from "@/components/layout/PageShell";
 import { MmoTextNav } from "@/components/mmo/MmoTextNav";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { CommandButton } from "@/components/terminal/CommandButton";
@@ -25,8 +26,7 @@ export default async function MmoRoomsPage() {
   const rooms = await getMmoRooms();
 
   return (
-    <div className={`mx-auto max-w-4xl px-4 py-16 ${styles.shell}`}>
-      <div className={styles.inner}>
+    <PageShell variant="dashboard" scanlines className={styles.shell} contentClassName={styles.inner}>
         <h1 className={styles.heroTitle}>Rooms // Underwatch Map</h1>
         <p className={styles.heroSubtitle}>
           Enter the first playable rooms of the Underwatch. Read the signal, choose a safe action,
@@ -108,7 +108,6 @@ export default async function MmoRoomsPage() {
             </Link>
           </div>
         </TerminalPanel>
-      </div>
-    </div>
+    </PageShell>
   );
 }

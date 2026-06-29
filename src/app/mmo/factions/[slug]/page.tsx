@@ -1,3 +1,4 @@
+import { PageShell } from "@/components/layout/PageShell";
 import { notFound } from "next/navigation";
 import { getAlliance, getFactionBySlug, getUserFactionMembership } from "@/lib/actions/mmo";
 import { getSessionUser } from "@/lib/auth/session";
@@ -20,7 +21,7 @@ export default async function FactionDetailPage({
     const alliance = await getAlliance();
     if (!alliance) notFound();
     return (
-      <div className="mx-auto max-w-4xl px-4 py-16">
+      <PageShell variant="wide" scanlines>
         <MmoNav active="/mmo/factions" />
         <p className="mb-2 font-mono text-[10px] tracking-[0.35em] text-primary/80 uppercase">
           Alliance Origin Dossier
@@ -38,7 +39,7 @@ export default async function FactionDetailPage({
           showAdminLink={user ? isAdmin(user.roles) : false}
           showOwnerLink={user ? isOwner(user.roles) : false}
         />
-      </div>
+      </PageShell>
     );
   }
 

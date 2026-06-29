@@ -1,3 +1,4 @@
+import { AdminShell } from "@/components/layout/AdminShell";
 import Link from "next/link";
 import { AdminCommunityPanel } from "@/components/admin/AdminCommunityPanel";
 import { AccessDenied } from "@/components/layout/AccessDenied";
@@ -29,7 +30,7 @@ export default async function AdminCommunityPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
+    <AdminShell>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-mono text-3xl tracking-widest uppercase">
@@ -73,6 +74,6 @@ export default async function AdminCommunityPage() {
         guilds={queue.guilds}
         lore={queue.lore}
       />
-    </div>
+    </AdminShell>
   );
 }

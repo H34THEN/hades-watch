@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageShell } from "@/components/layout/PageShell";
 import { MmoTextNav } from "@/components/mmo/MmoTextNav";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import styles from "@/components/mmo/text-mmo.module.css";
@@ -32,8 +33,7 @@ export default async function MmoDeadDropsPage() {
   const drops = await getMmoDeadDrops({ userId: user?.id });
 
   return (
-    <div className={`mx-auto max-w-4xl px-4 py-16 ${styles.shell}`}>
-      <div className={styles.inner}>
+    <PageShell variant="dashboard" scanlines className={styles.shell} contentClassName={styles.inner}>
         <h1 className={styles.heroTitle}>Dead Drops // Micro-Quest Cache</h1>
         <p className={styles.heroSubtitle}>
           Small prompts, recovered fragments, safe resource calls, mini-ciphers, and underworld
@@ -82,7 +82,6 @@ export default async function MmoDeadDropsPage() {
             </Link>
           ))}
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

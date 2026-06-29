@@ -24,8 +24,10 @@
 .inner {
   position: relative;
   z-index: 1;
-  max-width: 88rem;
+  width: 100%;
+  max-width: var(--hw-width-dashboard);
   margin: 0 auto;
+  min-width: 0;
 }
 
 .header {
@@ -76,13 +78,13 @@
 
 .grid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
 @media (min-width: 1280px) {
   .gridWide {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   }
 }
 

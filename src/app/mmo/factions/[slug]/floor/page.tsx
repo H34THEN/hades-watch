@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageShell } from "@/components/layout/PageShell";
 import { MmoTextNav } from "@/components/mmo/MmoTextNav";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { CommandButton } from "@/components/terminal/CommandButton";
@@ -26,8 +27,7 @@ export default async function FactionFloorPlaceholderPage({ params }: PageProps)
   if (!faction) notFound();
 
   return (
-    <div className={`mx-auto max-w-4xl px-4 py-16 ${styles.shell}`}>
-      <div className={styles.inner}>
+    <PageShell variant="dashboard" scanlines className={styles.shell} contentClassName={styles.inner}>
         <Link href="/mmo/rooms/faction-floors" className="font-mono text-xs text-muted-foreground hover:text-primary">
           ← Faction Floors
         </Link>
@@ -55,7 +55,6 @@ export default async function FactionFloorPlaceholderPage({ params }: PageProps)
             </Link>
           </div>
         </TerminalPanel>
-      </div>
-    </div>
+    </PageShell>
   );
 }

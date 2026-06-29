@@ -1,3 +1,4 @@
+import { PageShell } from "@/components/layout/PageShell";
 import Link from "next/link";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { BadgeRecordDisplay } from "@/components/badges/BadgeRecordDisplay";
@@ -31,7 +32,7 @@ export default async function CiphersPage() {
   const badgeBySlug = Object.fromEntries(badges.map((b) => [b.slug, b]));
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <PageShell variant="wide" scanlines>
       <p className="font-mono text-[10px] tracking-widest text-primary/80 uppercase">
         Ciphers // Dead Index Training Channel
       </p>
@@ -108,6 +109,6 @@ export default async function CiphersPage() {
           })
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

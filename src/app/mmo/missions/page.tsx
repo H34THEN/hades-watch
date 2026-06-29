@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageShell } from "@/components/layout/PageShell";
 import { MmoNav } from "@/components/mmo/MmoNav";
 import { MissionBadgePlaceholder } from "@/components/mmo/MissionBadgePlaceholder";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
@@ -95,7 +96,7 @@ export default async function MissionsPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <PageShell variant="wide" scanlines>
       <h1 className="mb-4 font-mono text-3xl tracking-widest uppercase">Missions</h1>
       <MmoNav active="/mmo/missions" />
 
@@ -131,6 +132,6 @@ export default async function MissionsPage() {
         </p>
       </TerminalPanel>
       <MissionList missions={underwatchCivic} />
-    </div>
+    </PageShell>
   );
 }

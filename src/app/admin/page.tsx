@@ -3,6 +3,7 @@ import { AdminCard } from "@/components/cards/AdminCard";
 import { AdminInvitePanel } from "@/components/admin/AdminInvitePanel";
 import { RoleBadge } from "@/components/badges/RoleBadge";
 import { AccessDenied } from "@/components/layout/AccessDenied";
+import { AdminShell } from "@/components/layout/AdminShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { writeAuditLog } from "@/lib/audit";
@@ -46,7 +47,7 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
+    <AdminShell>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-mono text-3xl tracking-widest uppercase">
@@ -174,6 +175,6 @@ export default async function AdminPage() {
           ))}
         </div>
       </TerminalPanel>
-    </div>
+    </AdminShell>
   );
 }

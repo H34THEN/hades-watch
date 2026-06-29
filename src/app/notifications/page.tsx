@@ -1,3 +1,4 @@
+import { PageShell } from "@/components/layout/PageShell";
 import Link from "next/link";
 import { markNotificationsReadFormAction } from "@/lib/actions/forum-identity";
 import { requireAuth, isApprovedUser } from "@/lib/auth/session";
@@ -16,7 +17,7 @@ export default async function NotificationsPage() {
   const notifications = await getUserNotifications(user.id);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 space-y-6">
+    <PageShell variant="standard" scanlines contentClassName="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-mono text-2xl tracking-widest uppercase text-primary">
@@ -75,6 +76,6 @@ export default async function NotificationsPage() {
           </ul>
         )}
       </TerminalPanel>
-    </div>
+    </PageShell>
   );
 }

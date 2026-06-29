@@ -1,3 +1,4 @@
+import { PageShell } from "@/components/layout/PageShell";
 import Link from "next/link";
 import { ProfileWorldRenderer } from "@/components/profile/ProfileWorldRenderer";
 import { ProfilePageShell } from "@/components/profile/ProfilePageShell";
@@ -18,9 +19,9 @@ export default async function ProfileWorldOwnerPage() {
 
   if (!world) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-16">
+      <PageShell variant="standard" scanlines>
         <SystemAlert title="Profile Unavailable" message="Unable to load profile world." variant="error" />
-      </div>
+      </PageShell>
     );
   }
 

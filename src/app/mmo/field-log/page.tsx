@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageShell } from "@/components/layout/PageShell";
 import { MmoTextNav } from "@/components/mmo/MmoTextNav";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import styles from "@/components/mmo/text-mmo.module.css";
@@ -18,8 +19,7 @@ export default async function MmoFieldLogPage() {
   const logs = await getRecentPublicFieldLogs(50);
 
   return (
-    <div className={`mx-auto max-w-4xl px-4 py-16 ${styles.shell}`}>
-      <div className={styles.inner}>
+    <PageShell variant="dashboard" scanlines className={styles.shell} contentClassName={styles.inner}>
         <h1 className={styles.heroTitle}>Field Log // Underwatch Activity</h1>
         <p className={styles.heroSubtitle}>
           Safe traces of room actions, Dead Drops, cipher cracks, archive work, and community
@@ -61,7 +61,6 @@ export default async function MmoFieldLogPage() {
         <p className="mt-4 font-mono text-[10px] text-muted-foreground">
           Logged in as {user.email}. Sensitive submission bodies are never published here.
         </p>
-      </div>
-    </div>
+    </PageShell>
   );
 }

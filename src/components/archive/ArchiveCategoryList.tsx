@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArchiveNav } from "@/components/archive/ArchiveNav";
+import { PageShell } from "@/components/layout/PageShell";
 import { LockedCard } from "@/components/archive/LockedCard";
 import { UnlockLoreButton } from "@/components/archive/UnlockLoreButton";
 import { WorldLoreMetadataInline } from "@/components/archive/WorldLoreMetadata";
@@ -26,7 +27,7 @@ export async function ArchiveCategoryList({ categorySlug }: ArchiveCategoryListP
   const readable = entries.filter((e) => e.canRead);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <PageShell variant="wide" scanlines>
       <ArchiveNav active={categorySlug} />
       <h1 className="mb-2 font-mono text-3xl tracking-widest uppercase">{meta.title}</h1>
       <p className="mb-8 max-w-2xl text-sm text-muted-foreground">{meta.description}</p>
@@ -105,6 +106,6 @@ export async function ArchiveCategoryList({ categorySlug }: ArchiveCategoryListP
           </Link>
         ))}
       </div>
-    </div>
+    </PageShell>
   );
 }

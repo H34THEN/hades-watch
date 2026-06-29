@@ -1,3 +1,4 @@
+import { PageShell } from "@/components/layout/PageShell";
 import { MmoNav } from "@/components/mmo/MmoNav";
 import { AllianceHero } from "@/components/factions/AllianceHero";
 import { FactionCellCard } from "@/components/factions/FactionCellCard";
@@ -12,7 +13,7 @@ export default async function FactionsPage() {
   const [factions, alliance] = await Promise.all([getFactions(), getAlliance()]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
+    <PageShell variant="wide" scanlines>
       <h1 className="mb-2 font-mono text-3xl tracking-widest uppercase">Faction Dossiers</h1>
       <p className="mb-6 font-mono text-xs text-muted-foreground">
         Classified cell registry — The Chthonic Uprising
@@ -47,6 +48,6 @@ export default async function FactionsPage() {
           No faction dossiers available.
         </p>
       )}
-    </div>
+    </PageShell>
   );
 }

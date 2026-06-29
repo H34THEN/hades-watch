@@ -56,7 +56,7 @@ export function SiteHeader({ className }: { className?: string }) {
           className,
         )}
       >
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
+        <div className="hw-page-header-band flex h-14 w-full items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
             {isAuthenticated && (
               <button

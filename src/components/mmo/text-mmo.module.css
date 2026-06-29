@@ -20,6 +20,10 @@
 .inner {
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: var(--hw-width-dashboard);
+  margin: 0 auto;
+  min-width: 0;
 }
 
 .heroTitle {

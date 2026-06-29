@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageShell } from "@/components/layout/PageShell";
 import { MmoDeadDropForm } from "@/components/mmo/MmoDeadDropForm";
 import { MmoTextNav } from "@/components/mmo/MmoTextNav";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
@@ -41,8 +42,7 @@ export default async function MmoDeadDropDetailPage({ params }: PageProps) {
   const options = parseOptions(drop.optionsJson);
 
   return (
-    <div className={`mx-auto max-w-4xl px-4 py-16 ${styles.shell}`}>
-      <div className={styles.inner}>
+    <PageShell variant="dashboard" scanlines className={styles.shell} contentClassName={styles.inner}>
         <Link href="/mmo/dead-drops" className="font-mono text-xs text-muted-foreground hover:text-primary">
           ← Dead Drops
         </Link>
@@ -109,7 +109,6 @@ export default async function MmoDeadDropDetailPage({ params }: PageProps) {
             Return to room →
           </Link>
         )}
-      </div>
-    </div>
+    </PageShell>
   );
 }

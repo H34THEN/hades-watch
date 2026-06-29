@@ -9,7 +9,7 @@ export function SiteFooter({ className }: { className?: string }) {
         className,
       )}
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
+      <div className="hw-page-header-band flex flex-col gap-4 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
         <p className="font-mono text-xs tracking-wider uppercase">
           Hades Watch // Unauthorized access is logged
         </p>
