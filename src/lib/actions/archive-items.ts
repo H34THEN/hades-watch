@@ -24,7 +24,9 @@ export type ActionResult =
   | { success: true }
   | { success: false; error: string };
 
-export type ArchiveSort = "newest" | "discussed";
+export type ArchiveSort = "newest" | "discussed" | "az" | "updated";
+
+export type ArchiveForgeFilter = "all" | "github" | "codeberg" | "other";
 
 const PUBLIC_STATUSES: ArchiveItemStatus[] = ["PUBLISHED"];
 const MOD_STATUSES: ArchiveItemStatus[] = ["PUBLISHED", "PENDING_REVIEW", "HIDDEN"];
@@ -52,15 +54,52 @@ async function resolveUniqueSlug(base: string, type: ArchiveItemType): Promise<s
 export async function getArchiveItems(
   type: ArchiveItemType,
   sort: ArchiveSort = "newest",
-  options?: { includeModeration?: boolean },
+  options?: {
+    includeModeration?: boolean;
+    forge?: ArchiveForgeFilter;
+    search?: string;
+    tag?: string;
+  },
 ) {
   const user = await getSessionUser();
   const canModerate = user ? isModerator(user.roles) : false;
   const statuses =
     options?.includeModeration && canModerate ? MOD_STATUSES : PUBLIC_STATUSES;
 
+  const where: Prisma.ArchiveItemWhereInput = {
+    type,
+    status: { in: statuses },
+  };
+
+  if (type === "CODE_REPO" && options?.forge && options.forge !== "all") {
+    if (options.forge === "github") {
+      where.forge = "GITHUB";
+    } else if (options.forge === "codeberg") {
+      where.forge = "CODEBERG";
+    } else if (options.forge === "other") {
+      where.OR = [{ forge: null }, { forge: { notIn: ["GITHUB", "CODEBERG"] } }];
+    }
+  }
+
+  const search = options?.search?.trim();
+  if (search) {
+    const searchOr: Prisma.ArchiveItemWhereInput[] = [
+      { title: { contains: search, mode: "insensitive" } },
+      { summary: { contains: search, mode: "insensitive" } },
+      { repoOwner: { contains: search, mode: "insensitive" } },
+      { repoName: { contains: search, mode: "insensitive" } },
+      { sourceName: { contains: search, mode: "insensitive" } },
+    ];
+    if (where.OR) {
+      where.AND = [{ OR: where.OR }, { OR: searchOr }];
+      delete where.OR;
+    } else {
+      where.OR = searchOr;
+    }
+  }
+
   const items = await prisma.archiveItem.findMany({
-    where: { type, status: { in: statuses } },
+    where,
     include: {
       submittedBy: { select: { id: true, name: true, email: true } },
       _count: {
@@ -72,14 +111,34 @@ export async function getArchiveItems(
     orderBy: { createdAt: "desc" },
   });
 
-  const mapped = items.map((item) => ({
+  let mapped = items.map((item) => ({
     ...item,
     tags: parseTagsJson(item.tags),
     commentCount: item._count.comments,
   }));
 
+  if (options?.tag) {
+    const tagLower = options.tag.toLowerCase();
+    mapped = mapped.filter((item) =>
+      item.tags.some((t) => t.toLowerCase() === tagLower),
+    );
+  }
+
   if (sort === "discussed") {
-    return [...mapped].sort((a, b) => b.commentCount - a.commentCount || b.createdAt.getTime() - a.createdAt.getTime());
+    return [...mapped].sort(
+      (a, b) =>
+        b.commentCount - a.commentCount || b.createdAt.getTime() - a.createdAt.getTime(),
+    );
+  }
+
+  if (sort === "az") {
+    return [...mapped].sort((a, b) => a.title.localeCompare(b.title));
+  }
+
+  if (sort === "updated") {
+    return [...mapped].sort(
+      (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime() || b.createdAt.getTime() - a.createdAt.getTime(),
+    );
   }
 
   return mapped;

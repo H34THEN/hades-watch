@@ -27,9 +27,9 @@ export const GHOST_IN_TECH_SECTION: ArchiveSignalSection = {
   slug: "ghost-in-tech",
   itemType: "CODE_REPO",
   title: "Ghost in Tech",
-  subtitle: "Repo Reliquary · Open Source Relics",
+  subtitle: "REPO RELIQUARY // OPEN SOURCE RELICS",
   description:
-    "A repo reliquary for GitHub and Codeberg tools, open source field gear, privacy projects, self-hosting resources, and strange useful code.",
+    "Repo relics, open-source tools, privacy projects, and useful code recovered from the surface web.",
   terminalLabel: "archive.ghost_in_tech",
   submitLabel: "Submit a Repo",
   emptyMessage: "No repo relics have surfaced from the Ghost in Tech archive yet.",

@@ -1,0 +1,187 @@
+.ghostInTechShell {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - var(--header-height, 64px));
+  padding: clamp(1rem, 2vw, 2rem);
+  background: radial-gradient(ellipse at 10% 0%, rgba(59, 130, 246, 0.05), transparent 45%),
+    radial-gradient(ellipse at 90% 100%, rgba(34, 197, 94, 0.04), transparent 40%);
+}
+
+.ghostInTechShell::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.035) 2px,
+    rgba(0, 0, 0, 0.035) 4px
+  );
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.ghostInTechInner {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1680px);
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.eyebrow {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--primary) 75%, transparent);
+}
+
+.title {
+  margin-top: 0.45rem;
+  font-family: var(--font-mono, monospace);
+  font-size: clamp(1.35rem, 3vw, 2.25rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+  text-shadow: 0 0 22px rgba(59, 130, 246, 0.15);
+}
+
+.description {
+  margin-top: 0.65rem;
+  max-width: 52rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}
+
+.safetyNotice {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, #eab308 30%, transparent);
+  background: rgba(234, 179, 8, 0.05);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--foreground) 85%, transparent);
+}
+
+.statsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.statValue {
+  color: var(--primary);
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.toolbarRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.searchForm {
+  display: flex;
+  flex: 1 1 220px;
+  min-width: min(100%, 220px);
+  gap: 0.5rem;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.65rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--foreground);
+}
+
+.searchInput:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 50%, transparent);
+  outline-offset: 1px;
+}
+
+.filterBtn {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+}
+
+.filterBtn:hover,
+.filterBtn:focus-visible {
+  border-color: var(--primary);
+  color: var(--primary);
+  outline: none;
+}
+
+.filterBtnActive {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
+}
+
+.repoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  border: 1px dashed color-mix(in srgb, var(--primary) 28%, transparent);
+  background: rgba(0, 0, 0, 0.3);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 480px) {
+  .repoGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterBtn {
+    transition: none;
+  }
+}

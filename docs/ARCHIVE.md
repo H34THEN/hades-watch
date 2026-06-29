@@ -11,7 +11,7 @@ The Archive is the underworld index for signals, tools, lore, and records the Su
 | `/archive/state-of-affairs` | Public-interest surface signals — privacy, civil liberties, surveillance, digital rights |
 | `/archive/state-of-affairs/submit` | File a new article/link (approved users) |
 | `/archive/state-of-affairs/[slug]` | Signal thread + comments |
-| `/archive/ghost-in-tech` | GitHub/Codeberg repo reliquary — open source field tools |
+| `/archive/ghost-in-tech` | GitHub/Codeberg repo reliquary — full-width card library |
 | `/archive/ghost-in-tech/submit` | Submit a repo (approved users) |
 | `/archive/ghost-in-tech/[slug]` | Repo discussion thread |
 
@@ -76,4 +76,4 @@ Comment hide/unhide actions exist in `setArchiveCommentHiddenAction` (inline on 
 - No nested comment replies in UI (schema supports `parentId`)
 - No full-text search on tags yet
 - No automatic metadata scraping from URLs
-- Ghost in Tech has no starter seed repos (by design)
+- Ghost in Tech: full-width repo card library — see `docs/GHOST_IN_TECH.md`

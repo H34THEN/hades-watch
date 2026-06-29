@@ -1,0 +1,188 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.1rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+  background: rgba(8, 8, 14, 0.72);
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.card::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  opacity: 0.5;
+}
+
+.cardInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.12), inset 0 0 20px rgba(59, 130, 246, 0.03);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.cardHeader {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--primary) 70%, transparent);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.chip {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  color: var(--muted-foreground);
+}
+
+.forgeGithub {
+  border-color: color-mix(in srgb, #a78bfa 45%, transparent);
+  color: #c4b5fd;
+}
+
+.forgeCodeberg {
+  border-color: color-mix(in srgb, #f97316 45%, transparent);
+  color: #fdba74;
+}
+
+.forgeOther {
+  border-color: color-mix(in srgb, var(--muted-foreground) 40%, transparent);
+}
+
+.statusChip {
+  border-color: color-mix(in srgb, #eab308 45%, transparent);
+  color: #fde047;
+}
+
+.title {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+
+.repoPath {
+  margin-top: 0.35rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  color: color-mix(in srgb, var(--primary) 80%, transparent);
+  word-break: break-all;
+}
+
+.summary {
+  margin-top: 0.75rem;
+  flex: 1;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--foreground) 88%, transparent);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--muted-foreground);
+}
+
+.meta {
+  margin-top: 0.85rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+}
+
+.actionLink {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--primary);
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.actionLink:hover,
+.actionLink:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+  outline: none;
+}
+
+.actionLinkOutline {
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  color: var(--muted-foreground);
+}
+
+.actionLinkOutline:hover,
+.actionLinkOutline:focus-visible {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  .card:hover,
+  .card:focus-within {
+    transform: none;
+  }
+}

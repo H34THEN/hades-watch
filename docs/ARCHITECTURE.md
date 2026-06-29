@@ -133,7 +133,7 @@ src/
 ### Lore Archive
 
 - Models: `LoreEntry` (`category`, `deadIndexId`, `loreMetadata`), `UserLoreUnlock`, `ArchiveItem`, `ArchiveComment`
-- Routes: `/archive`, lore categories, `/archive/state-of-affairs`, `/archive/ghost-in-tech`
+- Routes: `/archive`, lore categories, `/archive/state-of-affairs`, `/archive/ghost-in-tech` (full-width repo library)
 - Signal feeds: articles + repo library with comments — see [ARCHIVE.md](ARCHIVE.md)
 - Categories: Character, World, Faction, Mythos and Ethos — see [ARCHIVE_LORE_TAXONOMY.md](ARCHIVE_LORE_TAXONOMY.md)
 - Seed: `db:seed:lore`, `db:seed:archive` (production-safe, idempotent)
