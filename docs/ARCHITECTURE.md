@@ -53,6 +53,10 @@ src/
     jitsi.ts                   # Room name / URL generation
 ```
 
+## Layout System
+
+Responsive page width is controlled by `PageShell` / `AdminShell` (`src/components/layout/`) and shared CSS utilities in `globals.css`. Child routes choose variants per purpose — dashboard libraries use `dashboard`/`wide`, long-form lore articles use `standard`, auth forms use `narrow`. Archive signal feeds and repo detail pages use `ArchiveSignalFeed` / `ArchiveSignalItemDetail` with split sidebars. See [LAYOUT_SYSTEM.md](LAYOUT_SYSTEM.md).
+
 ## Profile Dossier (Phase 7)
 
 - Route: `/profile` — signed-in user's operative dossier

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DashboardCard } from "@/components/cards/DashboardCard";
 import { ArchiveNav } from "@/components/archive/ArchiveNav";
+import { PageShell } from "@/components/layout/PageShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { ARCHIVE_CATEGORIES } from "@/lib/archive/categories";
@@ -22,7 +23,7 @@ export default async function ArchivePage() {
   const readableCharacters = characterEntries.filter((e) => e.canRead).length;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <PageShell variant="dashboard" scanlines>
       <h1 className="mb-4 font-mono text-3xl tracking-widest uppercase">Archive</h1>
       <ArchiveNav active="hub" />
       <TerminalPanel title="archive.status" className="mb-8">
@@ -46,7 +47,7 @@ export default async function ArchivePage() {
       </TerminalPanel>
 
       <h2 className="mb-3 font-mono text-sm tracking-widest text-primary uppercase">Signal Feeds</h2>
-      <div className="mb-8 grid gap-4 sm:grid-cols-2">
+      <div className="mb-8 hw-dashboard-grid">
         <DashboardCard
           title={STATE_OF_AFFAIRS_SECTION.title}
           description={STATE_OF_AFFAIRS_SECTION.description}
@@ -68,7 +69,7 @@ export default async function ArchivePage() {
       </div>
 
       <h2 className="mb-3 font-mono text-sm tracking-widest text-primary uppercase">Classified Lore</h2>
-      <div className="mb-8 grid gap-4 sm:grid-cols-2">
+      <div className="mb-8 hw-dashboard-grid">
         {ARCHIVE_CATEGORIES.map((category) => (
           <DashboardCard
             key={category.slug}
@@ -87,7 +88,7 @@ export default async function ArchivePage() {
         <p className="mb-4 text-sm text-muted-foreground">
           Dead Index dossiers for the six founding leaders of the Chthonic Uprising.
         </p>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="hw-dashboard-grid">
           {ARCHIVE_LEADER_INDEX.map((leader) => (
             <Link
               key={leader.slug}
@@ -101,6 +102,6 @@ export default async function ArchivePage() {
           ))}
         </div>
       </TerminalPanel>
-    </div>
+    </PageShell>
   );
 }

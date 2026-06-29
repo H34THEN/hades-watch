@@ -3,6 +3,7 @@ import { ChthonicAlliancePanel } from "@/components/admin/ChthonicAlliancePanel"
 import { ChthonicCommandPanel } from "@/components/admin/ChthonicCommandPanel";
 import { RoleBadge } from "@/components/badges/RoleBadge";
 import { AccessDenied } from "@/components/layout/AccessDenied";
+import { AdminShell } from "@/components/layout/AdminShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getChthonicAllianceMembers } from "@/lib/actions/chthonic-alliance";
@@ -48,14 +49,14 @@ export default async function ChthonicCommandPage() {
   const ownerView = isOwner(user.roles);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
+    <AdminShell>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="font-mono text-[10px] tracking-[0.35em] text-primary/80 uppercase">
             {ownerView ? "Chthonic Overlord Access" : "Faction Command — Admin View"}
           </p>
           <h1 className="font-mono text-3xl tracking-widest uppercase">Chthonic Command</h1>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          <p className="mt-2 hw-readable-wide text-sm text-muted-foreground">
             Overlord access for the Archivist — monitor, assign, and govern the five cells of
             the Chthonic Uprising.
           </p>
@@ -105,6 +106,6 @@ export default async function ChthonicCommandPage() {
           />
         </div>
       )}
-    </div>
+    </AdminShell>
   );
 }

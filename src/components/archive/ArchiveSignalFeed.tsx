@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArchiveNav } from "@/components/archive/ArchiveNav";
 import { ArchiveArticleCard, ArchiveRepoCard } from "@/components/archive/ArchiveSignalCards";
+import { PageShell } from "@/components/layout/PageShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getArchiveItems, type ArchiveSort } from "@/lib/actions/archive-items";
@@ -23,14 +24,18 @@ export async function ArchiveSignalFeed({ section, sort = "newest" }: ArchiveSig
   const items = await getArchiveItems(section.itemType, sort, { includeModeration: canModerate });
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <PageShell variant="dashboard" scanlines>
       <ArchiveNav active={section.slug} />
-      <h1 className="mb-1 font-mono text-3xl tracking-widest uppercase">{section.title}</h1>
-      <p className="mb-2 font-mono text-[10px] tracking-wider text-primary/70 uppercase">{section.subtitle}</p>
-      <p className="mb-8 max-w-2xl text-sm text-muted-foreground">{section.description}</p>
+      <header className="mb-8">
+        <h1 className="mb-1 font-mono text-3xl tracking-widest uppercase">{section.title}</h1>
+        <p className="mb-2 font-mono text-[10px] tracking-wider text-primary/70 uppercase">
+          {section.subtitle}
+        </p>
+        <p className="hw-readable-wide text-sm text-muted-foreground">{section.description}</p>
+      </header>
 
       <TerminalPanel title={section.terminalLabel} className="mb-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="hw-wide-toolbar">
           <p className="font-mono text-sm text-muted-foreground">
             {items.length} signal{items.length !== 1 ? "s" : ""} indexed
           </p>
@@ -54,21 +59,25 @@ export async function ArchiveSignalFeed({ section, sort = "newest" }: ArchiveSig
         </div>
       </TerminalPanel>
 
-      <div className="space-y-4">
-        {items.length === 0 ? (
-          <TerminalPanel title="archive.signals.empty">
-            <p className="font-mono text-sm text-muted-foreground">{section.emptyMessage}</p>
-          </TerminalPanel>
-        ) : section.itemType === "ARTICLE" ? (
-          items.map((item) => (
-            <ArchiveArticleCard key={item.id} item={item} section={section} showModeration={canModerate} />
-          ))
-        ) : (
-          items.map((item) => (
+      {items.length === 0 ? (
+        <TerminalPanel title="archive.signals.empty">
+          <p className="font-mono text-sm text-muted-foreground">{section.emptyMessage}</p>
+        </TerminalPanel>
+      ) : section.itemType === "ARTICLE" ? (
+        <div className="hw-library-grid">
+          {items.map((item) => (
+            <div key={item.id} className="min-w-0">
+              <ArchiveArticleCard item={item} section={section} showModeration={canModerate} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="hw-library-grid">
+          {items.map((item) => (
             <ArchiveRepoCard key={item.id} item={item} section={section} showModeration={canModerate} />
-          ))
-        )}
-      </div>
-    </div>
+          ))}
+        </div>
+      )}
+    </PageShell>
   );
 }

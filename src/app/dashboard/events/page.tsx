@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { EventCard } from "@/components/events/EventCard";
+import { PageShell } from "@/components/layout/PageShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { SystemAlert } from "@/components/terminal/SystemAlert";
 import { getUpcomingEvents } from "@/lib/actions/events";
@@ -12,7 +13,7 @@ export default async function DashboardEventsPage() {
   const events = await getUpcomingEvents(user.roles, 10);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <PageShell variant="dashboard" scanlines>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-mono text-3xl tracking-widest uppercase">
@@ -34,7 +35,7 @@ export default async function DashboardEventsPage() {
           variant="info"
         />
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="hw-dashboard-grid">
           {events.map((ev) => (
             <EventCard
               key={ev.id}
@@ -51,6 +52,6 @@ export default async function DashboardEventsPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

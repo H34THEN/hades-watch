@@ -192,8 +192,36 @@
   align-items: start;
 }
 
+.hw-split-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: start;
+}
+
+.hw-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.hw-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: clamp(1rem, 1.8vw, 1.5rem);
+}
+
+.hw-wide-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
 @media (max-width: 900px) {
-  .hw-split-layout {
+  .hw-split-layout,
+  .hw-split-panel {
     grid-template-columns: 1fr;
   }
 }

@@ -36,7 +36,29 @@ Hades Watch uses a shared **PageShell** layout system so dashboard pages use des
 - `.hw-grid-cards` — min 280px cards
 - `.hw-grid-library` — min 340px repo/library cards
 - `.hw-grid-dashboard` — min 320px dashboard tiles
-- `.hw-split-layout` — main + 360px aside (stacks ≤900px)
+- `.hw-library-grid` — alias for library card grids
+- `.hw-dashboard-grid` — alias for dashboard module grids
+- `.hw-split-layout` / `.hw-split-panel` — main + aside (stacks ≤900px)
+- `.hw-wide-toolbar` — full-width filter/action bars
+
+## Route Width Audit
+
+| Route | Desired Variant | Updated | Notes |
+|---|---|---|---|
+| `/archive` | dashboard | yes | hub card grids |
+| `/archive/lore` | dashboard | yes | lore library grid |
+| `/archive/state-of-affairs` | dashboard | yes | via `ArchiveSignalFeed` |
+| `/archive/ghost-in-tech` | dashboard | yes | `GhostInTechLibrary` shell |
+| `/archive/ghost-in-tech/[slug]` | split | yes | repo detail + metadata sidebar |
+| `/archive/state-of-affairs/[slug]` | split | yes | article detail + sidebar |
+| `/dashboard` | dashboard | yes | operative command modules |
+| `/dashboard/transmissions` | split | yes | list + console sidebar |
+| `/dashboard/events` | dashboard | yes | event card grid |
+| `/admin/factions/command` | dashboard | yes | `AdminShell` |
+
+## Parent layouts
+
+No route-group `layout.tsx` files constrain width — only `src/app/layout.tsx` wraps the app shell without max-width. Narrow columns were coming from **page-level and shared component wrappers** (`mx-auto max-w-*`), not parent route layouts.
 
 ## Shared shells updated
 
@@ -61,7 +83,13 @@ Use `Readable` or `.hw-readable` inside wide dashboards for paragraph copy. Grid
 
 ## Pages migrated (manual + shared shells)
 
-**PageShell / AdminShell:**
+**PageShell / AdminShell (pass 2 — child routes):**
+- `/archive`, `/archive/lore`
+- `/archive/state-of-affairs`, `/archive/ghost-in-tech/[slug]` (via `ArchiveSignalFeed` / `ArchiveSignalItemDetail`)
+- `/dashboard`, `/dashboard/transmissions`, `/dashboard/events`
+- `/admin/factions/command`
+
+**PageShell / AdminShell (pass 1):**
 - `/admin`, `/admin/community`, `/admin/users`
 - `/login`, `/register`, `/invite`
 - `/ciphers`, `/notifications`, `/chat`
@@ -78,7 +106,7 @@ Use `Readable` or `.hw-readable` inside wide dashboards for paragraph copy. Grid
 
 - Remaining `/admin/*` routes still on `mx-auto max-w-*` — migrate to `AdminShell`
 - Auth pages: `forgot-password`, `reset-password`, `verify-email`
-- Moderation, dashboard, events, profile forum builder pages
-- Some nested components still have local max-width (e.g. `LoreDetailView`, `ArchiveSignalItemDetail`) — intentional for article prose
+- Moderation, profile forum builder pages
+- `LoreDetailView` — article detail pages use `standard` width for long prose (intentional)
 - `FactionDetailClient` may retain internal width constraints
 - Avatar builder already uses full width wrapper

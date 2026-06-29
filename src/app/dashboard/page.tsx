@@ -2,6 +2,7 @@ import Link from "next/link";
 import { RoleBadge } from "@/components/badges/RoleBadge";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { DashboardCard } from "@/components/cards/DashboardCard";
+import { PageShell } from "@/components/layout/PageShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getUpcomingEvents } from "@/lib/actions/events";
@@ -41,7 +42,7 @@ export default async function DashboardPage() {
   const readableDrops = deadDrops.filter((d) => d.readable).length;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
+    <PageShell variant="dashboard" scanlines>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-mono text-3xl tracking-widest uppercase">
@@ -90,7 +91,7 @@ export default async function DashboardPage() {
         </TerminalPanel>
       )}
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 hw-dashboard-grid">
         <DashboardCard title="Transmissions" description={`${transmissions.length} active broadcasts`} icon={<span>◎</span>}>
           <Link href="/dashboard/transmissions">
             <CommandButton size="sm">View Transmissions</CommandButton>
@@ -113,7 +114,7 @@ export default async function DashboardPage() {
         </DashboardCard>
       </div>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-8 hw-dashboard-grid">
         <DashboardCard
           title="Character"
           description={character ? character.callsign : "No operative record"}
@@ -232,6 +233,6 @@ export default async function DashboardPage() {
           ))}
         </TerminalPanel>
       )}
-    </div>
+    </PageShell>
   );
 }
