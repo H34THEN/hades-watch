@@ -84,6 +84,10 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     terminalLabel: "ACCOUNT",
     links: [
       { href: "/profile/dossier", label: "Dossier", access: "authenticated" },
+      { href: "/profile/forum", label: "Forum Identity", access: "approved" },
+      { href: "/profile/forum/button-builder", label: "Forum Button Builder", access: "approved" },
+      { href: "/profile/forum/banner-builder", label: "Forum Banner Builder", access: "approved" },
+      { href: "/notifications", label: "Notifications", access: "approved" },
       { href: "/profile/badges", label: "Badge Case", access: "authenticated" },
       { href: "/profile/relic-zone", label: "Relic Zone", access: "approved" },
       { href: "/profile/world", label: "Profile World", access: "authenticated" },

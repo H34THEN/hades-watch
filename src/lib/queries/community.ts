@@ -13,7 +13,21 @@ const authorSelect = {
   id: true,
   name: true,
   email: true,
-  character: { select: { callsign: true, archetype: true } },
+  activeTitle: true,
+  character: {
+    select: {
+      callsign: true,
+      archetype: true,
+      avatarUrl: true,
+      faction: { select: { slug: true, name: true } },
+    },
+  },
+  forumProfile: {
+    include: {
+      activeButton: true,
+      activeBanner: true,
+    },
+  },
 } as const;
 
 export async function getForumCategories() {
@@ -82,6 +96,15 @@ export async function getForumComments(threadId: string) {
     orderBy: { createdAt: "asc" },
     include: {
       author: { select: authorSelect },
+      quotedAuthor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          character: { select: { callsign: true } },
+          forumProfile: { select: { displayName: true } },
+        },
+      },
       reactions: {
         select: { reactionType: true, userId: true },
       },

@@ -324,6 +324,12 @@ model User {
   avatarUnlocksGranted         UserAvatarUnlock[]      @relation("AvatarUnlockGranter")
   adminRewardGrantsGiven       AdminRewardGrantAudit[] @relation("AdminRewardGranter")
   adminRewardGrantsReceived    AdminRewardGrantAudit[] @relation("AdminRewardRecipient")
+  forumProfile                 ForumProfile?
+  forumSignatureAssets         ForumSignatureAsset[]
+  forumUserPreference          ForumUserPreference?
+  notificationsReceived        UserNotification[]      @relation("NotificationRecipient")
+  notificationsSent            UserNotification[]      @relation("NotificationActor")
+  forumCommentsQuoted          ForumComment[]          @relation("ForumQuoteAuthor")
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -1295,6 +1301,46 @@ enum ForumReactionType {
   THANKS
 }
 
+enum ForumImageSource {
+  UPLOADED
+  AVATAR
+  FACTION_ICON
+  GENERATED
+}
+
+enum ForumSignatureAssetType {
+  BUTTON
+  BANNER
+}
+
+enum ForumSignatureSourceType {
+  GENERATED
+  UPLOADED
+  SYSTEM
+}
+
+enum ForumModerationStatus {
+  APPROVED
+  PENDING
+  REJECTED
+  HIDDEN
+}
+
+enum ForumSignatureDisplayMode {
+  COMPACT
+  FULL
+  HIDDEN
+}
+
+enum UserNotificationType {
+  FORUM_QUOTE
+  FORUM_REPLY
+  FORUM_MENTION
+  FORUM_REACTION
+  BADGE_GRANTED
+  RECOGNITION_GRANTED
+}
+
 enum VolunteerLane {
   CODE
   DESIGN
@@ -1468,8 +1514,10 @@ model ForumThread {
   title          String
   slug           String            @unique
   body           String            @db.Text
+  flair          String?
   status         ForumThreadStatus @default(ACTIVE)
   pinned         Boolean           @default(false)
+  solved         Boolean           @default(false)
   score          Int               @default(0)
   commentCount   Int               @default(0)
   lastActivityAt DateTime          @default(now())
@@ -1491,20 +1539,27 @@ model ForumComment {
   threadId        String
   authorId        String
   parentCommentId String?
+  quotedCommentId String?
+  quotedAuthorId  String?
+  quoteExcerpt    String?            @db.VarChar(320)
   body            String             @db.Text
   status          ForumCommentStatus @default(ACTIVE)
   score           Int                @default(0)
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 
-  thread        ForumThread     @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  author        User            @relation("ForumCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  parentComment ForumComment?   @relation("ForumCommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
-  replies       ForumComment[]  @relation("ForumCommentReplies")
-  reactions     ForumReaction[] @relation("ForumCommentReactions")
+  thread         ForumThread     @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author         User            @relation("ForumCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  parentComment  ForumComment?   @relation("ForumCommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
+  replies        ForumComment[]  @relation("ForumCommentReplies")
+  quotedComment  ForumComment?   @relation("ForumCommentQuotes", fields: [quotedCommentId], references: [id], onDelete: SetNull)
+  quotesOf       ForumComment[]  @relation("ForumCommentQuotes")
+  quotedAuthor   User?           @relation("ForumQuoteAuthor", fields: [quotedAuthorId], references: [id], onDelete: SetNull)
+  reactions      ForumReaction[] @relation("ForumCommentReactions")
 
   @@index([threadId, createdAt])
   @@index([authorId])
+  @@index([quotedCommentId])
 }
 
 model ForumReaction {
@@ -1523,6 +1578,100 @@ model ForumReaction {
   @@unique([userId, commentId])
   @@index([threadId])
   @@index([commentId])
+}
+
+model ForumProfile {
+  id                   String                    @id @default(cuid())
+  userId               String                    @unique
+  displayName          String?
+  forumImageSource     ForumImageSource          @default(GENERATED)
+  forumImagePath       String?
+  forumImageAlt        String?
+  generatedImageConfig Json?
+  selectedTitleSlug    String?
+  statusLine           String?                   @db.VarChar(120)
+  factionSlug          String?
+  guildSlug            String?
+  showBadges           Boolean                   @default(true)
+  showReputation       Boolean                   @default(true)
+  showProfileWorldLink Boolean                   @default(true)
+  signatureText        String?                   @db.VarChar(500)
+  signatureMode        ForumSignatureDisplayMode @default(COMPACT)
+  activeButtonId       String?
+  activeBannerId       String?
+  stylePreset          String?
+  hoverEffect          String?
+  moderationStatus     ForumModerationStatus     @default(APPROVED)
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+
+  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeButton ForumSignatureAsset?  @relation("ForumActiveButton", fields: [activeButtonId], references: [id], onDelete: SetNull)
+  activeBanner ForumSignatureAsset?  @relation("ForumActiveBanner", fields: [activeBannerId], references: [id], onDelete: SetNull)
+  assets       ForumSignatureAsset[] @relation("ForumProfileAssets")
+
+  @@index([moderationStatus])
+}
+
+model ForumSignatureAsset {
+  id               String                   @id @default(cuid())
+  userId           String
+  profileId        String?
+  assetType        ForumSignatureAssetType
+  sizePreset       String
+  sourceType       ForumSignatureSourceType
+  imagePath        String?
+  altText          String?
+  textPrimary      String?
+  textSecondary    String?
+  safeConfig       Json?
+  moderationStatus ForumModerationStatus    @default(APPROVED)
+  moderationNote   String?                  @db.Text
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile           ForumProfile?  @relation("ForumProfileAssets", fields: [profileId], references: [id], onDelete: Cascade)
+  activeButtonFor   ForumProfile[] @relation("ForumActiveButton")
+  activeBannerFor   ForumProfile[] @relation("ForumActiveBanner")
+
+  @@index([userId])
+  @@index([moderationStatus])
+}
+
+model ForumUserPreference {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  hideSignatures      Boolean  @default(false)
+  reduceMotion        Boolean  @default(false)
+  disableHoverEffects Boolean  @default(false)
+  compactAuthorCards  Boolean  @default(false)
+  notifyWhenQuoted    Boolean  @default(true)
+  notifyOnDirectReply Boolean  @default(true)
+  notifyOnMention     Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserNotification {
+  id          String               @id @default(cuid())
+  recipientId String
+  actorId     String?
+  type        UserNotificationType
+  title       String
+  body        String?              @db.Text
+  targetUrl   String?
+  readAt      DateTime?
+  metadata    Json?
+  createdAt   DateTime             @default(now())
+
+  recipient User  @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor     User? @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([recipientId, readAt])
+  @@index([recipientId, createdAt])
 }
 
 model VolunteerOpportunity {

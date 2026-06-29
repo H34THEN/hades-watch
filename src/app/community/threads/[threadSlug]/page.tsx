@@ -5,6 +5,7 @@ import { ForumThreadView } from "@/components/community/ForumThreadView";
 import { formatCommunityBody } from "@/lib/community/sanitize";
 import { getSessionUser, isApprovedUser } from "@/lib/auth/session";
 import { getForumComments, getForumThreadBySlug } from "@/lib/queries/community";
+import { getForumUserPreference } from "@/lib/queries/forum-identity";
 
 export async function generateMetadata({
   params,
@@ -34,7 +35,10 @@ export default async function ForumThreadPage({
 
   const user = await getSessionUser();
   const approved = user ? isApprovedUser(user) : false;
-  const comments = await getForumComments(thread.id);
+  const [comments, prefs] = await Promise.all([
+    getForumComments(thread.id),
+    user ? getForumUserPreference(user.id) : Promise.resolve(null),
+  ]);
   const bodyHtml = formatCommunityBody(thread.body);
 
   return (
@@ -46,6 +50,7 @@ export default async function ForumThreadPage({
         comments={comments}
         currentUserId={user?.id}
         canReply={approved && thread.status === "ACTIVE"}
+        hideSignatures={prefs?.hideSignatures ?? false}
       />
     </CommunityShell>
   );

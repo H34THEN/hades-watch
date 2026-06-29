@@ -1,0 +1,273 @@
+.postActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.actionButton {
+  border: 1px solid color-mix(in srgb, var(--border) 80%, var(--primary) 20%);
+  background: color-mix(in srgb, var(--card) 60%, transparent);
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.actionButton:hover,
+.actionButton:focus-visible {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  outline: none;
+}
+
+.authorCard {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.authorCardCompact {
+  gap: 0.5rem;
+}
+
+.forumAvatar {
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  border: 2px solid color-mix(in srgb, var(--primary) 35%, var(--border));
+  border-radius: 0.35rem;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #12051f, #0a0812);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.authorCardCompact .forumAvatar {
+  width: 3rem;
+  height: 3rem;
+}
+
+.forumAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.forumAvatarGlyph {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+}
+
+.authorMeta {
+  min-width: 0;
+  flex: 1;
+}
+
+.authorLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.authorCallsign {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.authorCallsign:hover {
+  text-decoration: underline;
+}
+
+.opBadge,
+.titleChip,
+.factionChip {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, var(--primary) 30%);
+}
+
+.opBadge {
+  color: #fbbf24;
+  border-color: color-mix(in srgb, #fbbf24 40%, var(--border));
+}
+
+.titleChip {
+  color: var(--muted-foreground);
+}
+
+.factionChip {
+  color: var(--foreground);
+}
+
+.statusLine,
+.authorTimestamp {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.signatureBlock {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed color-mix(in srgb, var(--border) 80%, var(--primary) 20%);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.signatureCompact {
+  opacity: 0.92;
+}
+
+.signatureText {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+
+.signatureButton,
+.signatureButtonCompact {
+  image-rendering: pixelated;
+}
+
+.quoteBlock {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  background: color-mix(in srgb, var(--card) 50%, transparent);
+}
+
+.quoteLabel {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.35rem;
+}
+
+.quoteAuthor {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.quoteJump {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+
+.quoteExcerpt {
+  font-size: 0.85rem;
+  color: var(--foreground);
+  white-space: pre-wrap;
+  opacity: 0.9;
+}
+
+.avatarTheme_dead-index-violet {
+  background: linear-gradient(145deg, #12051f, #1a0a2e);
+}
+
+.avatarTheme_styx-neon-rat {
+  background: linear-gradient(145deg, #0a1a0f, #102818);
+}
+
+.avatarTheme_oracular-blue {
+  background: linear-gradient(145deg, #051428, #0a2040);
+}
+
+.hover_soft-glow:hover,
+.hover_soft-glow:focus-within {
+  box-shadow: 0 0 16px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.hover_glitch-nudge:hover,
+.hover_glitch-nudge:focus-within {
+  transform: translateX(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover_glitch-nudge:hover,
+  .hover_glitch-nudge:focus-within {
+    transform: none;
+  }
+}
+
+.identityGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .identityGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.builderPreview {
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, var(--primary) 20%);
+  background: color-mix(in srgb, var(--card) 40%, transparent);
+}
+
+.safetyNote {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+
+.notificationList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notificationItem {
+  border: 1px solid color-mix(in srgb, var(--border) 80%, var(--primary) 15%);
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, var(--card) 35%, transparent);
+}
+
+.notificationUnread {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+  background: color-mix(in srgb, var(--primary) 6%, var(--card));
+}
+
+.notificationTitle {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--foreground);
+}
+
+.notificationBody {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.notificationMeta {
+  margin-top: 0.35rem;
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}

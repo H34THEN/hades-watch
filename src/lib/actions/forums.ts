@@ -12,6 +12,9 @@ import { tryAwardBadgeBySlug } from "@/lib/community/badges";
 import { POSITIVE_REACTION_SCORE } from "@/lib/community/constants";
 import { recordReputationEvent } from "@/lib/community/reputation";
 import { stripCommunityText } from "@/lib/community/sanitize";
+import { createUserNotification } from "@/lib/forums/notifications";
+import { buildQuoteExcerpt, parseMentions } from "@/lib/forums/quotes";
+import { resolveForumCallsign } from "@/lib/forums/callsign";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { z } from "zod";
@@ -30,6 +33,7 @@ const commentSchema = z.object({
   threadId: z.string().min(1),
   body: z.string().min(1).max(10000),
   parentCommentId: z.string().optional(),
+  quotedCommentId: z.string().optional(),
 });
 
 const reactionSchema = z.object({
@@ -158,6 +162,7 @@ export async function createCommentAction(formData: FormData): Promise<ActionRes
     threadId: formData.get("threadId"),
     body: stripCommunityText(String(formData.get("body") ?? ""), 10000),
     parentCommentId: formData.get("parentCommentId") || undefined,
+    quotedCommentId: formData.get("quotedCommentId") || undefined,
   });
 
   if (!parsed.success) {
@@ -196,11 +201,45 @@ export async function createCommentAction(formData: FormData): Promise<ActionRes
     }
   }
 
+  let quotedCommentId: string | null = null;
+  let quotedAuthorId: string | null = null;
+  let quoteExcerpt: string | null = null;
+
+  if (parsed.data.quotedCommentId) {
+    const quoted = await prisma.forumComment.findFirst({
+      where: {
+        id: parsed.data.quotedCommentId,
+        threadId: thread.id,
+        status: "ACTIVE",
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            character: { select: { callsign: true } },
+            forumProfile: { select: { displayName: true } },
+          },
+        },
+      },
+    });
+    if (!quoted) {
+      return { success: false, error: "Quoted comment not found." };
+    }
+    quotedCommentId = quoted.id;
+    quotedAuthorId = quoted.authorId;
+    quoteExcerpt = buildQuoteExcerpt(quoted.body);
+  }
+
   const comment = await prisma.forumComment.create({
     data: {
       threadId: thread.id,
       authorId: auth.id,
       parentCommentId: parsed.data.parentCommentId ?? null,
+      quotedCommentId,
+      quotedAuthorId,
+      quoteExcerpt,
       body: parsed.data.body,
       status: "ACTIVE",
     },
@@ -225,6 +264,83 @@ export async function createCommentAction(formData: FormData): Promise<ActionRes
 
   await tryAwardBadgeBySlug(auth.id, "signal-reply");
 
+  const actorCallsign =
+    (
+      await prisma.user.findUnique({
+        where: { id: auth.id },
+        select: {
+          name: true,
+          email: true,
+          character: { select: { callsign: true } },
+          forumProfile: { select: { displayName: true } },
+        },
+      })
+    ) ?? null;
+
+  const quoterName = actorCallsign
+    ? resolveForumCallsign(actorCallsign)
+    : "An operative";
+
+  const threadUrl = `/community/threads/${thread.slug}#comment-${comment.id}`;
+
+  if (quotedAuthorId && quotedAuthorId !== auth.id) {
+    await createUserNotification({
+      recipientId: quotedAuthorId,
+      actorId: auth.id,
+      type: "FORUM_QUOTE",
+      title: `${quoterName} echoed your signal`,
+      body: `In “${thread.title}”: ${quoteExcerpt ?? ""}`.slice(0, 500),
+      targetUrl: threadUrl,
+      metadata: {
+        threadId: thread.id,
+        commentId: comment.id,
+        quotedCommentId,
+      },
+    });
+  }
+
+  if (parsed.data.parentCommentId) {
+    const parent = await prisma.forumComment.findUnique({
+      where: { id: parsed.data.parentCommentId },
+      select: { authorId: true },
+    });
+    if (parent && parent.authorId !== auth.id && parent.authorId !== quotedAuthorId) {
+      await createUserNotification({
+        recipientId: parent.authorId,
+        actorId: auth.id,
+        type: "FORUM_REPLY",
+        title: `${quoterName} replied to your signal`,
+        body: `In “${thread.title}”.`,
+        targetUrl: threadUrl,
+        metadata: { threadId: thread.id, commentId: comment.id },
+      });
+    }
+  }
+
+  const mentions = parseMentions(parsed.data.body);
+  if (mentions.length > 0) {
+    const mentionedCharacters = await prisma.character.findMany({
+      where: {
+        callsign: { in: mentions, mode: "insensitive" },
+        userId: { not: auth.id },
+      },
+      select: { userId: true, callsign: true },
+    });
+
+    for (const mentioned of mentionedCharacters) {
+      if (mentioned.userId === quotedAuthorId) continue;
+      await createUserNotification({
+        recipientId: mentioned.userId,
+        actorId: auth.id,
+        type: "FORUM_MENTION",
+        title: `${quoterName} mentioned you in a thread`,
+        body: `In “${thread.title}”.`,
+        targetUrl: threadUrl,
+        metadata: { threadId: thread.id, commentId: comment.id },
+      });
+    }
+  }
+
   await writeAuditLog({
     action: "forum.comment.create",
     actorId: auth.id,
@@ -236,6 +352,8 @@ export async function createCommentAction(formData: FormData): Promise<ActionRes
   revalidatePath("/forums");
   revalidatePath(`/forums/${thread.category.slug}`);
   revalidatePath(`/forums/${thread.category.slug}/${thread.slug}`);
+  revalidatePath(`/community/threads/${thread.slug}`);
+  revalidatePath("/notifications");
   return { success: true };
 }
 

@@ -1,43 +1,38 @@
 import Link from "next/link";
-import { ForumCommentForm } from "@/components/community/ForumCommentForm";
-import { ForumCommentList } from "@/components/community/ForumCommentList";
 import { ForumReactionButtons } from "@/components/community/ForumReactionButtons";
+import { ForumThreadInteraction } from "@/components/forums/ForumThreadInteraction";
+import {
+  ForumAuthorCard,
+  ForumSignatureBlock,
+  type ForumAuthorView,
+} from "@/components/forums/ForumAuthorCard";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import styles from "@/components/community/community.module.css";
 import { cn } from "@/lib/utils";
 
-type ThreadAuthor = {
-  id: string;
-  character?: { callsign: string | null } | null;
-  name: string | null;
-  email: string;
-};
+type ThreadAuthor = ForumAuthorView;
 
 interface ForumThreadViewProps {
   thread: {
     id: string;
     slug: string;
     title: string;
+    flair?: string | null;
     pinned: boolean;
+    solved?: boolean;
     score: number;
     status: string;
     createdAt: Date;
+    authorId: string;
     author: ThreadAuthor;
     category: { slug: string; name: string };
     reactions: { reactionType: string; userId: string }[];
   };
   bodyHtml: string;
-  comments: Parameters<typeof ForumCommentList>[0]["comments"];
+  comments: Parameters<typeof ForumThreadInteraction>[0]["comments"];
   currentUserId?: string | null;
   canReply?: boolean;
-}
-
-function authorCallsign(author: ThreadAuthor): string {
-  const callsign = author.character?.callsign;
-  if (callsign) {
-    return callsign;
-  }
-  return author.name ?? author.email.split("@")[0] ?? "operative";
+  hideSignatures?: boolean;
 }
 
 export function ForumThreadView({
@@ -46,8 +41,13 @@ export function ForumThreadView({
   comments,
   currentUserId,
   canReply = true,
+  hideSignatures = false,
 }: ForumThreadViewProps) {
   const locked = thread.status === "LOCKED";
+  const threadSignatureMode =
+    hideSignatures || thread.author.forumProfile?.signatureMode === "HIDDEN"
+      ? "HIDDEN"
+      : ((thread.author.forumProfile?.signatureMode as "COMPACT" | "FULL") ?? "COMPACT");
 
   return (
     <div className="space-y-6">
@@ -60,6 +60,8 @@ export function ForumThreadView({
             ← {thread.category.name}
           </Link>
           {thread.pinned && <span className={styles.pinnedBadge}>Pinned</span>}
+          {thread.solved && <span className={styles.statusChip}>Solved</span>}
+          {thread.flair && <span className={styles.statusChip}>{thread.flair}</span>}
           {locked && (
             <span className={cn(styles.statusChip, styles.statusNeutral)}>Locked</span>
           )}
@@ -69,12 +71,9 @@ export function ForumThreadView({
           {thread.title}
         </h1>
 
-        <p className={cn(styles.metaRow, "mt-2")}>
-          <span>{authorCallsign(thread.author)}</span>
-          <span>Score {thread.score}</span>
-          <span>{comments.length} repl{comments.length !== 1 ? "ies" : "y"}</span>
-          <span>{thread.createdAt.toLocaleDateString()}</span>
-        </p>
+        <div className="mt-4">
+          <ForumAuthorCard author={thread.author} createdAt={thread.createdAt} isOp />
+        </div>
 
         <div
           className={cn(styles.threadBody, "mt-4")}
@@ -87,17 +86,23 @@ export function ForumThreadView({
           reactions={thread.reactions}
           currentUserId={currentUserId}
         />
+
+        {!hideSignatures && (
+          <ForumSignatureBlock author={thread.author} mode={threadSignatureMode} />
+        )}
       </TerminalPanel>
 
       <TerminalPanel title="forums.replies">
-        <ForumCommentList comments={comments} currentUserId={currentUserId} />
+        <ForumThreadInteraction
+          threadId={thread.id}
+          threadSlug={thread.slug}
+          threadAuthorId={thread.authorId}
+          comments={comments}
+          currentUserId={currentUserId}
+          canReply={canReply && !locked}
+          hideSignatures={hideSignatures}
+        />
       </TerminalPanel>
-
-      {canReply && !locked && (
-        <TerminalPanel title="forums.reply">
-          <ForumCommentForm threadId={thread.id} />
-        </TerminalPanel>
-      )}
 
       {locked && (
         <p className="font-mono text-xs text-muted-foreground">

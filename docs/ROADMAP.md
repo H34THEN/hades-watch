@@ -198,6 +198,7 @@
 - **Community hub:** `/community` landing with reputation panel
 - **Community Builder:** moderated submission intake at `/community/builder`
 - **Forums:** categories, threads, comments, reactions at `/community/forums`
+- **Forum identity:** relay masks, safe signatures/buttons, quote notifications at `/profile/forum`, `/notifications`
 - **Volunteer board:** opportunities + responses at `/community/volunteer`
 - **Guilds:** request, approval, membership at `/community/guilds`
 - **Canon lore tiers:** submissions at `/community/lore`
