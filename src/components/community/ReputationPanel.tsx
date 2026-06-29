@@ -15,6 +15,8 @@ const CATEGORY_LABELS: Record<ReputationCategory, string> = {
   GUILDS: "Guilds",
   MODERATION: "Moderation",
   ACCESSIBILITY: "Accessibility",
+  FACTION: "Faction",
+  RECOGNITION: "Recognition",
 };
 
 interface ReputationPanelProps {

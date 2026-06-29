@@ -22,7 +22,7 @@ src/
     dashboard/transmissions/   # User-facing broadcasts
     dashboard/events/          # Upcoming events summary
     events/                    # Full event calendar
-    mmo/                       # Text MMO hub, character, factions, missions
+    mmo/                       # Text MMO hub, character, factions, missions, rooms, dead-drops, field-log
     archive/                   # Lore archive
     dead-drops/                # Fictional dead drops (roleplay)
     ciphers/                   # Cipher puzzles (roleplay)
@@ -95,7 +95,7 @@ src/
 |--------|---------|
 | `npm run db:generate` | Generate Prisma client only — no data changes |
 | `npm run db:deploy` | Apply migrations + regenerate client |
-| `npm run db:seed` / `db:seed:all` | Canonical production-safe seeds (factions, lore, archive, missions, chat, net-neighbors) |
+| `npm run db:seed` / `db:seed:all` | Canonical production-safe seeds (factions, lore, archive, missions, chat, net-neighbors, text-mmo) |
 | `npm run db:release` | `db:generate` + `db:deploy` + canonical seed |
 | `npm run db:backfill:profile-slugs` | Provision missing `Character.callsign` from codename |
 | `npm run db:seed:legacy` | Legacy dev seed (roles + dev invites when allowed) |
@@ -124,6 +124,8 @@ src/
 
 - Models: `Character` (one per user), `Faction`, `FactionMembership`, `Quest`, `MissionSubmission`, `Badge`, `UserBadge`
 - Routes: `/mmo`, `/mmo/character`, `/mmo/factions`, `/mmo/missions`, `/mmo/missions/[slug]`
+- **Text MMO playable loops:** `MmoRoom`, `MmoDeadDrop`, `MmoFieldLog`, loot/lore grant models — routes `/mmo/rooms`, `/mmo/dead-drops`, `/mmo/field-log` — see [TEXT_MMO_PLAYABLE_LOOPS.md](TEXT_MMO_PLAYABLE_LOOPS.md), [TEXT_MMO_IMPLEMENTATION_NOTES.md](TEXT_MMO_IMPLEMENTATION_NOTES.md)
+- Seed: `db:seed:text-mmo` (included in `db:seed`)
 - Membership requests scaffolded (Pending/Approved/Rejected/Left)
 - Mission participation — join/leave/complete (Phase 5)
 - **First Descent Protocols** (Phase 10): real-world readiness support missions, cross-faction completion, private proof packets, moderator review — see [missions/FIRST_DESCENT_PROTOCOLS.md](missions/FIRST_DESCENT_PROTOCOLS.md)

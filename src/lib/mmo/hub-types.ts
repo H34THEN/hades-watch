@@ -24,7 +24,8 @@ export type HubModuleCategory =
   | "Community"
   | "Archive"
   | "Forge"
-  | "Signals";
+  | "Signals"
+  | "Underwatch";
 
 export interface HubModuleDefinition {
   slug: string;

@@ -29,6 +29,7 @@ const CANONICAL_SEEDS: { name: string; script: string; optional?: boolean }[] = 
   { name: "ciphers:first-set", script: "prisma/scripts/seed-ciphers-first-set.ts" },
   { name: "chat", script: "prisma/scripts/seed-chat-rooms.ts" },
   { name: "net-neighbors", script: "prisma/scripts/seed-net-neighbors.ts" },
+  { name: "text-mmo", script: "prisma/scripts/seed-text-mmo-loops.ts" },
 ];
 
 async function seedRoles() {

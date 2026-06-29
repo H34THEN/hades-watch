@@ -207,6 +207,16 @@
 - **Seed:** `db:seed:community-signals` (categories + volunteer calls, no fake users)
 - **Docs:** `docs/COMMUNITY_SIGNALS.md` and related guides
 
+## Phase 12 — Text MMO Playable Loops
+
+- **Five core rooms:** Underwatch Town Square, Dead Drop Terminal, Oracular Relay, Faction Floors, Archive Terminal
+- **Routes:** `/mmo/rooms`, `/mmo/dead-drops`, `/mmo/field-log` + detail pages
+- **Models:** `MmoRoom`, `MmoDeadDrop`, `MmoFieldLog`, loot/lore grants (separate from phase-4 `/dead-drops`)
+- **Rewards:** reputation, badges, loot, lore unlocks; review-required submission flow
+- **Admin:** `/admin/mmo-submissions`
+- **Seed:** `db:seed:text-mmo`
+- **Docs:** [TEXT_MMO_PLAYABLE_LOOPS.md](TEXT_MMO_PLAYABLE_LOOPS.md), [TEXT_MMO_IMPLEMENTATION_NOTES.md](TEXT_MMO_IMPLEMENTATION_NOTES.md)
+
 ## Future Lore
 
 Planned archive entries and mission chains from the origin dossier:

@@ -105,6 +105,9 @@ export default async function AdminPage() {
         <AdminCard title="Dead Drops" description="Roleplay messages" status="online">
           <Link href="/admin/dead-drops"><CommandButton size="sm">Manage</CommandButton></Link>
         </AdminCard>
+        <AdminCard title="MMO Dead Drops" description="Text MMO submission review" status="online">
+          <Link href="/admin/mmo-submissions"><CommandButton size="sm">Review</CommandButton></Link>
+        </AdminCard>
         <AdminCard title="Community" description="Builder, guilds, lore queues" status="online">
           <Link href="/admin/community"><CommandButton size="sm">Review</CommandButton></Link>
         </AdminCard>

@@ -313,6 +313,11 @@ model User {
   loreSubmissionsReviewed      LoreSubmission[]      @relation("LoreSubmissionReviewer")
   playerRecognitionsReceived   PlayerRecognition[]   @relation("RecognitionRecipient")
   playerRecognitionsGranted    PlayerRecognition[]   @relation("RecognitionGranter")
+  mmoFieldLogs                 MmoFieldLog[]
+  mmoDeadDropSubmissions       MmoDeadDropSubmission[]
+  mmoLootGrants                MmoLootGrant[]
+  mmoLoreUnlockGrants          MmoLoreUnlockGrant[]
+  reviewedMmoDeadDropSubmissions MmoDeadDropSubmission[] @relation("MmoDeadDropReviewer")
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -1356,6 +1361,8 @@ enum ReputationCategory {
   GUILDS
   MODERATION
   ACCESSIBILITY
+  FACTION
+  RECOGNITION
 }
 
 enum CanonTier {
@@ -1667,4 +1674,336 @@ model PlayerRecognition {
 
   @@index([recipientId])
   @@index([isPublic, revoked])
+}
+
+// --- Text MMO playable loops (see docs/TEXT_MMO_PLAYABLE_LOOPS.md) ---
+
+enum MmoRoomType {
+  social_hub
+  dead_drop_hub
+  cipher_hub
+  faction_floor
+  archive_hub
+  command_layer
+  event_room
+  guild_room
+}
+
+enum MmoRoomState {
+  quiet
+  active
+  crowded
+  locked
+  rotating_drop_live
+  cipher_open
+  faction_call_active
+  archive_trace_detected
+  moderation_review_required
+}
+
+enum MmoAccessLevel {
+  public
+  logged_in
+  approved_user
+  admin
+  owner
+}
+
+enum MmoActionType {
+  READ_SIGNAL
+  POST_FIELD_NOTE
+  SUBMIT_DEAD_DROP
+  SOLVE_CIPHER
+  SUBMIT_RESOURCE
+  VISIT_ARCHIVE
+  JOIN_DISCUSSION
+  OFFER_HELP
+  CREATE_LORE_FRAGMENT
+  SUBMIT_ACCESSIBILITY_NOTE
+  SUBMIT_NET_NEIGHBOR
+  REQUEST_GUILD
+}
+
+enum MmoDropType {
+  field_note
+  lore_fragment
+  resource_link
+  mini_cipher
+  accessibility_note
+  zine_line
+  net_neighbor_lead
+  repo_relic
+  community_question
+  mission_hook
+  archive_artifact
+  safe_care_action_idea
+}
+
+enum MmoSubmissionType {
+  short_text
+  long_text
+  url_plus_summary
+  multiple_choice
+  cipher_answer
+  no_submission_read_only
+}
+
+enum MmoRepeatability {
+  one_time
+  daily
+  weekly
+  rotating
+  repeatable_with_cooldown
+  always_available
+}
+
+enum MmoDropSubmissionStatus {
+  PENDING
+  APPROVED
+  NEEDS_REVISION
+  REJECTED
+  AUTO_COMPLETED
+  ARCHIVED
+}
+
+enum MmoFieldLogVisibility {
+  public
+  approved_users
+  guild_only
+  private
+}
+
+enum MmoFieldLogStatus {
+  ACTIVE
+  HIDDEN
+  REMOVED
+  PRIVATE
+}
+
+enum MmoLootType {
+  title
+  badge
+  relic
+  profile_cosmetic
+  avatar_item
+  room_access
+  lore_fragment
+  forum_flair
+  guild_banner
+  signal_player_unlock
+  relic_zone_module
+  net_neighbor_banner_part
+  faction_flair
+}
+
+enum MmoLootRarity {
+  common
+  uncommon
+  rare
+  relic
+  mythic
+}
+
+model MmoRoom {
+  id                   String        @id @default(cuid())
+  title                String
+  slug                 String        @unique
+  description          String        @db.Text
+  entryText            String        @db.Text
+  roomType             MmoRoomType
+  primaryFactionSlug   String?
+  secondaryFactionSlugs Json?
+  accessLevel          MmoAccessLevel @default(logged_in)
+  status               String        @default("active")
+  state                MmoRoomState  @default(active)
+  sortOrder            Int           @default(0)
+  mvpPriority          String        @default("phase-1")
+  safetyNote           String?       @db.Text
+  emptyStateText       String?       @db.Text
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  actions   MmoRoomAction[]
+  deadDrops MmoDeadDrop[]
+  fieldLogs MmoFieldLog[]
+
+  @@index([roomType])
+  @@index([sortOrder])
+}
+
+model MmoRoomAction {
+  id                       String         @id @default(cuid())
+  roomId                   String
+  label                    String
+  slug                     String
+  description              String?        @db.Text
+  actionType               MmoActionType
+  targetRoute              String?
+  accessLevel              MmoAccessLevel @default(logged_in)
+  rewardBadgeSlug          String?
+  rewardReputationCategory ReputationCategory?
+  rewardReputationPoints   Int            @default(0)
+  reputationEventSlug      String?
+  cooldownSeconds          Int            @default(0)
+  reviewRequired           Boolean        @default(false)
+  sortOrder                Int            @default(0)
+  isActive                 Boolean        @default(true)
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  room MmoRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, slug])
+  @@index([roomId, sortOrder])
+}
+
+model MmoDeadDrop {
+  id                       String              @id @default(cuid())
+  title                    String
+  slug                     String              @unique
+  loopSlug                 String
+  roomSlug                 String?
+  factionSlug              String?
+  dropType                 MmoDropType
+  difficulty               String              @default("initiate")
+  repeatability            MmoRepeatability    @default(one_time)
+  reviewRequired           Boolean             @default(false)
+  submissionType           MmoSubmissionType
+  playerPrompt             String              @db.Text
+  successText              String              @db.Text
+  failureText              String              @db.Text
+  loreNote                 String?             @db.Text
+  safetyNote               String?             @db.Text
+  rewardBadgeSlug          String?
+  rewardReputationCategory ReputationCategory?
+  rewardReputationPoints   Int                 @default(0)
+  rewardLootSlug           String?
+  loreUnlockSlug           String?
+  answerHash               String?
+  acceptedAnswerHashes     Json?
+  optionsJson              Json?
+  status                   String              @default("active")
+  startsAt                 DateTime?
+  expiresAt                DateTime?
+  sortOrder                Int                 @default(0)
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+
+  room        MmoRoom?                @relation(fields: [roomSlug], references: [slug], onDelete: SetNull)
+  submissions MmoDeadDropSubmission[]
+  fieldLogs   MmoFieldLog[]
+
+  @@index([loopSlug])
+  @@index([roomSlug])
+  @@index([status])
+}
+
+model MmoDeadDropSubmission {
+  id                   String                  @id @default(cuid())
+  deadDropId           String
+  userId               String
+  characterId          String?
+  body                 String?                 @db.Text
+  url                  String?
+  summary              String?                 @db.Text
+  selectedOption       String?
+  normalizedAnswerHash String?
+  status               MmoDropSubmissionStatus @default(PENDING)
+  visibility           MmoFieldLogVisibility   @default(approved_users)
+  reviewedById         String?
+  reviewedAt           DateTime?
+  reviewNote           String?                 @db.Text
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+
+  deadDrop   MmoDeadDrop @relation(fields: [deadDropId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy User?       @relation("MmoDeadDropReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([deadDropId])
+  @@index([userId])
+  @@index([status])
+}
+
+model MmoFieldLog {
+  id          String                @id @default(cuid())
+  userId      String
+  characterId String?
+  roomId      String?
+  deadDropId  String?
+  actionType  MmoActionType?
+  message     String                @db.Text
+  visibility  MmoFieldLogVisibility @default(approved_users)
+  status      MmoFieldLogStatus     @default(ACTIVE)
+  createdAt   DateTime              @default(now())
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room     MmoRoom?     @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  deadDrop MmoDeadDrop? @relation(fields: [deadDropId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([visibility, status])
+}
+
+model MmoLoot {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique
+  type            MmoLootType
+  rarity          MmoLootRarity @default(common)
+  description     String?       @db.Text
+  flavorText      String?       @db.Text
+  displayLocation String?
+  sourceLoopSlug  String?
+  unlockCondition String?       @db.Text
+  assetPath       String?
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  grants MmoLootGrant[]
+}
+
+model MmoLootGrant {
+  id          String   @id @default(cuid())
+  lootId      String
+  userId      String
+  characterId String?
+  sourceType  String?
+  sourceSlug  String?
+  grantedAt   DateTime @default(now())
+
+  loot MmoLoot @relation(fields: [lootId], references: [id], onDelete: Cascade)
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lootId])
+  @@index([userId])
+}
+
+model MmoLoreUnlock {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?  @db.Text
+  flavorText  String?  @db.Text
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  grants MmoLoreUnlockGrant[]
+}
+
+model MmoLoreUnlockGrant {
+  id            String   @id @default(cuid())
+  loreUnlockId  String
+  userId        String
+  sourceType    String?
+  sourceSlug    String?
+  grantedAt     DateTime @default(now())
+
+  loreUnlock MmoLoreUnlock @relation(fields: [loreUnlockId], references: [id], onDelete: Cascade)
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, loreUnlockId])
+  @@index([userId])
 }

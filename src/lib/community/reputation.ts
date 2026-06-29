@@ -118,6 +118,8 @@ export async function getUserReputationSummary(
     GUILDS: 0,
     MODERATION: 0,
     ACCESSIBILITY: 0,
+    FACTION: 0,
+    RECOGNITION: 0,
   } satisfies Record<ReputationCategory, number>;
 
   let total = 0;
