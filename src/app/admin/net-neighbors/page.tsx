@@ -2,6 +2,7 @@ import Link from "next/link";
 import { NetNeighborAdminPanel } from "@/components/net-neighbors/NetNeighborAdminPanel";
 import { RoleBadge } from "@/components/badges/RoleBadge";
 import { AccessDenied } from "@/components/layout/AccessDenied";
+import { AdminShell } from "@/components/layout/AdminShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { writeAuditLog } from "@/lib/audit";
@@ -64,7 +65,7 @@ export default async function AdminNetNeighborsPage() {
   }));
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
+    <AdminShell>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-mono text-3xl tracking-widest uppercase">Net Neighbors</h1>
@@ -88,6 +89,6 @@ export default async function AdminNetNeighborsPage() {
       <TerminalPanel title="net_neighbors.admin">
         <NetNeighborAdminPanel pendingNeighbors={pending} approvedNeighbors={approved} />
       </TerminalPanel>
-    </div>
+    </AdminShell>
   );
 }

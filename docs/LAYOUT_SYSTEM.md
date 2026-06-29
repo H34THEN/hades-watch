@@ -83,6 +83,15 @@ Use `Readable` or `.hw-readable` inside wide dashboards for paragraph copy. Grid
 
 ## Pages migrated (manual + shared shells)
 
+**PageShell / AdminShell (pass 3 — ops/community):**
+- `/mmo/character` (split + command sidebar)
+- `/chat/[roomSlug]` (full + split relay)
+- `/net-neighbors` (dashboard-width HUD)
+- `/dead-drops`, `/dead-drops/[slug]` (field care library)
+- `/moderation`
+- `/admin/net-neighbors`, `/admin/media`, `/admin/archive`
+- `/admin/archivist` (action feed)
+
 **PageShell / AdminShell (pass 2 — child routes):**
 - `/archive`, `/archive/lore`
 - `/archive/state-of-affairs`, `/archive/ghost-in-tech/[slug]` (via `ArchiveSignalFeed` / `ArchiveSignalItemDetail`)

@@ -85,6 +85,9 @@ export default async function AdminPage() {
       </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <AdminCard title="Archivist Administrator" description="Unified action feed for pending signals" status="online">
+          <Link href="/admin/archivist"><CommandButton size="sm">Open Action Feed</CommandButton></Link>
+        </AdminCard>
         <AdminCard title="Lore" description="Archive entries" status="online">
           <Link href="/admin/lore"><CommandButton size="sm">Manage</CommandButton></Link>
         </AdminCard>

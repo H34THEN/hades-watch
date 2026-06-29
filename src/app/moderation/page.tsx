@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminCard } from "@/components/cards/AdminCard";
 import { RoleBadge } from "@/components/badges/RoleBadge";
 import { AccessDenied } from "@/components/layout/AccessDenied";
+import { PageShell } from "@/components/layout/PageShell";
 import { ModerationNav } from "@/components/moderation/ModerationNav";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
@@ -33,14 +34,21 @@ export default async function ModerationPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
+    <PageShell variant="dashboard" scanlines>
       <div className="mb-4 flex items-center justify-between">
         <h1 className="font-mono text-3xl tracking-widest uppercase">Moderation</h1>
         <RoleBadge role={getHighestRole(mod.user.roles)} />
       </div>
       <ModerationNav active="/moderation" />
+      <div className="mb-6">
+        <Link href="/admin/archivist">
+          <CommandButton size="sm" variant="outline">
+            Archivist Action Feed
+          </CommandButton>
+        </Link>
+      </div>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-8 hw-dashboard-grid">
         <AdminCard title="Open" status={stats.open > 0 ? "degraded" : "online"}>
           <p className="font-mono text-2xl text-primary">{stats.open}</p>
         </AdminCard>
@@ -71,6 +79,6 @@ export default async function ModerationPage() {
           <CommandButton size="sm">All Reports</CommandButton>
         </Link>
       </TerminalPanel>
-    </div>
+    </PageShell>
   );
 }

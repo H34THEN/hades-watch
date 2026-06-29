@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { OwnerMediaDeckPanel } from "@/components/admin/OwnerMediaDeckPanel";
 import { AccessDenied } from "@/components/layout/AccessDenied";
+import { AdminShell } from "@/components/layout/AdminShell";
 import { CommandButton } from "@/components/terminal/CommandButton";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getOwnerMediaDeckData } from "@/lib/actions/media";
@@ -37,7 +38,7 @@ export default async function AdminMediaPage() {
   const owner = isOwner(user.roles);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
+    <AdminShell>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="mb-1 font-mono text-[10px] tracking-[0.3em] text-primary/80 uppercase">
@@ -71,6 +72,6 @@ export default async function AdminMediaPage() {
       )}
 
       <OwnerMediaDeckPanel albums={data.albums} tracks={data.tracks} isOwner={owner} />
-    </div>
+    </AdminShell>
   );
 }

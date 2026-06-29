@@ -1,0 +1,83 @@
+.safetyPanel {
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.dropCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dropCard:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.dropEyebrow {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--primary) 75%, transparent);
+}
+
+.dropTitle {
+  margin-top: 0.35rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.chip {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.5625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  color: var(--muted-foreground);
+}
+
+.chipReview {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.5625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid color-mix(in srgb, hsl(45 93% 47%) 35%, transparent);
+  color: hsl(45 93% 65%);
+}
+
+.dropPrompt {
+  margin-top: 0.75rem;
+  flex: 1;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--foreground) 78%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dropMeta {
+  margin-top: 0.85rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  color: var(--muted-foreground);
+}

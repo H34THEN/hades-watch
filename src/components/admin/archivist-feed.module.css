@@ -1,0 +1,116 @@
+.archivistShell {
+  width: 100%;
+  min-width: 0;
+}
+
+.feedGrid {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .feedGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.statChip {
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  padding: 0.65rem 0.75rem;
+  font-family: var(--font-mono, monospace);
+}
+
+.statLabel {
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.statValue {
+  margin-top: 0.25rem;
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+.actionCard {
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  padding: 1rem;
+  min-width: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease, border-color 0.2s ease;
+}
+
+.actionCardUrgent {
+  border-color: color-mix(in srgb, hsl(0 72% 51%) 35%, transparent);
+}
+
+.actionCardCompleted {
+  border-color: color-mix(in srgb, hsl(142 76% 36%) 45%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, hsl(142 76% 36%) 12%, transparent);
+}
+
+.actionCardGlitchAway {
+  opacity: 0;
+  transform: translateX(12px) skewX(-2deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionCardGlitchAway {
+    transform: none;
+  }
+}
+
+.sourceChip {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid color-mix(in srgb, hsl(190 90% 45%) 30%, transparent);
+  color: hsl(190 90% 65%);
+}
+
+.priorityUrgent {
+  border-color: color-mix(in srgb, hsl(0 72% 51%) 40%, transparent);
+  color: hsl(0 72% 65%);
+}
+
+.priorityHigh {
+  border-color: color-mix(in srgb, hsl(45 93% 47%) 35%, transparent);
+  color: hsl(45 93% 65%);
+}
+
+.toast {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 50;
+  border: 1px solid color-mix(in srgb, hsl(142 76% 36%) 45%, transparent);
+  background: color-mix(in srgb, var(--background) 92%, hsl(142 76% 36%) 8%);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: hsl(142 76% 60%);
+  box-shadow: 0 0 24px color-mix(in srgb, hsl(142 76% 36%) 15%, transparent);
+}
+
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.sidePanel {
+  min-width: 0;
+}

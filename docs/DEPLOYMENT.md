@@ -156,15 +156,37 @@ sudo journalctl -u hades-watch-next -n 50
 
 ## Deploy Updates (VPS)
 
+Minimal post-pull sequence (migrations, canonical seed, build):
+
 ```bash
 cd /opt/hades-watch-next
 git pull
-npm ci
-npm run build          # includes postbuild asset copy
-npm run db:deploy      # if migrations changed
+npm ci --include=dev
+npm run deploy:full
 sudo systemctl restart hades-watch-next
-curl -s http://127.0.0.1:3000/api/health
-curl -I https://hadeswatch.com | grep -i content-security-policy
+curl -s https://hadeswatch.com/api/health
+```
+
+### What each command does
+
+| Script | Steps |
+|--------|--------|
+| `npm run db:generate` | Prisma client only — **does not** migrate, seed, or sync assets |
+| `npm run db:deploy` | Apply migrations + regenerate Prisma client |
+| `npm run db:seed` | Canonical upsert seed (factions, lore, missions, ciphers, chat, net-neighbors) — no test users |
+| `npm run db:release` | `db:generate` + `db:deploy` + `db:seed` |
+| `npm run deploy:update` | Alias for `db:release` — use after `git pull` when schema/seed data changed |
+| `npm run deploy:full` | `deploy:update` + production `build` |
+| `npm run assets:sync` | Copy source PNGs → `public/` + regenerate `avatar-imported-registry.ts` (dev/maintainer; commit results) |
+
+Avatar/badge PNGs in `public/` and the generated registry are **committed in git**. On VPS you normally do **not** run `assets:sync` — `git pull` already delivers them. Run `assets:sync` locally when adding files under `src/components/avatar/avatar assets/`, then commit and push.
+
+### Granular (if you need one step only)
+
+```bash
+npm run db:deploy      # migrations only
+npm run db:seed        # canonical seed only
+npm run build          # prisma generate + next build (+ postbuild standalone assets)
 ```
 
 ---

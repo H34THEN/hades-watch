@@ -108,15 +108,16 @@ pg_dump -h localhost -U archivist -d hadeswatch_db -F c -f pre_deploy.dump
 ## 10. Updates
 
 ```bash
-# backup first
+# backup first (see BACKUPS.md)
+cd /opt/hades-watch-next
 git pull
-npm ci
-npm run db:deploy          # migrate + prisma generate
-npm run db:seed:lore       # origin + character dossiers (after factions seed)
-npm run build
-sudo systemctl restart hades-watch   # or docker compose up -d --build web
-curl -s http://127.0.0.1:3000/api/health
+npm ci --include=dev
+npm run deploy:full    # migrate + canonical seed + build
+sudo systemctl restart hades-watch-next
+curl -s https://hadeswatch.com/api/health
 ```
+
+Set `AVATAR_FORGE_GPT_URL` in `.env` before first Avatar Forge deploy (see `docs/AVATAR_FORGE_GPT_ACCESS.md`). No migration needed for env-only changes — restart after editing `.env`.
 
 ## 11. Rollback
 

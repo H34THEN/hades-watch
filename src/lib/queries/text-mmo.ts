@@ -39,7 +39,10 @@ export async function getMmoDeadDrops(filters?: {
   userId?: string;
 }) {
   const drops = await prisma.mmoDeadDrop.findMany({
-    where: { status: "active" },
+    where: {
+      status: "active",
+      ...(filters?.loopSlug ? { loopSlug: filters.loopSlug } : {}),
+    },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
   });
 
@@ -52,7 +55,6 @@ export async function getMmoDeadDrops(filters?: {
   const byDrop = new Map(subs.map((s) => [s.deadDropId, s.status]));
 
   return drops
-    .filter((d) => !filters.loopSlug || d.loopSlug === filters.loopSlug)
     .map((d) => ({
       ...d,
       userCompleted: ["AUTO_COMPLETED", "APPROVED"].includes(byDrop.get(d.id) ?? ""),

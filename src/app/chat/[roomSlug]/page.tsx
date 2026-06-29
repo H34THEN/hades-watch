@@ -1,4 +1,6 @@
 import { ChatRoomClient } from "@/components/chat/ChatRoomClient";
+import { ChatRoomSidebar } from "@/components/chat/ChatRoomSidebar";
+import { PageShell } from "@/components/layout/PageShell";
 import { TerminalPanel } from "@/components/terminal/TerminalPanel";
 import { getActiveChatRooms } from "@/lib/chat/queries";
 import { resolveDefaultChatAlias } from "@/lib/chat/aliases";
@@ -20,11 +22,11 @@ export default async function ChatRoomPage({
 
   if (!active) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16">
+      <PageShell variant="dashboard" scanlines>
         <TerminalPanel title="chat.error">
           <p>Room not found.</p>
         </TerminalPanel>
-      </div>
+      </PageShell>
     );
   }
 
@@ -39,17 +41,30 @@ export default async function ChatRoomPage({
   });
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="mb-2 font-mono text-3xl tracking-widest uppercase">Chat Rooms</h1>
-      <p className="mb-8 text-sm text-muted-foreground">
-        AIM-era underwatch chatter. HTTPS-protected temporary chat — not end-to-end encrypted.
-      </p>
-      <ChatRoomClient
-        rooms={rooms}
-        activeRoomSlug={roomSlug}
-        defaultAlias={defaultAlias}
-        canModerate={isModerator(user.roles)}
-      />
-    </div>
+    <PageShell variant="full" scanlines contentClassName="max-w-none">
+      <div className="hw-split-panel">
+        <div className="min-w-0">
+          <header className="mb-4">
+            <h1 className="font-mono text-2xl tracking-widest uppercase md:text-3xl">Chat Relay</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              AIM-era underwatch chatter. HTTPS-protected temporary chat — not end-to-end encrypted.
+            </p>
+          </header>
+          <ChatRoomClient
+            rooms={rooms}
+            activeRoomSlug={roomSlug}
+            defaultAlias={defaultAlias}
+            canModerate={isModerator(user.roles)}
+          />
+        </div>
+
+        <ChatRoomSidebar
+          roomName={active.name}
+          roomDescription={active.description}
+          presence={[]}
+          activeRoomSlug={roomSlug}
+        />
+      </div>
+    </PageShell>
   );
 }

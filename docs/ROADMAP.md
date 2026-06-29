@@ -199,7 +199,9 @@
 - **Community Builder:** moderated submission intake at `/community/builder`
 - **Forums:** categories, threads, comments, reactions at `/community/forums`
 - **Forum identity:** relay masks, safe signatures/buttons, quote notifications at `/profile/forum`, `/notifications`
-- **Layout system:** `PageShell` variants (narrow → dashboard) — see `docs/LAYOUT_SYSTEM.md`; pass 2 widened archive child routes, dashboard, and admin faction command
+- **Layout system:** `PageShell` variants — see `docs/LAYOUT_SYSTEM.md`; pass 3 widened character, chat, net-neighbors, dead-drops, moderation, admin ops pages
+- **Field Care Dead Drops:** `/dead-drops` seeded readiness prompts — see `docs/REAL_WORLD_READINESS_DEAD_DROPS.md`
+- **Archivist Administrator:** `/admin/archivist` unified Owner/Admin action feed — see `docs/ARCHIVIST_ADMINISTRATOR.md`
 - **Volunteer board:** opportunities + responses at `/community/volunteer`
 - **Guilds:** request, approval, membership at `/community/guilds`
 - **Canon lore tiers:** submissions at `/community/lore`

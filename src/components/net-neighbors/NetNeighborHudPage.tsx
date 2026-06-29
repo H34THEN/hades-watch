@@ -34,7 +34,7 @@ export function NetNeighborHudPage({
 }: NetNeighborHudPageProps) {
   return (
     <div className={styles.hudPage}>
-      <div className="relative mx-auto w-full max-w-7xl px-4 py-10 md:px-8 md:py-14">
+      <div className="relative w-full px-4 py-10 md:px-8 md:py-14" style={{ maxWidth: "var(--hw-width-dashboard)", marginInline: "auto" }}>
         <header className="mb-10">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>

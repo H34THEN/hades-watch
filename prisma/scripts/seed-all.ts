@@ -30,6 +30,7 @@ const CANONICAL_SEEDS: { name: string; script: string; optional?: boolean }[] = 
   { name: "chat", script: "prisma/scripts/seed-chat-rooms.ts" },
   { name: "net-neighbors", script: "prisma/scripts/seed-net-neighbors.ts" },
   { name: "text-mmo", script: "prisma/scripts/seed-text-mmo-loops.ts" },
+  { name: "dead-drops:real-world", script: "prisma/scripts/seed-real-world-dead-drops.ts" },
   { name: "mmo-rewards", script: "prisma/scripts/seed-mmo-rewards.ts" },
 ];
 
