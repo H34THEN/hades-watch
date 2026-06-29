@@ -111,8 +111,8 @@ export async function updateProfileWorldAction(formData: FormData): Promise<Acti
   });
 
   await writeAuditLog({ action: "profile.world.update", actorId: user.id });
-  revalidatePath("/profile");
-  revalidatePath("/profile/edit");
+  revalidatePath("/profile/world");
+  revalidatePath("/profile/relic-zone");
   return { success: true };
 }
 
@@ -171,7 +171,7 @@ export async function uploadProfileAssetAction(
     metadata: { kind, assetId: asset.id },
   });
 
-  revalidatePath("/profile");
+  revalidatePath("/profile/world");
   revalidatePath("/profile/edit");
   return { success: true, assetId: asset.id };
 }
@@ -190,7 +190,7 @@ export async function removeProfileAssetAction(
     where: { userId: user.id },
     data: { [field]: null },
   });
-  revalidatePath("/profile");
+  revalidatePath("/profile/world");
   revalidatePath("/profile/edit");
   return { success: true };
 }

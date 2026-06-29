@@ -52,7 +52,7 @@ export function AccountMenu({ roles, accountStatus }: AccountMenuProps) {
         {highestRole}
       </span>
       <Link
-        href="/profile"
+        href="/profile/world"
         className={
           pathname === "/profile"
             ? "font-mono text-[10px] tracking-wider text-primary uppercase"

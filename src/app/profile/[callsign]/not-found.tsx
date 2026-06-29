@@ -13,7 +13,7 @@ export default function ProfileNotFound() {
         Set your callsign on <Link href="/profile/edit" className="text-primary hover:underline">/profile/edit</Link> to activate your public profile signal.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/profile">
+        <Link href="/profile/world">
           <CommandButton size="sm">Your Profile World</CommandButton>
         </Link>
         <Link href="/profile/edit">

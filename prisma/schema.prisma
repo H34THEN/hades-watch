@@ -292,6 +292,7 @@ model User {
   netNeighborsSubmitted   NetNeighbor[] @relation("NetNeighborSubmittedBy")
   netNeighborsReviewed    NetNeighbor[] @relation("NetNeighborReviewedBy")
   profileCustomization    UserProfileCustomization?
+  profileWorld            ProfileWorld?
   userAvatar              UserAvatar?
   profileAssets           UserProfileAsset[]
   avatarUserParts         AvatarUserPart[]
@@ -1087,10 +1088,51 @@ model UserProfileCustomization {
   isEnabled           Boolean  @default(true)
   showRelicZone       Boolean  @default(true)
   showRssZone         Boolean  @default(true)
+  activeLayout        String   @default("standard_dossier")
+  relicThemeConfig    Json?
+  relicModuleConfig   Json?
+  relicDraftConfig    Json?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ProfileWorld {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  activeLayout       String   @default("standard_dossier")
+  title              String?
+  visibility         String   @default("approved")
+  globalThemeConfig  Json?
+  moduleConfig       Json?
+  activeRelicBuildId String?  @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relicBuilds     RelicBuild[] @relation("ProfileRelicBuilds")
+  activeRelicBuild RelicBuild? @relation("ActiveRelicBuild", fields: [activeRelicBuildId], references: [id], onDelete: SetNull)
+}
+
+model RelicBuild {
+  id             String   @id @default(cuid())
+  profileWorldId String
+  userId         String
+  name           String   @default("Default Build")
+  layoutKey      String   @default("standard_dossier")
+  themeConfig    Json?
+  moduleConfig   Json?
+  isActive       Boolean  @default(false)
+  isDraft        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  profileWorld ProfileWorld  @relation("ProfileRelicBuilds", fields: [profileWorldId], references: [id], onDelete: Cascade)
+  activeFor    ProfileWorld? @relation("ActiveRelicBuild")
+
+  @@index([userId])
+  @@index([profileWorldId])
 }
 
 model UserProfileAsset {

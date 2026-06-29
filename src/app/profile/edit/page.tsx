@@ -71,7 +71,7 @@ export default async function ProfileEditPage() {
   return (
     <>
       <div className="mx-auto flex w-full max-w-6xl flex-wrap justify-end gap-2 px-4 pt-6 md:px-8">
-        <Link href="/profile">
+        <Link href="/profile/world">
           <CommandButton size="sm" variant="outline">
             ← Profile World
           </CommandButton>
@@ -82,7 +82,7 @@ export default async function ProfileEditPage() {
           </CommandButton>
         </Link>
         {callsign ? (
-          <Link href={`/profile/${callsign}`}>
+          <Link href={`/profile/world/${callsign}`}>
             <CommandButton size="sm" variant="outline">
               View Public Profile
             </CommandButton>

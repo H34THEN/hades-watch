@@ -102,7 +102,7 @@ export default async function DashboardPage() {
           </Link>
         </DashboardCard>
         <DashboardCard title="Profile" description="Edit operative identity" icon={<span>◈</span>}>
-          <Link href="/profile">
+          <Link href="/profile/dossier">
             <CommandButton size="sm">Open Profile</CommandButton>
           </Link>
         </DashboardCard>

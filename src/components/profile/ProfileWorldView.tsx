@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import type { ProfileWorldData } from "@/lib/queries/profile-world";
 import { SandboxedProfileFrame } from "@/components/profile/SandboxedProfileFrame";
 import { DossierBadgeList } from "@/components/profile/DossierBadgeList";
@@ -13,9 +14,24 @@ import { AvatarHudFrame } from "@/components/avatar/AvatarHudFrame";
 interface ProfileWorldViewProps {
   world: ProfileWorldData;
   showEditLinks?: boolean;
+  hiddenModules?: Set<string>;
+  moduleTitles?: Record<string, string>;
+  relicAccent?: string;
+  compact?: boolean;
 }
 
-export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldViewProps) {
+function isHidden(hidden: Set<string> | undefined, key: string) {
+  return hidden?.has(key) ?? false;
+}
+
+export function ProfileWorldView({
+  world,
+  showEditLinks = false,
+  hiddenModules,
+  moduleTitles,
+  relicAccent,
+  compact = false,
+}: ProfileWorldViewProps) {
   const { dossier } = world;
   const bgStyle = world.backgroundImageUrl
     ? {
@@ -28,9 +44,11 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
       : undefined;
 
   const factionName = dossier.faction?.name ?? dossier.allianceMembership?.name ?? null;
+  const accentStyle = relicAccent ? ({ "--primary": relicAccent } as CSSProperties) : undefined;
+  const publicHandlePath = world.handle ? `/profile/world/${world.handle}` : null;
 
   return (
-    <div className="min-h-screen w-full" style={bgStyle}>
+    <div className={`min-h-screen w-full ${compact ? "min-h-0" : ""}`} style={{ ...bgStyle, ...accentStyle }}>
       <div className="min-h-screen w-full bg-gradient-to-b from-black/60 via-black/85 to-black/95">
         {world.bannerUrl && (
           <div
@@ -42,22 +60,27 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
         <div className="mx-auto w-full max-w-[1600px] px-4 py-6 md:px-8 md:py-10">
           {showEditLinks && (
             <div className="mb-6 flex flex-wrap gap-2">
-              <Link href="/profile/edit">
-                <CommandButton size="sm">Edit Profile</CommandButton>
+              <Link href="/profile/relic-zone">
+                <CommandButton size="sm">Relic Zone Editor</CommandButton>
+              </Link>
+              <Link href="/profile/dossier">
+                <CommandButton size="sm" variant="outline">
+                  Character Dossier
+                </CommandButton>
               </Link>
               <Link href="/profile/avatar">
                 <CommandButton size="sm" variant="outline">
                   Avatar Builder
                 </CommandButton>
               </Link>
-              {world.handle ? (
-                <Link href={`/profile/${world.handle}`}>
+              {publicHandlePath ? (
+                <Link href={publicHandlePath}>
                   <CommandButton size="sm" variant="outline">
                     View Public Profile
                   </CommandButton>
                 </Link>
               ) : (
-                <Link href="/profile/edit">
+                <Link href="/mmo/character">
                   <CommandButton size="sm" variant="outline">
                     Set Callsign
                   </CommandButton>
@@ -73,12 +96,13 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,46%)] lg:items-start xl:grid-cols-[minmax(0,1fr)_minmax(420px,44%)]">
             <div className="order-2 space-y-6 lg:order-1">
+              {!isHidden(hiddenModules, "character_card") && !isHidden(hiddenModules, "bio") ? (
               <header className="space-y-3 border-b border-primary/20 pb-6">
                 <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase">
-                  Profile World · Operative Dossier
+                  Profile World · {moduleTitles?.character_card ?? "Public Relic"}
                 </p>
                 <div className="flex flex-wrap items-start gap-4">
-                  {world.portraitUrl && (
+                  {!isHidden(hiddenModules, "character_card") && world.portraitUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={world.portraitUrl}
@@ -87,34 +111,40 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                     />
                   )}
                   <div className="min-w-0 flex-1">
-                    <h1 className="font-mono text-3xl tracking-widest uppercase text-foreground md:text-4xl xl:text-5xl">
-                      {world.displayName}
-                    </h1>
-                    {world.tagline && (
-                      <p className="mt-2 text-base text-muted-foreground md:text-lg">{world.tagline}</p>
-                    )}
-                    {world.avatar?.pronouns && (
-                      <p className="mt-1 font-mono text-xs text-muted-foreground">{world.avatar.pronouns}</p>
-                    )}
-                    {world.handle && (
-                      <p className="mt-2 font-mono text-[10px] text-primary/80">/profile/{world.handle}</p>
-                    )}
+                    {!isHidden(hiddenModules, "character_card") ? (
+                      <>
+                        <h1 className="font-mono text-3xl tracking-widest uppercase text-foreground md:text-4xl xl:text-5xl">
+                          {world.displayName}
+                        </h1>
+                        {world.tagline && (
+                          <p className="mt-2 text-base text-muted-foreground md:text-lg">{world.tagline}</p>
+                        )}
+                        {world.avatar?.pronouns && (
+                          <p className="mt-1 font-mono text-xs text-muted-foreground">{world.avatar.pronouns}</p>
+                        )}
+                        {world.handle && (
+                          <p className="mt-2 font-mono text-[10px] text-primary/80">/profile/world/{world.handle}</p>
+                        )}
+                      </>
+                    ) : null}
                   </div>
                 </div>
-                {world.motto && (
+                {!isHidden(hiddenModules, "bio") && world.motto && (
                   <blockquote className="border-l-2 border-primary/50 pl-4 text-sm italic text-foreground/80">
                     {world.motto}
                   </blockquote>
                 )}
-                {world.avatar?.bio && (
+                {!isHidden(hiddenModules, "bio") && world.avatar?.bio && (
                   <p className="max-w-3xl text-sm leading-relaxed text-foreground/90">{world.avatar.bio}</p>
                 )}
-                {world.favoriteSignal && (
+                {!isHidden(hiddenModules, "bio") && world.favoriteSignal && (
                   <p className="font-mono text-xs text-primary">Signal: {world.favoriteSignal}</p>
                 )}
               </header>
+              ) : null}
 
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {!isHidden(hiddenModules, "character_card") ? (
                 <TerminalPanel title="identity.dossier">
                   <dl className="space-y-2 font-mono text-xs">
                     <div>
@@ -137,8 +167,10 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                     )}
                   </dl>
                 </TerminalPanel>
+                ) : null}
 
-                <TerminalPanel title="faction.standing">
+                {!isHidden(hiddenModules, "faction") ? (
+                <TerminalPanel title={moduleTitles?.faction ?? "faction.standing"}>
                   {dossier.allianceMembership ? (
                     <div className="mb-3">
                       <p className="font-mono text-[10px] text-primary uppercase">Alliance</p>
@@ -157,8 +189,10 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                     <p className="text-sm text-muted-foreground">No faction clearance on record.</p>
                   )}
                 </TerminalPanel>
+                ) : null}
 
-                <TerminalPanel title="badges" className="sm:col-span-2 xl:col-span-1">
+                {!isHidden(hiddenModules, "badges") ? (
+                <TerminalPanel title={moduleTitles?.badges ?? "badges"} className="sm:col-span-2 xl:col-span-1">
                   {dossier.badges.length === 0 && dossier.dbBadges.length === 0 ? (
                     <p className="font-mono text-sm text-muted-foreground">
                       No badge records have surfaced from the Dead Index yet.
@@ -182,28 +216,30 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                     </div>
                   )}
                 </TerminalPanel>
+                ) : null}
               </div>
 
-              {dossier.missionBadges.length > 0 && (
-                <TerminalPanel title="mission.records">
+              {!isHidden(hiddenModules, "missions") && dossier.missionBadges.length > 0 && (
+                <TerminalPanel title={moduleTitles?.missions ?? "mission.records"}>
                   <ProfileMissionBadgeGrid badges={dossier.missionBadges} />
                 </TerminalPanel>
               )}
-              {dossier.cipherBadges.length > 0 && (
-                <TerminalPanel title="cipher.standing">
+              {!isHidden(hiddenModules, "ciphers") && dossier.cipherBadges.length > 0 && (
+                <TerminalPanel title={moduleTitles?.ciphers ?? "cipher.standing"}>
                   <ProfileCipherBadgeGrid badges={dossier.cipherBadges} />
                 </TerminalPanel>
               )}
 
-              {(world.links.length > 0 || world.profileButtons.length > 0) && (
-                <TerminalPanel title="net.neighbor.buttons">
+              {!isHidden(hiddenModules, "links") &&
+              (world.links.length > 0 || world.profileButtons.length > 0) && (
+                <TerminalPanel title={moduleTitles?.links ?? "net.neighbor.buttons"}>
                   <div className="flex flex-wrap gap-3">
                     {world.profileButtons.map((btn) => (
                       <a
                         key={`${btn.label}-${btn.url}`}
                         href={btn.url}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener noreferrer nofollow ugc"
                         className="inline-block border border-border/60 bg-black/40 px-3 py-2 font-mono text-xs hover:border-primary/50"
                       >
                         {btn.imageUrl ? (
@@ -218,7 +254,7 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                         key={`${link.label}-${link.url}`}
                         href={link.url}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener noreferrer nofollow ugc"
                         className="font-mono text-xs text-primary hover:underline"
                       >
                         {link.label} →
@@ -228,8 +264,8 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                 </TerminalPanel>
               )}
 
-              {world.spotifyEmbedUrl && (
-                <TerminalPanel title="signal.soundtrack">
+              {!isHidden(hiddenModules, "spotify") && world.spotifyEmbedUrl && (
+                <TerminalPanel title={moduleTitles?.spotify ?? "signal.soundtrack"}>
                   <iframe
                     title="Spotify playlist"
                     src={world.spotifyEmbedUrl}
@@ -240,7 +276,7 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
                 </TerminalPanel>
               )}
 
-              {world.showRelicZone && (
+              {!isHidden(hiddenModules, "relic_iframe") && world.showRelicZone && (
                 <div>
                   {world.relicSrcDoc ? (
                     <TerminalPanel title="relic.zone">
@@ -264,7 +300,7 @@ export function ProfileWorldView({ world, showEditLinks = false }: ProfileWorldV
               )}
             </div>
 
-            <aside className="order-1 lg:sticky lg:top-6 lg:order-2 lg:self-start">
+            <aside className={`order-1 lg:sticky lg:top-6 lg:order-2 lg:self-start ${isHidden(hiddenModules, "character_card") ? "hidden" : ""}`}>
               {world.avatar ? (
                 <AvatarHudFrame
                   layers={world.avatar.layers}

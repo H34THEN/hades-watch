@@ -32,7 +32,7 @@ export function MmoHubOperativePanel({ context }: MmoHubOperativePanelProps) {
     );
   }
 
-  const profileHref = `/profile/${encodeURIComponent(character.callsign)}`;
+  const profileHref = `/profile/world/${encodeURIComponent(character.callsign)}`;
 
   return (
     <section className={styles.operativePanel} aria-labelledby="operative-heading">
@@ -70,7 +70,7 @@ export function MmoHubOperativePanel({ context }: MmoHubOperativePanelProps) {
               </CommandButton>
             </Link>
           )}
-          <Link href="/profile">
+          <Link href="/profile/dossier">
             <CommandButton size="sm">Open Dossier</CommandButton>
           </Link>
         </div>

@@ -87,7 +87,7 @@ export default async function ProfileAvatarPage() {
               </p>
             </div>
         <div className="flex flex-wrap gap-2">
-          <Link href="/profile">
+          <Link href="/profile/world">
             <CommandButton size="sm" variant="outline">
               ← Profile World
             </CommandButton>

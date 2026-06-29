@@ -45,7 +45,7 @@ export default async function AvatarForgeAccessPage() {
               ← Avatar Builder
             </CommandButton>
           </Link>
-          <Link href="/profile">
+          <Link href="/profile/world">
             <CommandButton size="sm" variant="outline">
               Profile World
             </CommandButton>

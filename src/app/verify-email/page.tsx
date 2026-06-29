@@ -17,7 +17,7 @@ export default async function VerifyEmailPage({
       <div className="mx-auto max-w-md px-4 py-16">
         <TerminalPanel title="verify.missing">
           <SystemAlert title="Missing Token" message="No verification token provided." variant="warning" />
-          <Link href="/profile" className="mt-4 inline-block font-mono text-xs text-primary">← Profile</Link>
+          <Link href="/profile/world" className="mt-4 inline-block font-mono text-xs text-primary">← Profile</Link>
         </TerminalPanel>
       </div>
     );
@@ -33,7 +33,7 @@ export default async function VerifyEmailPage({
         ) : (
           <SystemAlert title="Failed" message={result.error} variant="error" />
         )}
-        <Link href="/profile" className="mt-4 inline-block font-mono text-xs text-primary">← Profile</Link>
+        <Link href="/profile/world" className="mt-4 inline-block font-mono text-xs text-primary">← Profile</Link>
       </TerminalPanel>
     </div>
   );

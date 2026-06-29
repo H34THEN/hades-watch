@@ -37,7 +37,7 @@ export default async function PendingApprovalPage() {
         </p>
         <p className="mt-2 font-mono text-xs text-muted-foreground">
           You can update your dossier at{" "}
-          <Link href="/profile" className="text-primary hover:underline">
+          <Link href="/profile/world" className="text-primary hover:underline">
             /profile
           </Link>{" "}
           while waiting.
