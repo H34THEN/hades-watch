@@ -1,0 +1,135 @@
+.shell {
+  position: relative;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--hw-width-dashboard);
+  margin: 0 auto;
+  min-width: 0;
+}
+
+.heroTitle {
+  font-family: var(--font-mono, monospace);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.heroSubtitle {
+  margin-top: 0.75rem;
+  max-width: 48rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardLink:hover {
+  opacity: 0.95;
+}
+
+.cardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.cardTitle {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: hsl(var(--primary));
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid hsl(var(--border) / 0.6);
+  color: hsl(var(--muted-foreground));
+}
+
+.tagState {
+  border-color: hsl(142 76% 36% / 0.4);
+  color: hsl(142 76% 45%);
+}
+
+.safetyInline {
+  margin-top: 0.75rem;
+  font-size: 0.7rem;
+  color: hsl(45 93% 60%);
+  line-height: 1.5;
+}
+
+.safetyNote {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid hsl(45 93% 47% / 0.25);
+  background: hsl(45 93% 47% / 0.05);
+  font-size: 0.75rem;
+  color: hsl(45 93% 70%);
+}
+
+.highlight {
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+.relayPending {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px dashed hsl(var(--border));
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterLink {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid hsl(var(--border) / 0.6);
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+}
+
+.filterLink:hover,
+.filterActive {
+  border-color: hsl(var(--primary) / 0.5);
+  color: hsl(var(--primary));
+}

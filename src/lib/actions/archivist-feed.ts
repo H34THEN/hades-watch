@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { reviewNetNeighborAction } from "@/lib/actions/net-neighbors";
 import { setArchiveItemStatusAction } from "@/lib/actions/archive-items";
 import { reviewMmoDeadDropSubmissionAction } from "@/lib/actions/text-mmo";
+import { reviewPlayableSubmissionAction } from "@/lib/actions/expanded-play";
 import { reviewCommunitySubmissionAction } from "@/lib/actions/community-builder";
 import { reviewVolunteerResponseAction } from "@/lib/actions/volunteer";
 import { reviewAvatarForgeAccessAction } from "@/lib/actions/avatar-forge-access";
@@ -57,6 +58,14 @@ export async function executeArchivistQuickAction(
         result = await reviewMmoDeadDropSubmissionAction(sourceId, "REJECTED", note);
       else if (action === "request_revision")
         result = await reviewMmoDeadDropSubmissionAction(sourceId, "NEEDS_REVISION", note);
+      break;
+    case "play_submission":
+      if (action === "approve")
+        result = await reviewPlayableSubmissionAction(sourceId, "APPROVED", note);
+      else if (action === "reject")
+        result = await reviewPlayableSubmissionAction(sourceId, "REJECTED", note);
+      else if (action === "request_revision")
+        result = await reviewPlayableSubmissionAction(sourceId, "NEEDS_REVISION", note);
       break;
     case "community_submission":
       if (action === "approve")

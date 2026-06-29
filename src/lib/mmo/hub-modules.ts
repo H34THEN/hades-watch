@@ -133,6 +133,22 @@ const modules: HubModuleDefinition[] = [
     ctaLabel: "Enter Rooms",
   },
   {
+    slug: "expanded-play",
+    title: "Expanded Play Functions",
+    eyebrow: "Underwatch",
+    description:
+      "Daily signals, faction calls, assignments, forum quests, archive hunts, public works, and creative challenges.",
+    emptyState: "Expanded play functions seed pending.",
+    route: "/mmo/play",
+    routeExists: true,
+    status: "live",
+    accessLevel: "approved-user",
+    factionAssociations: ["Chthonic Uprising"],
+    badgeHooks: ["daily-signal-pin", "public-works-badge"],
+    loreHooks: ["expanded-field-ops"],
+    ctaLabel: "Open Play Hub",
+  },
+  {
     slug: "mmo-dead-drops",
     title: "Dead Drops",
     eyebrow: "Underwatch",

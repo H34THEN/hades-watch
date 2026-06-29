@@ -18,6 +18,7 @@ export async function getArchivistActionFeed(): Promise<{
     netNeighbors,
     archivePending,
     mmoSubmissions,
+    playSubmissions,
     modReports,
     communitySubs,
     volunteerResponses,
@@ -44,6 +45,15 @@ export async function getArchivistActionFeed(): Promise<{
       take: 50,
       include: {
         deadDrop: { select: { title: true, slug: true } },
+        user: { select: { name: true, email: true } },
+      },
+    }),
+    prisma.mmoPlayableSubmission.findMany({
+      where: { status: "PENDING" },
+      orderBy: { createdAt: "asc" },
+      take: 50,
+      include: {
+        prompt: { select: { title: true, slug: true, functionSlug: true } },
         user: { select: { name: true, email: true } },
       },
     }),
@@ -161,6 +171,28 @@ export async function getArchivistActionFeed(): Promise<{
         { action: "reject", label: "Reject", dangerous: true },
         { action: "request_revision", label: "Request Revision", requiresNote: true },
         { action: "open", label: "Open MMO Submissions" },
+      ],
+    });
+  }
+
+  for (const s of playSubmissions) {
+    items.push({
+      id: `play_submission:${s.id}`,
+      sourceType: "play_submission",
+      sourceId: s.id,
+      title: s.prompt.title,
+      summary: s.body?.slice(0, 160) ?? `${s.prompt.functionSlug} submission pending review`,
+      status: "pending",
+      priority: "normal",
+      category: "Expanded Play",
+      createdAt: s.createdAt,
+      actorName: actorLabel(s.user.name, s.user.email),
+      targetUrl: "/mmo/play",
+      actions: [
+        { action: "approve", label: "Approve" },
+        { action: "reject", label: "Reject", dangerous: true },
+        { action: "request_revision", label: "Request Revision", requiresNote: true },
+        { action: "open", label: "Open Play Hub" },
       ],
     });
   }

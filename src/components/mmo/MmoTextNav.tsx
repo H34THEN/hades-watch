@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/mmo", label: "Hub" },
+  { href: "/mmo/play", label: "Play" },
   { href: "/mmo/rooms", label: "Rooms" },
   { href: "/mmo/dead-drops", label: "Dead Drops" },
   { href: "/mmo/field-log", label: "Field Log" },

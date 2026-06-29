@@ -315,6 +315,8 @@ model User {
   playerRecognitionsGranted    PlayerRecognition[]   @relation("RecognitionGranter")
   mmoFieldLogs                 MmoFieldLog[]
   mmoDeadDropSubmissions       MmoDeadDropSubmission[]
+  mmoPlayableSubmissions       MmoPlayableSubmission[] @relation("PlayableSubmissionAuthor")
+  reviewedPlayableSubmissions  MmoPlayableSubmission[] @relation("PlayableSubmissionReviewer")
   mmoLootGrants                MmoLootGrant[]
   mmoLoreUnlockGrants          MmoLoreUnlockGrant[]
   reviewedMmoDeadDropSubmissions MmoDeadDropSubmission[] @relation("MmoDeadDropReviewer")
@@ -2219,6 +2221,7 @@ enum RewardSourceType {
   admin_grant
   volunteer
   community_builder
+  play_prompt
 }
 
 enum RewardMappingRewardType {
@@ -2501,4 +2504,236 @@ model AdminRewardGrantAudit {
 
   @@index([recipientId, createdAt])
   @@index([actorId, createdAt])
+}
+
+enum MmoPlayActionType {
+  READ_SIGNAL
+  POST_FIELD_NOTE
+  VISIT_ARCHIVE
+  ATTEMPT_CIPHER
+  VISIT_FACTION_FLOOR
+  JOIN_DISCUSSION
+  VISIT_PROFILE_WORLD
+  READ_NET_NEIGHBOR
+  OPEN_DEAD_DROP
+  VISIT_SIGNAL_PLAYER
+  ANSWER_PROMPT
+  SUBMIT_FEEDBACK
+  REST_SIGNAL
+  SUBMIT_RESOURCE
+  SUBMIT_LORE
+  SUBMIT_PUBLIC_WORK
+  SUBMIT_FORUM_QUEST
+  COMPLETE_ASSIGNMENT
+  MARK_COMPLETE
+}
+
+enum MmoPlayPromptStatus {
+  draft
+  active
+  retired
+  seasonal
+}
+
+enum MmoPublicWorksTaskType {
+  bug
+  accessibility
+  documentation
+  avatar_asset_need
+  badge_asset_need
+  lore_prompt
+  forum_category
+  ghost_in_tech_summary
+  net_neighbor_button
+  profile_theme
+  mobile_qa
+  safety_copy
+  seed_data
+  event_idea
+  guild_support
+}
+
+enum MmoPublicWorksTaskStatus {
+  open
+  in_progress
+  closed
+}
+
+model MmoPlayFunction {
+  id                String   @id @default(cuid())
+  title             String
+  slug              String   @unique
+  primaryRoute      String
+  connectedSystems  Json     @default("[]")
+  primaryPlayType   String
+  accessLevel       String   @default("approved-user")
+  repeatability     String
+  reviewRequirement String   @db.Text
+  mvpPriority       String   @default("phase-3")
+  description       String?  @db.Text
+  loreFraming       String?  @db.Text
+  playerFantasy     String?  @db.Text
+  safetyNotes       String?  @db.Text
+  isActive          Boolean  @default(true)
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  prompts MmoPlayablePrompt[]
+
+  @@index([isActive, sortOrder])
+}
+
+model MmoPlayablePrompt {
+  id                 String              @id @default(cuid())
+  functionSlug       String
+  title              String
+  slug               String              @unique
+  prompt             String              @db.Text
+  actionType         MmoPlayActionType
+  category           String?
+  factionSlug        String?
+  connectedRoute     String?
+  difficulty         String?
+  repeatability      String              @default("daily")
+  cooldown           String?
+  reviewRequired     Boolean             @default(false)
+  proofStyle         String?
+  rewardSummary      String?             @db.Text
+  badgeHook          String?
+  avatarUnlockHook   String?
+  reputationCategory ReputationCategory?
+  reputationPoints   Int                 @default(0)
+  fieldLogTemplate   String?
+  safetyNote         String?             @db.Text
+  metadata           Json                @default("{}")
+  status             MmoPlayPromptStatus @default(active)
+  sortOrder          Int                 @default(0)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  function    MmoPlayFunction         @relation(fields: [functionSlug], references: [slug], onDelete: Cascade)
+  submissions MmoPlayableSubmission[]
+
+  @@index([functionSlug, status, sortOrder])
+  @@index([factionSlug])
+}
+
+model MmoPlayableSubmission {
+  id             String                  @id @default(cuid())
+  promptId       String
+  userId         String
+  characterId    String?
+  body           String?                 @db.Text
+  url            String?
+  selectedOption String?
+  proofText      String?                 @db.Text
+  status         MmoDropSubmissionStatus @default(PENDING)
+  visibility     MmoFieldLogVisibility   @default(private)
+  reviewedById   String?
+  reviewedAt     DateTime?
+  reviewNote     String?                 @db.Text
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  prompt     MmoPlayablePrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  user       User              @relation("PlayableSubmissionAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy User?             @relation("PlayableSubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([promptId, userId, createdAt])
+  @@index([userId, status])
+  @@index([status, createdAt])
+}
+
+model MmoPublicWorksTask {
+  id                 String                   @id @default(cuid())
+  title              String
+  slug               String                   @unique
+  taskType           MmoPublicWorksTaskType
+  difficulty         String                   @default("beginner")
+  estimatedTime      String?
+  ownerRole          String?
+  description        String                   @db.Text
+  acceptanceCriteria String?                  @db.Text
+  rewardSummary      String?                  @db.Text
+  badgeHook          String?
+  avatarUnlockHook   String?
+  reviewRequired     Boolean                  @default(true)
+  status             MmoPublicWorksTaskStatus @default(open)
+  safetyNote         String?                  @db.Text
+  assetNeedPath      String?
+  sortOrder          Int                      @default(0)
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+
+  @@index([taskType, status])
+}
+
+model MmoRelicSet {
+  id                   String   @id @default(cuid())
+  title                String
+  slug                 String   @unique
+  fragmentsNeeded      Json     @default("[]")
+  completedRelicName   String
+  profileDisplayEffect String?  @db.Text
+  avatarUnlockHook     String?
+  badgeHook            String?
+  safetyNote           String?  @db.Text
+  sortOrder            Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model MmoRoomStateDefinition {
+  id           String   @id @default(cuid())
+  stateName    String
+  roomSlug     String?
+  trigger      String?  @db.Text
+  roomCopy     String?  @db.Text
+  visualEffect String?  @db.Text
+  rewardHook   String?
+  safetyNote   String?  @db.Text
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([roomSlug, stateName])
+  @@index([roomSlug])
+}
+
+model MmoVisitor {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  appearanceText String   @db.Text
+  roomSlug       String
+  prompt         String   @db.Text
+  rewardSummary  String?  @db.Text
+  loreUnlock     String?
+  avatarItem     String?
+  fieldLogText   String?
+  safetyNote     String?  @db.Text
+  sortOrder      Int      @default(0)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model MmoSeasonalEvent {
+  id               String   @id @default(cuid())
+  title            String
+  slug             String   @unique
+  seasonTiming     String?
+  eventRooms       Json     @default("[]")
+  eventPrompts     Json     @default("[]")
+  eventRewards     String?  @db.Text
+  badges           Json     @default("[]")
+  profileCosmetics Json     @default("[]")
+  avatarUnlocks    Json     @default("[]")
+  guildHooks       String?  @db.Text
+  safetyNotes      String?  @db.Text
+  sortOrder        Int      @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

@@ -85,6 +85,16 @@ export default async function MmoPage() {
         </TerminalPanel>
       )}
 
+      <TerminalPanel title="expanded.play" className="mb-8">
+        <p className="mb-3 font-mono text-xs text-muted-foreground">
+          Daily signals, faction calls, forum quests, archive hunts, public works, and creative
+          challenges.
+        </p>
+        <Link href="/mmo/play">
+          <CommandButton size="sm">Expanded Play Hub</CommandButton>
+        </Link>
+      </TerminalPanel>
+
       {sectionModules.map((section) => (
         <MmoHubSection
           key={section.id}

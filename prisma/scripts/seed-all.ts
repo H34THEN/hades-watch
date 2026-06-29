@@ -32,6 +32,7 @@ const CANONICAL_SEEDS: { name: string; script: string; optional?: boolean }[] = 
   { name: "text-mmo", script: "prisma/scripts/seed-text-mmo-loops.ts" },
   { name: "dead-drops:real-world", script: "prisma/scripts/seed-real-world-dead-drops.ts" },
   { name: "mmo-rewards", script: "prisma/scripts/seed-mmo-rewards.ts" },
+  { name: "text-mmo-expanded", script: "prisma/scripts/seed-text-mmo-expanded-play.ts" },
 ];
 
 async function seedRoles() {

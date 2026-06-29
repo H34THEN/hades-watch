@@ -46,6 +46,7 @@
     "db:seed:text-mmo": "tsx prisma/scripts/seed-text-mmo-loops.ts",
     "db:seed:dead-drops:real-world": "tsx prisma/scripts/seed-real-world-dead-drops.ts",
     "db:seed:mmo-rewards": "tsx prisma/scripts/seed-mmo-rewards.ts",
+    "db:seed:text-mmo-expanded": "tsx prisma/scripts/seed-text-mmo-expanded-play.ts",
     "deploy:verify": "bash scripts/verify-production-deploy.sh"
   },
   "dependencies": {
