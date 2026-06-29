@@ -18,6 +18,8 @@
     "db:seed": "tsx prisma/scripts/seed-all.ts",
     "db:seed:all": "tsx prisma/scripts/seed-all.ts",
     "db:release": "prisma generate && prisma migrate deploy && tsx prisma/scripts/seed-all.ts",
+    "deploy:update": "npm run db:release",
+    "deploy:full": "npm run deploy:update && npm run build",
     "db:backfill:profile-slugs": "tsx prisma/scripts/backfill-profile-slugs.ts",
     "db:seed:legacy": "tsx prisma/seed.ts",
     "db:seed:factions": "tsx prisma/scripts/seed-factions.ts",
@@ -36,9 +38,11 @@
     "db:seed:ciphers:first-set": "prisma generate && tsx prisma/scripts/seed-ciphers-first-set.ts",
     "assets:migrate": "tsx scripts/migrate-static-assets.ts",
     "assets:registry": "tsx scripts/generate-avatar-imported-registry.ts",
+    "assets:sync": "npm run assets:migrate && npm run assets:registry",
     "db:seed:chat": "prisma generate && tsx prisma/scripts/seed-chat-rooms.ts",
     "db:seed:net-neighbors": "tsx prisma/scripts/seed-net-neighbors.ts",
     "db:cleanup:chat": "tsx prisma/scripts/cleanup-chat-messages.ts",
+    "db:seed:community-signals": "prisma generate && tsx prisma/scripts/seed-community-signals.ts",
     "deploy:verify": "bash scripts/verify-production-deploy.sh"
   },
   "dependencies": {

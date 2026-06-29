@@ -297,6 +297,21 @@ model User {
   avatarUserParts         AvatarUserPart[]
   avatarForgeAccessRequest AvatarForgeAccessRequest? @relation("AvatarForgeAccessUser")
   avatarForgeReviews      AvatarForgeAccessRequest[] @relation("AvatarForgeAccessReviewer")
+  communitySubmissions         CommunitySubmission[] @relation("CommunitySubmissionAuthor")
+  communitySubmissionsReviewed CommunitySubmission[] @relation("CommunitySubmissionReviewer")
+  forumThreads                 ForumThread[]         @relation("ForumThreadAuthor")
+  forumComments                ForumComment[]        @relation("ForumCommentAuthor")
+  forumReactions               ForumReaction[]       @relation("ForumReactionAuthor")
+  volunteerOpportunitiesCreated VolunteerOpportunity[] @relation("VolunteerOpportunityCreator")
+  volunteerResponses           VolunteerResponse[]   @relation("VolunteerResponseAuthor")
+  volunteerResponsesReviewed   VolunteerResponse[]   @relation("VolunteerResponseReviewer")
+  guildsFounded                Guild[]               @relation("GuildFounder")
+  guildMemberships             GuildMembership[]
+  reputationEvents             ReputationEvent[]
+  loreSubmissions              LoreSubmission[]      @relation("LoreSubmissionAuthor")
+  loreSubmissionsReviewed      LoreSubmission[]      @relation("LoreSubmissionReviewer")
+  playerRecognitionsReceived   PlayerRecognition[]   @relation("RecognitionRecipient")
+  playerRecognitionsGranted    PlayerRecognition[]   @relation("RecognitionGranter")
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -1170,4 +1185,444 @@ model AvatarForgeAccessRequest {
   reviewedBy User? @relation("AvatarForgeAccessReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
 
   @@index([status])
+}
+
+// ─── Community Signals (MMO Hub Phase 2) ───────────────────────────────────
+
+enum CommunitySubmissionType {
+  FORUM_CATEGORY
+  MISSION
+  CIPHER
+  LORE_FRAGMENT
+  AVATAR_ASSET
+  BADGE_IDEA
+  ACCESSIBILITY
+  NET_NEIGHBOR
+  COMMUNITY_EVENT
+  ARCHIVE_RESOURCE
+  FIELD_NOTE
+  COMMUNITY_QUESTION
+  OTHER
+}
+
+enum CommunitySubmissionStatus {
+  PENDING
+  ACCEPTED
+  NEEDS_REVISION
+  REJECTED
+  ARCHIVED
+  IMPLEMENTED
+}
+
+enum ForumAccessLevel {
+  PUBLIC_READ
+  APPROVED_POST
+  MODERATOR_ONLY
+}
+
+enum ForumThreadStatus {
+  ACTIVE
+  LOCKED
+  HIDDEN
+  REMOVED
+  ARCHIVED
+}
+
+enum ForumCommentStatus {
+  ACTIVE
+  HIDDEN
+  REMOVED
+}
+
+enum ForumReactionType {
+  SIGNAL_BOOST
+  USEFUL
+  LOREFUL
+  NEEDS_CARE
+  THANKS
+}
+
+enum VolunteerLane {
+  CODE
+  DESIGN
+  AVATAR_ASSETS
+  BADGE_ART
+  LORE_WRITING
+  MISSION_WRITING
+  CIPHER_WRITING
+  MODERATION
+  ACCESSIBILITY
+  DOCUMENTATION
+  RESEARCH_ARCHIVE
+  QA_TESTING
+  COMMUNITY_EVENTS
+  MUSIC_SIGNAL
+  NET_NEIGHBOR_SCOUTING
+}
+
+enum VolunteerOpportunityStatus {
+  OPEN
+  CLAIMED
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum VolunteerResponseStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
+
+enum GuildStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum GuildVisibility {
+  PUBLIC
+  APPROVED_USERS
+  INVITE_ONLY
+}
+
+enum GuildMembershipRole {
+  FOUNDER
+  LEADER
+  STEWARD
+  MEMBER
+  APPLICANT
+}
+
+enum GuildMembershipStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  LEFT
+}
+
+enum ReputationCategory {
+  COMMUNITY
+  LORE
+  MISSIONS
+  CIPHERS
+  ARCHIVE
+  FORGE
+  GUILDS
+  MODERATION
+  ACCESSIBILITY
+}
+
+enum CanonTier {
+  PRIVATE_DRAFT
+  CHARACTER
+  GUILD
+  LOCAL_COMMUNITY
+  FACTION_ECHO
+  WORLD
+}
+
+enum LoreSubmissionStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  NEEDS_REVISION
+  REJECTED
+  ARCHIVED
+}
+
+enum PlayerRecognitionType {
+  BADGE
+  TITLE
+  FEATURED_PROFILE
+  FEATURED_GUILD
+  COMMUNITY_SPOTLIGHT
+  ARCHIVE_CREDIT
+  MISSION_CREDIT
+  FORGE_CREDIT
+  LORE_CREDIT
+  MODERATOR_COMMENDATION
+  ARCHIVIST_MARK
+}
+
+enum PlayerRecognitionCategory {
+  COMMUNITY_CARE
+  LORE_CRAFT
+  CIPHER_HELP
+  MISSION_SUPPORT
+  ARCHIVE_WORK
+  FORGE_CONTRIBUTIONS
+  ACCESSIBILITY
+  MODERATION
+  GUILD_LEADERSHIP
+  OLD_WEB_CULTURE
+}
+
+model CommunitySubmission {
+  id               String                    @id @default(cuid())
+  authorId         String
+  type             CommunitySubmissionType
+  title            String
+  summary          String                    @db.Text
+  description      String                    @db.Text
+  factionSlug      String?
+  relatedSystem    String?
+  relatedUrl       String?
+  status           CommunitySubmissionStatus @default(PENDING)
+  consentNoSecrets Boolean                   @default(false)
+  reviewNote       String?                   @db.Text
+  reviewedById     String?
+  reviewedAt       DateTime?
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+
+  author     User  @relation("CommunitySubmissionAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("CommunitySubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([authorId])
+  @@index([status])
+  @@index([type])
+}
+
+model ForumCategory {
+  id          String           @id @default(cuid())
+  name        String
+  slug        String           @unique
+  description String           @db.Text
+  factionSlug String?
+  accessLevel ForumAccessLevel @default(APPROVED_POST)
+  sortOrder   Int              @default(0)
+  iconGlyph   String?
+  rules       String?          @db.Text
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  threads ForumThread[]
+
+  @@index([sortOrder])
+}
+
+model ForumThread {
+  id             String            @id @default(cuid())
+  categoryId     String
+  authorId       String
+  title          String
+  slug           String            @unique
+  body           String            @db.Text
+  status         ForumThreadStatus @default(ACTIVE)
+  pinned         Boolean           @default(false)
+  score          Int               @default(0)
+  commentCount   Int               @default(0)
+  lastActivityAt DateTime          @default(now())
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  category  ForumCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  author    User            @relation("ForumThreadAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  comments  ForumComment[]
+  reactions ForumReaction[] @relation("ForumThreadReactions")
+
+  @@index([categoryId, lastActivityAt])
+  @@index([authorId])
+  @@index([status])
+}
+
+model ForumComment {
+  id              String             @id @default(cuid())
+  threadId        String
+  authorId        String
+  parentCommentId String?
+  body            String             @db.Text
+  status          ForumCommentStatus @default(ACTIVE)
+  score           Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  thread        ForumThread     @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author        User            @relation("ForumCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  parentComment ForumComment?   @relation("ForumCommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
+  replies       ForumComment[]  @relation("ForumCommentReplies")
+  reactions     ForumReaction[] @relation("ForumCommentReactions")
+
+  @@index([threadId, createdAt])
+  @@index([authorId])
+}
+
+model ForumReaction {
+  id           String            @id @default(cuid())
+  userId       String
+  threadId     String?
+  commentId    String?
+  reactionType ForumReactionType
+  createdAt    DateTime          @default(now())
+
+  user    User          @relation("ForumReactionAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  thread  ForumThread?  @relation("ForumThreadReactions", fields: [threadId], references: [id], onDelete: Cascade)
+  comment ForumComment? @relation("ForumCommentReactions", fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, threadId])
+  @@unique([userId, commentId])
+  @@index([threadId])
+  @@index([commentId])
+}
+
+model VolunteerOpportunity {
+  id             String                     @id @default(cuid())
+  title          String
+  slug           String                     @unique
+  description    String                     @db.Text
+  lane           VolunteerLane
+  requiredSkills String?                    @db.Text
+  difficulty     String?
+  estimatedTime  String?
+  status         VolunteerOpportunityStatus @default(OPEN)
+  createdById    String?
+  claimedById    String?
+  completedAt    DateTime?
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+
+  createdBy User?               @relation("VolunteerOpportunityCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  responses VolunteerResponse[]
+
+  @@index([status])
+  @@index([lane])
+}
+
+model VolunteerResponse {
+  id            String                  @id @default(cuid())
+  opportunityId String
+  userId        String
+  message       String                  @db.Text
+  skills        String?                 @db.Text
+  availability  String?
+  status        VolunteerResponseStatus @default(PENDING)
+  reviewNote    String?                 @db.Text
+  reviewedById  String?
+  reviewedAt    DateTime?
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+
+  opportunity VolunteerOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  user        User                 @relation("VolunteerResponseAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy  User?                @relation("VolunteerResponseReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@unique([opportunityId, userId])
+  @@index([userId])
+  @@index([status])
+}
+
+model Guild {
+  id               String          @id @default(cuid())
+  name             String
+  slug             String          @unique
+  description      String          @db.Text
+  purpose          String          @db.Text
+  conductAgreement String          @db.Text
+  factionAffinity  String?
+  visibility       GuildVisibility @default(APPROVED_USERS)
+  status           GuildStatus     @default(PENDING_REVIEW)
+  founderId        String
+  bannerGlyph      String?
+  rules            String?         @db.Text
+  reviewNote       String?         @db.Text
+  reviewedById     String?
+  reviewedAt       DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  founder     User              @relation("GuildFounder", fields: [founderId], references: [id], onDelete: Cascade)
+  memberships GuildMembership[]
+  lorePieces  LoreSubmission[]
+
+  @@index([status])
+  @@index([founderId])
+}
+
+model GuildMembership {
+  id        String                @id @default(cuid())
+  guildId   String
+  userId    String
+  role      GuildMembershipRole   @default(MEMBER)
+  status    GuildMembershipStatus @default(PENDING)
+  message   String?               @db.Text
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@index([userId])
+}
+
+model ReputationEvent {
+  id         String             @id @default(cuid())
+  userId     String
+  category   ReputationCategory
+  points     Int
+  reason     String
+  sourceType String?
+  sourceId   String?
+  revoked    Boolean            @default(false)
+  revokedAt  DateTime?
+  createdAt  DateTime           @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([category])
+}
+
+model LoreSubmission {
+  id                String               @id @default(cuid())
+  authorId          String
+  title             String
+  slug              String               @unique
+  body              String               @db.Text
+  tierRequested     CanonTier            @default(CHARACTER)
+  tierApproved      CanonTier?
+  characterCallsign String?
+  guildId           String?
+  factionSlug       String?
+  contentWarnings   String?
+  status            LoreSubmissionStatus @default(DRAFT)
+  reviewNote        String?              @db.Text
+  reviewedById      String?
+  reviewedAt        DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  author     User   @relation("LoreSubmissionAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  reviewedBy User?  @relation("LoreSubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  guild      Guild? @relation(fields: [guildId], references: [id], onDelete: SetNull)
+
+  @@index([authorId])
+  @@index([status])
+  @@index([tierRequested])
+}
+
+model PlayerRecognition {
+  id          String                    @id @default(cuid())
+  recipientId String
+  grantedById String
+  type        PlayerRecognitionType
+  category    PlayerRecognitionCategory
+  title       String
+  body        String?                   @db.Text
+  isPublic    Boolean                   @default(true)
+  revoked     Boolean                   @default(false)
+  revokedAt   DateTime?
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+
+  recipient User @relation("RecognitionRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  grantedBy User @relation("RecognitionGranter", fields: [grantedById], references: [id], onDelete: Cascade)
+
+  @@index([recipientId])
+  @@index([isPublic, revoked])
 }

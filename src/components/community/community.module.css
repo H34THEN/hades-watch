@@ -1,0 +1,238 @@
+.shell {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 3vw, 2.5rem);
+}
+
+.shell::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.title {
+  font-family: var(--font-mono, monospace);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--primary);
+  text-shadow: 0 0 24px var(--hw-glow, rgba(220, 38, 38, 0.25));
+}
+
+.subtitle {
+  margin-top: 0.75rem;
+  max-width: 48rem;
+  font-size: 0.95rem;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+
+.nav {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 80%, var(--primary) 20%);
+  padding-bottom: 1rem;
+}
+
+.navLink {
+  border-radius: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+}
+
+.navLinkActive {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+.navLinkIdle {
+  color: var(--muted-foreground);
+}
+
+.navLinkIdle:hover {
+  color: var(--primary);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+
+.safetyNotice {
+  margin-top: 2.5rem;
+  padding: 1.25rem;
+  border: 1px solid color-mix(in srgb, hsl(45 70% 45%) 35%, var(--border));
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--card) 70%, hsl(45 30% 8%) 30%);
+}
+
+.safetyTitle {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: hsl(45 90% 55%);
+  margin-bottom: 0.5rem;
+}
+
+.safetyBody {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.statusChip {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.25rem;
+  border: 1px solid transparent;
+}
+
+.statusPending {
+  color: hsl(45 90% 55%);
+  border-color: hsl(45 60% 40% / 0.4);
+  background: hsl(45 30% 12% / 0.5);
+}
+
+.statusAccepted {
+  color: hsl(142 70% 45%);
+  border-color: hsl(142 50% 35% / 0.4);
+  background: hsl(142 40% 12% / 0.5);
+}
+
+.statusRevision {
+  color: hsl(200 70% 55%);
+  border-color: hsl(200 50% 40% / 0.4);
+  background: hsl(200 30% 12% / 0.5);
+}
+
+.statusRejected {
+  color: hsl(0 70% 55%);
+  border-color: hsl(0 50% 40% / 0.4);
+  background: hsl(0 30% 12% / 0.5);
+}
+
+.statusNeutral {
+  color: var(--muted-foreground);
+  border-color: color-mix(in srgb, var(--border) 70%, var(--primary) 30%);
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
+}
+
+.pinnedBadge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(45 90% 55%);
+}
+
+.threadBody {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--foreground);
+}
+
+.threadBody a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.reactionBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.reactionButton {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.5625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, var(--primary) 20%);
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.reactionButtonActive {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow: 0 0 8px var(--hw-glow, rgba(220, 38, 38, 0.12));
+  color: var(--primary);
+}
+
+.tierGuide {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tierItem {
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, var(--primary) 15%);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+}
+
+.tierLabel {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.tierDesc {
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}

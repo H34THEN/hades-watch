@@ -27,6 +27,7 @@ src/
     dead-drops/                # Fictional dead drops (roleplay)
     ciphers/                   # Cipher puzzles (roleplay)
     chat/                      # AIM-style temporary chat (approved users)
+    community/                 # Forums, builder, volunteer, guilds, lore, recognition
     net-neighbors/             # Old-web banner wall
     moderation/                # Moderation console
     admin/                     # Admin console + subpages

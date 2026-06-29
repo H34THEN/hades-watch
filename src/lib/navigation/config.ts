@@ -62,6 +62,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
     terminalLabel: "SOCIAL",
     links: [
       { href: "/chat", label: "Chat Rooms", access: "approved", description: "HTTPS-protected temporary chat" },
+      { href: "/community", label: "Community Signals", access: "open", description: "Forums, guilds, volunteer board" },
       { href: "/net-neighbors", label: "Net Neighbors", access: "open", description: "Old-web banner wall" },
       { href: "/profile", label: "Profile Worlds", access: "approved", description: "Full-page operative shrines" },
     ],

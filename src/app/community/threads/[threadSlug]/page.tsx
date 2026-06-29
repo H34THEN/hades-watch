@@ -1,0 +1,52 @@
+import { notFound } from "next/navigation";
+import { CommunityNav } from "@/components/community/CommunityNav";
+import { CommunityShell } from "@/components/community/CommunityShell";
+import { ForumThreadView } from "@/components/community/ForumThreadView";
+import { formatCommunityBody } from "@/lib/community/sanitize";
+import { getSessionUser, isApprovedUser } from "@/lib/auth/session";
+import { getForumComments, getForumThreadBySlug } from "@/lib/queries/community";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ threadSlug: string }>;
+}) {
+  const { threadSlug } = await params;
+  const thread = await getForumThreadBySlug(threadSlug);
+  return { title: thread ? `${thread.title} // Thread` : "Thread" };
+}
+
+export default async function ForumThreadPage({
+  params,
+}: {
+  params: Promise<{ threadSlug: string }>;
+}) {
+  const { threadSlug } = await params;
+  const thread = await getForumThreadBySlug(threadSlug);
+
+  if (
+    !thread ||
+    thread.status === "HIDDEN" ||
+    thread.status === "REMOVED"
+  ) {
+    notFound();
+  }
+
+  const user = await getSessionUser();
+  const approved = user ? isApprovedUser(user) : false;
+  const comments = await getForumComments(thread.id);
+  const bodyHtml = formatCommunityBody(thread.body);
+
+  return (
+    <CommunityShell title={thread.title}>
+      <CommunityNav active="/community/forums" />
+      <ForumThreadView
+        thread={thread}
+        bodyHtml={bodyHtml}
+        comments={comments}
+        currentUserId={user?.id}
+        canReply={approved && thread.status === "ACTIVE"}
+      />
+    </CommunityShell>
+  );
+}

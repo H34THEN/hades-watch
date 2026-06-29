@@ -192,6 +192,20 @@
 - **Docs:** `docs/MEDIA_PLAYER.md`
 - **Seed:** `db:seed:factions` assigns Owner → Chthonic Uprising `LEADER` / The Archivist
 
+## Phase 11 — Community Signals (MMO Hub Phase 2)
+
+- **Community hub:** `/community` landing with reputation panel
+- **Community Builder:** moderated submission intake at `/community/builder`
+- **Forums:** categories, threads, comments, reactions at `/community/forums`
+- **Volunteer board:** opportunities + responses at `/community/volunteer`
+- **Guilds:** request, approval, membership at `/community/guilds`
+- **Canon lore tiers:** submissions at `/community/lore`
+- **Player recognition:** public board at `/community/recognition`
+- **Reputation events:** `ReputationEvent` model with daily caps
+- **Admin:** `/admin/community` review queues
+- **Seed:** `db:seed:community-signals` (categories + volunteer calls, no fake users)
+- **Docs:** `docs/COMMUNITY_SIGNALS.md` and related guides
+
 ## Future Lore
 
 Planned archive entries and mission chains from the origin dossier:

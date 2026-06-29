@@ -105,7 +105,26 @@ export type AuditAction =
   | "avatar.forge.unlock.failed"
   | "avatar.forge.link.revealed"
   | "alliance.membership.assign"
-  | "alliance.membership.remove";
+  | "alliance.membership.remove"
+  | "community.submission.submit"
+  | "community.submission.review"
+  | "forum.thread.create"
+  | "forum.thread.moderate"
+  | "forum.comment.create"
+  | "forum.comment.moderate"
+  | "forum.reaction"
+  | "forum.report.create"
+  | "volunteer.response.submit"
+  | "volunteer.response.review"
+  | "volunteer.opportunity.create"
+  | "guild.request"
+  | "guild.review"
+  | "guild.join"
+  | "guild.membership.review"
+  | "lore.submit"
+  | "lore.review"
+  | "recognition.grant"
+  | "recognition.revoke";
 
 interface AuditEntry {
   action: AuditAction;
