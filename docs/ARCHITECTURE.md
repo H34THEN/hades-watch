@@ -55,7 +55,14 @@ src/
 
 ## Layout System
 
-Responsive page width is controlled by `PageShell` / `AdminShell` (`src/components/layout/`) and shared CSS utilities in `globals.css`. Child routes choose variants per purpose — dashboard libraries use `dashboard`/`wide`, long-form lore articles use `standard`, auth forms use `narrow`. Archive signal feeds and repo detail pages use `ArchiveSignalFeed` / `ArchiveSignalItemDetail` with split sidebars. See [LAYOUT_SYSTEM.md](LAYOUT_SYSTEM.md).
+Responsive page width is controlled by `PageShell` / `AdminShell` and shared CSS utilities. See [LAYOUT_SYSTEM.md](LAYOUT_SYSTEM.md). Pass 3 added field care `/dead-drops`, chat relay, and `/admin/archivist`.
+
+## Field Care Dead Drops & Archivist Feed
+
+- `/dead-drops` — safe readiness MmoDeadDrop library (`field-care-cache` loop)
+- `/admin/archivist` — Owner/Admin unified action feed
+
+See [DEAD_DROPS.md](DEAD_DROPS.md) and [ARCHIVIST_ADMINISTRATOR.md](ARCHIVIST_ADMINISTRATOR.md).
 
 ## Profile Dossier (Phase 7)
 

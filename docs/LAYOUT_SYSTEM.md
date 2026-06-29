@@ -55,6 +55,15 @@ Hades Watch uses a shared **PageShell** layout system so dashboard pages use des
 | `/dashboard/transmissions` | split | yes | list + console sidebar |
 | `/dashboard/events` | dashboard | yes | event card grid |
 | `/admin/factions/command` | dashboard | yes | `AdminShell` |
+| `/mmo/character` | split | yes | character command sidebar |
+| `/chat/underwatch-lobby` | full/split | yes | chat relay + sidebar |
+| `/net-neighbors` | dashboard | yes | HUD banner wall |
+| `/admin/net-neighbors` | dashboard | yes | `AdminShell` |
+| `/admin/media` | dashboard | yes | `AdminShell` |
+| `/admin/archive` | dashboard | yes | `AdminShell` |
+| `/moderation` | dashboard | yes | mod console grid |
+| `/dead-drops` | dashboard | yes | field care library |
+| `/admin/archivist` | dashboard | yes | action feed |
 
 ## Parent layouts
 
