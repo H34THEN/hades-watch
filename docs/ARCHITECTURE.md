@@ -95,7 +95,7 @@ src/
 |--------|---------|
 | `npm run db:generate` | Generate Prisma client only — no data changes |
 | `npm run db:deploy` | Apply migrations + regenerate client |
-| `npm run db:seed` / `db:seed:all` | Canonical production-safe seeds (factions, lore, archive, missions, chat, net-neighbors, text-mmo) |
+| `npm run db:seed` / `db:seed:all` | Canonical production-safe seeds (factions, lore, archive, missions, chat, net-neighbors, text-mmo, mmo-rewards) |
 | `npm run db:release` | `db:generate` + `db:deploy` + canonical seed |
 | `npm run db:backfill:profile-slugs` | Provision missing `Character.callsign` from codename |
 | `npm run db:seed:legacy` | Legacy dev seed (roles + dev invites when allowed) |

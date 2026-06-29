@@ -17,6 +17,11 @@ interface CharacterDossierPageProps {
     archetype: string | null;
   } | null;
   isApproved: boolean;
+  rewardStats?: {
+    avatarUnlocks: number;
+    titles: number;
+    loot: number;
+  };
 }
 
 export function CharacterDossierPage({
@@ -24,6 +29,7 @@ export function CharacterDossierPage({
   world,
   character,
   isApproved,
+  rewardStats,
 }: CharacterDossierPageProps) {
   if (!character || !dossier) {
     return (
@@ -170,6 +176,22 @@ export function CharacterDossierPage({
                   <dd>{dossier.faction.reputation}</dd>
                 </div>
               ) : null}
+              {rewardStats && (
+                <>
+                  <div>
+                    <dt>Avatar Unlocks</dt>
+                    <dd>{rewardStats.avatarUnlocks}</dd>
+                  </div>
+                  <div>
+                    <dt>Earned Titles</dt>
+                    <dd>{rewardStats.titles}</dd>
+                  </div>
+                  <div>
+                    <dt>Loot / Relics</dt>
+                    <dd>{rewardStats.loot}</dd>
+                  </div>
+                </>
+              )}
             </dl>
           </TerminalPanel>
         </div>

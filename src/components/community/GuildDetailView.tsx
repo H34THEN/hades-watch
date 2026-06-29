@@ -42,7 +42,14 @@ interface GuildDetailViewProps {
     bannerGlyph?: string | null;
     rules?: string | null;
     visibility: string;
-    founder: GuildFounder;
+    founder: GuildFounder | null;
+    isStarterGuild?: boolean;
+    publicMotto?: string | null;
+    guildType?: string | null;
+    joinPolicy?: string | null;
+    foundingHook?: string | null;
+    suggestedActivities?: string | null;
+    starterRoles?: unknown;
     memberships: GuildMember[];
     _count?: { lorePieces: number };
   };
@@ -140,10 +147,15 @@ export function GuildDetailView({
               {guild.name}
             </h1>
             <p className={cn(styles.metaRow, "mt-2")}>
+              {guild.isStarterGuild && <span>Starter guild</span>}
+              {guild.guildType && <span>{guild.guildType}</span>}
               {guild.factionAffinity && <span>{guild.factionAffinity}</span>}
               <span>{guild.visibility.replace("_", " ")}</span>
               {guild._count && <span>{guild._count.lorePieces} lore pieces</span>}
             </p>
+            {guild.publicMotto && (
+              <p className="mt-2 font-mono text-xs text-primary/90">{guild.publicMotto}</p>
+            )}
           </div>
         </div>
 

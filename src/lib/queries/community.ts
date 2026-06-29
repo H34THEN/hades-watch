@@ -163,7 +163,7 @@ export async function getApprovedGuilds(options?: {
       status: "APPROVED" satisfies GuildStatus,
       visibility: { in: visibilityFilter },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isStarterGuild: "desc" }, { createdAt: "desc" }],
     include: {
       founder: { select: authorSelect },
       _count: {

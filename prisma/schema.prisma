@@ -318,6 +318,12 @@ model User {
   mmoLootGrants                MmoLootGrant[]
   mmoLoreUnlockGrants          MmoLoreUnlockGrant[]
   reviewedMmoDeadDropSubmissions MmoDeadDropSubmission[] @relation("MmoDeadDropReviewer")
+  playerTitleGrants            PlayerTitleGrant[]
+  playerTitlesGranted          PlayerTitleGrant[]      @relation("PlayerTitleGranter")
+  avatarUnlockGrants           UserAvatarUnlock[]
+  avatarUnlocksGranted         UserAvatarUnlock[]      @relation("AvatarUnlockGranter")
+  adminRewardGrantsGiven       AdminRewardGrantAudit[] @relation("AdminRewardGranter")
+  adminRewardGrantsReceived    AdminRewardGrantAudit[] @relation("AdminRewardRecipient")
   @@index([createdAt])
   @@index([accountStatus])
 }
@@ -1520,26 +1526,40 @@ model ForumReaction {
 }
 
 model VolunteerOpportunity {
-  id             String                     @id @default(cuid())
-  title          String
-  slug           String                     @unique
-  description    String                     @db.Text
-  lane           VolunteerLane
-  requiredSkills String?                    @db.Text
-  difficulty     String?
-  estimatedTime  String?
-  status         VolunteerOpportunityStatus @default(OPEN)
-  createdById    String?
-  claimedById    String?
-  completedAt    DateTime?
-  createdAt      DateTime                   @default(now())
-  updatedAt      DateTime                   @updatedAt
+  id                     String                     @id @default(cuid())
+  title                  String
+  slug                   String                     @unique
+  description            String                     @db.Text
+  lane                   VolunteerLane
+  requiredSkills         String?                    @db.Text
+  difficulty             String?
+  estimatedTime          String?
+  status                 VolunteerOpportunityStatus @default(OPEN)
+  createdById            String?
+  claimedById            String?
+  completedAt            DateTime?
+  purpose                String?                    @db.Text
+  taskDescription        String?                    @db.Text
+  acceptanceCriteria     String?                    @db.Text
+  whatNotToSubmit        String?                    @db.Text
+  factionAffinity        String?
+  accessLevel            String?
+  reputationRewardPoints Int?
+  reputationCategory     ReputationCategory?
+  badgeHookSlug          String?
+  avatarUnlockHookSlug   String?
+  imageAssetPath         String?
+  reviewRequired         Boolean                    @default(false)
+  isStarterSeed          Boolean                    @default(false)
+  createdAt              DateTime                   @default(now())
+  updatedAt              DateTime                   @updatedAt
 
   createdBy User?               @relation("VolunteerOpportunityCreator", fields: [createdById], references: [id], onDelete: SetNull)
   responses VolunteerResponse[]
 
   @@index([status])
   @@index([lane])
+  @@index([isStarterSeed])
 }
 
 model VolunteerResponse {
@@ -1566,30 +1586,44 @@ model VolunteerResponse {
 }
 
 model Guild {
-  id               String          @id @default(cuid())
-  name             String
-  slug             String          @unique
-  description      String          @db.Text
-  purpose          String          @db.Text
-  conductAgreement String          @db.Text
-  factionAffinity  String?
-  visibility       GuildVisibility @default(APPROVED_USERS)
-  status           GuildStatus     @default(PENDING_REVIEW)
-  founderId        String
-  bannerGlyph      String?
-  rules            String?         @db.Text
-  reviewNote       String?         @db.Text
-  reviewedById     String?
-  reviewedAt       DateTime?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id                   String          @id @default(cuid())
+  name                 String
+  slug                 String          @unique
+  description          String          @db.Text
+  purpose              String          @db.Text
+  conductAgreement     String          @db.Text
+  factionAffinity      String?
+  visibility           GuildVisibility @default(APPROVED_USERS)
+  status               GuildStatus     @default(PENDING_REVIEW)
+  founderId            String?
+  isStarterGuild       Boolean         @default(false)
+  guildType            String?
+  publicMotto          String?
+  joinPolicy           String?
+  primaryFactionSlug   String?
+  secondaryAffinities  Json?
+  suggestedActivities  String?         @db.Text
+  starterRoles         Json?
+  safetyNotes          String?         @db.Text
+  badgeHooks           Json?
+  imageAssetPath       String?
+  bannerAssetPath      String?
+  foundingHook         String?         @db.Text
+  bannerGlyph          String?
+  rules                String?         @db.Text
+  reviewNote           String?         @db.Text
+  reviewedById         String?
+  reviewedAt           DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 
-  founder     User              @relation("GuildFounder", fields: [founderId], references: [id], onDelete: Cascade)
+  founder     User?             @relation("GuildFounder", fields: [founderId], references: [id], onDelete: SetNull)
   memberships GuildMembership[]
   lorePieces  LoreSubmission[]
 
   @@index([status])
   @@index([founderId])
+  @@index([isStarterGuild])
 }
 
 model GuildMembership {
@@ -2006,4 +2040,316 @@ model MmoLoreUnlockGrant {
 
   @@unique([userId, loreUnlockId])
   @@index([userId])
+}
+
+// --- MMO seed data & reward system (see docs/MMO_SEED_DATA_AND_REWARD_SYSTEM.md) ---
+
+enum AvatarUnlockCategory {
+  accessories
+  fictional_props
+  tech_gear
+  faction_flair
+  outerwear
+  back_items
+  effects
+  backgrounds
+}
+
+enum RewardSourceType {
+  mission
+  dead_drop
+  cipher
+  faction_mission
+  guild
+  archive
+  ghost_in_tech
+  relic_zone
+  profile_world
+  signal_player
+  manual_recognition
+  admin_grant
+  volunteer
+  community_builder
+}
+
+enum RewardMappingRewardType {
+  badge
+  loot
+  avatar_unlock
+  title
+  profile_cosmetic
+  reputation
+  lore_unlock
+  relic
+  signal_player_unlock
+  guild_banner
+  forum_flair
+}
+
+enum AdminGrantType {
+  badge
+  loot
+  avatar_unlock
+  title
+  profile_cosmetic
+  reputation
+  lore_unlock
+  recognition
+}
+
+enum CommunityBuilderPromptCategory {
+  forum_topic
+  mission_idea
+  cipher_idea
+  lore_fragment
+  avatar_asset_idea
+  badge_idea
+  accessibility_note
+  archive_resource
+  net_neighbor
+  event_idea
+  profile_world_theme
+  signal_player_idea
+}
+
+enum RewardPoolType {
+  faction_mission
+  guild_milestone
+  admin_manual
+}
+
+model CommunityBuilderPrompt {
+  id                String                         @id @default(cuid())
+  slug              String                         @unique
+  title             String
+  category          CommunityBuilderPromptCategory
+  suggestedRoute    String?
+  playerPrompt      String                         @db.Text
+  reviewRequired    Boolean                        @default(true)
+  safetyNote        String?                        @db.Text
+  rewardSuggestions String?                        @db.Text
+  badgeHooks        Json?
+  sortOrder         Int                            @default(0)
+  isActive          Boolean                        @default(true)
+  createdAt         DateTime                       @default(now())
+  updatedAt         DateTime                       @updatedAt
+
+  @@index([category, sortOrder])
+}
+
+model PlayerRecognitionTemplate {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  title            String
+  recognitionType  String
+  category         String
+  grantedByRole    String
+  visibility       String   @default("public")
+  description      String   @db.Text
+  flavorText       String?  @db.Text
+  unlockCondition  String?  @db.Text
+  revocable        Boolean  @default(true)
+  optOut           Boolean  @default(true)
+  badgeHookSlug    String?
+  titleHookSlug    String?
+  lootHookSlug     String?
+  imageAssetPath   String?
+  sortOrder        Int      @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([category, sortOrder])
+}
+
+model ReputationEventDefinition {
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  eventName        String
+  category         ReputationCategory
+  points           Int
+  trigger          String             @db.Text
+  cooldownKey      String?
+  dailyCap         Int?
+  reviewRequired   Boolean            @default(false)
+  abuseNotes       String?            @db.Text
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model CanonTierDefinition {
+  id                String   @id @default(cuid())
+  tier              Int      @unique
+  tierLabel         String
+  slug              String   @unique
+  whatUsersCanCreate String  @db.Text
+  examplePrompt     String   @db.Text
+  reviewRequirement String   @db.Text
+  ownershipRules    String   @db.Text
+  safetyRules       String   @db.Text
+  rewardHooks       String?  @db.Text
+  badgeHooks        String?  @db.Text
+  loreUnlockHooks   String?  @db.Text
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model CanonLorePrompt {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  tier         Int
+  playerPrompt String   @db.Text
+  rewardHook   String?
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([tier, sortOrder])
+}
+
+model PlayerTitle {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  category        String
+  unlockCondition String   @db.Text
+  factionAffinity String?
+  displayLocation String?
+  flavorText      String?  @db.Text
+  imageAssetPath  String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  grants PlayerTitleGrant[]
+}
+
+model PlayerTitleGrant {
+  id          String    @id @default(cuid())
+  userId      String
+  titleId     String
+  sourceType  String?
+  sourceSlug  String?
+  adminNote   String?   @db.Text
+  grantedById String?
+  revoked     Boolean   @default(false)
+  revokedAt   DateTime?
+  grantedAt   DateTime  @default(now())
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     PlayerTitle @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  grantedBy User?       @relation("PlayerTitleGranter", fields: [grantedById], references: [id], onDelete: SetNull)
+
+  @@unique([userId, titleId])
+  @@index([userId])
+}
+
+model AvatarUnlockAsset {
+  id                String               @id @default(cuid())
+  slug              String               @unique
+  name              String
+  category          AvatarUnlockCategory
+  rarity            MmoLootRarity        @default(common)
+  factionAffinity   String?
+  unlockSource      String?              @db.Text
+  assetPath         String
+  layerOrder        Int                  @default(50)
+  visualDescription String?              @db.Text
+  isActive          Boolean              @default(true)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  grants UserAvatarUnlock[]
+}
+
+model UserAvatarUnlock {
+  id          String    @id @default(cuid())
+  userId      String
+  assetId     String
+  sourceType  String?
+  sourceSlug  String?
+  grantedById String?
+  revoked     Boolean   @default(false)
+  revokedAt   DateTime?
+  grantedAt   DateTime  @default(now())
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset     AvatarUnlockAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  grantedBy User?             @relation("AvatarUnlockGranter", fields: [grantedById], references: [id], onDelete: SetNull)
+
+  @@unique([userId, assetId])
+  @@index([userId])
+}
+
+model RewardMapping {
+  id                 String                  @id @default(cuid())
+  sourceType         RewardSourceType
+  sourceSlug         String
+  rewardType         RewardMappingRewardType
+  rewardSlug         String
+  quantity           Int                     @default(1)
+  repeatability      String                  @default("one_time")
+  reviewRequired     Boolean                 @default(false)
+  adminNotes         String?                 @db.Text
+  factionLeaderNotes String?                 @db.Text
+  isActive           Boolean                 @default(true)
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+
+  @@unique([sourceType, sourceSlug, rewardType, rewardSlug])
+  @@index([sourceType, sourceSlug])
+}
+
+model RewardPool {
+  id           String         @id @default(cuid())
+  slug         String         @unique
+  name         String
+  factionSlug  String?
+  poolType     RewardPoolType
+  description  String?        @db.Text
+  adminNotes   String?        @db.Text
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  items RewardPoolItem[]
+
+  @@index([factionSlug])
+}
+
+model RewardPoolItem {
+  id         String                  @id @default(cuid())
+  poolId     String
+  rewardType RewardMappingRewardType
+  rewardSlug String
+  quantity   Int                     @default(1)
+  notes      String?                 @db.Text
+
+  pool RewardPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+
+  @@unique([poolId, rewardType, rewardSlug])
+}
+
+model AdminRewardGrantAudit {
+  id          String         @id @default(cuid())
+  actorId     String
+  recipientId String
+  grantType   AdminGrantType
+  grantSlug   String
+  action      String
+  reason      String
+  adminNote   String?        @db.Text
+  sourceType  String?
+  sourceSlug  String?
+  createdAt   DateTime       @default(now())
+
+  actor     User @relation("AdminRewardGranter", fields: [actorId], references: [id], onDelete: Cascade)
+  recipient User @relation("AdminRewardRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, createdAt])
+  @@index([actorId, createdAt])
 }

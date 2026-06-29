@@ -31,7 +31,7 @@ type GuildRow = {
   id: string;
   name: string;
   slug: string;
-  founder: { name: string | null; email: string };
+  founder: { name: string | null; email: string } | null;
 };
 
 type LoreRow = {
@@ -196,7 +196,7 @@ export function AdminCommunityPanel({
               <li key={g.id} className="border-b border-border/30 pb-4 font-mono text-xs">
                 <p className="text-primary">{g.name}</p>
                 <p className="text-muted-foreground">
-                  {g.slug} · {g.founder.name ?? g.founder.email}
+                  {g.slug} · {g.founder ? (g.founder.name ?? g.founder.email) : "Starter guild"}
                 </p>
                 <ReviewForm
                   action={reviewGuild}

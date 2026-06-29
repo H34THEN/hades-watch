@@ -44,6 +44,7 @@
     "db:cleanup:chat": "tsx prisma/scripts/cleanup-chat-messages.ts",
     "db:seed:community-signals": "prisma generate && tsx prisma/scripts/seed-community-signals.ts",
     "db:seed:text-mmo": "tsx prisma/scripts/seed-text-mmo-loops.ts",
+    "db:seed:mmo-rewards": "tsx prisma/scripts/seed-mmo-rewards.ts",
     "deploy:verify": "bash scripts/verify-production-deploy.sh"
   },
   "dependencies": {

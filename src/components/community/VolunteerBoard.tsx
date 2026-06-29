@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
@@ -148,7 +149,11 @@ export function VolunteerBoard({
               <p className="font-mono text-xs tracking-wider text-primary uppercase">
                 {VOLUNTEER_LANES[opportunity.lane]}
               </p>
-              <h3 className="mt-1 font-mono text-sm text-foreground">{opportunity.title}</h3>
+              <h3 className="mt-1 font-mono text-sm text-foreground">
+                <Link href={`/community/volunteer/${opportunity.slug}`} className="hover:text-primary hover:underline">
+                  {opportunity.title}
+                </Link>
+              </h3>
             </div>
             <span className={cn(styles.statusChip, styles.statusAccepted)}>
               {opportunity.status.replace("_", " ")}

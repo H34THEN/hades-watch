@@ -16,9 +16,12 @@ interface GuildRow {
   description: string;
   purpose: string;
   factionAffinity?: string | null;
+  publicMotto?: string | null;
+  guildType?: string | null;
+  isStarterGuild?: boolean;
   bannerGlyph?: string | null;
   visibility: string;
-  founder: GuildFounder;
+  founder: GuildFounder | null;
   _count?: { memberships: number };
 }
 
@@ -26,7 +29,8 @@ interface GuildListProps {
   guilds: GuildRow[];
 }
 
-function founderCallsign(founder: GuildFounder): string {
+function founderCallsign(founder: GuildFounder | null, isStarter?: boolean): string {
+  if (!founder) return isStarter ? "Underwatch Starter Cell" : "—";
   return (
     founder.character?.callsign ??
     founder.name ??
@@ -67,8 +71,15 @@ export function GuildList({ guilds }: GuildListProps) {
               <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">
                 {guild.description}
               </p>
+              {guild.publicMotto && (
+                <p className="mt-1 font-mono text-[10px] text-primary/80">{guild.publicMotto}</p>
+              )}
               <p className={cn(styles.metaRow, "mt-3")}>
-                <span>Founder {founderCallsign(guild.founder)}</span>
+                {guild.isStarterGuild ? (
+                  <span>Starter guild</span>
+                ) : (
+                  <span>Founder {founderCallsign(guild.founder, guild.isStarterGuild)}</span>
+                )}
                 {guild._count && (
                   <span>
                     {guild._count.memberships} member

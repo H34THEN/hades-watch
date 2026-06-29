@@ -217,6 +217,13 @@
 - **Seed:** `db:seed:text-mmo`
 - **Docs:** [TEXT_MMO_PLAYABLE_LOOPS.md](TEXT_MMO_PLAYABLE_LOOPS.md), [TEXT_MMO_IMPLEMENTATION_NOTES.md](TEXT_MMO_IMPLEMENTATION_NOTES.md)
 
+## Phase 13 — MMO Seed Data & Reward System
+
+- **Seed data:** starter guilds, volunteer opportunities, builder prompts, recognition templates, titles, badges, loot, avatar unlocks, reward mappings, faction pools
+- **Admin:** `/admin/rewards`, grant console, per-user rewards, pool viewers
+- **Docs:** [MMO_SEED_DATA_AND_REWARD_SYSTEM.md](MMO_SEED_DATA_AND_REWARD_SYSTEM.md), [MMO_REWARDS_IMPLEMENTATION_NOTES.md](MMO_REWARDS_IMPLEMENTATION_NOTES.md)
+- **Seed:** `db:seed:mmo-rewards`
+
 ## Future Lore
 
 Planned archive entries and mission chains from the origin dossier:

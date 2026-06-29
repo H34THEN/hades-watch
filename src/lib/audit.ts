@@ -126,7 +126,9 @@ export type AuditAction =
   | "recognition.grant"
   | "recognition.revoke"
   | "mmo.dead_drop.submit"
-  | "mmo.dead_drop.review";
+  | "mmo.dead_drop.review"
+  | "admin.reward.grant"
+  | "admin.reward.revoke";
 
 interface AuditEntry {
   action: AuditAction;

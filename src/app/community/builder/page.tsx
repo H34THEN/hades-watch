@@ -1,10 +1,12 @@
 import { CommunityBuilderForm } from "@/components/community/CommunityBuilderForm";
+import { CommunityBuilderPromptLibrary } from "@/components/community/CommunityBuilderPromptLibrary";
 import { CommunityNav } from "@/components/community/CommunityNav";
 import { CommunitySafetyNotice } from "@/components/community/CommunitySafetyNotice";
 import { CommunityShell } from "@/components/community/CommunityShell";
 import { CommunitySubmissionList } from "@/components/community/CommunitySubmissionList";
 import { getSessionUser, isApprovedUser } from "@/lib/auth/session";
 import { getUserCommunitySubmissions } from "@/lib/queries/community";
+import { getCommunityBuilderPrompts } from "@/lib/queries/rewards";
 
 export const metadata = {
   title: "Community Builder // Signal Planter",
@@ -13,7 +15,10 @@ export const metadata = {
 export default async function CommunityBuilderPage() {
   const user = await getSessionUser();
   const approved = user ? isApprovedUser(user) : false;
-  const submissions = user ? await getUserCommunitySubmissions(user.id) : [];
+  const [submissions, prompts] = await Promise.all([
+    user ? getUserCommunitySubmissions(user.id) : Promise.resolve([]),
+    getCommunityBuilderPrompts(),
+  ]);
 
   return (
     <CommunityShell
@@ -34,6 +39,7 @@ export default async function CommunityBuilderPage() {
           <CommunitySubmissionList submissions={submissions} />
         </div>
       )}
+      <CommunityBuilderPromptLibrary prompts={prompts} />
       <CommunitySafetyNotice />
     </CommunityShell>
   );
